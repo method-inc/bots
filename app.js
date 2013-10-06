@@ -7,6 +7,15 @@ function debug_print(o) {
   util.debug(util.inspect(o, false, 2, true));
 }
 
+
+/**
+ * . - land
+ * ^ - player1 hive
+ * # - player2 hive
+ * a - player1 aliens
+ * b - player2 aliens
+ * * - food
+ */ 
 function print_map(map) {
   util.print('Map:\n');
   util.print('[ ');
