@@ -8,8 +8,7 @@ function debug_print(o) {
 }
 
 function print_map(map) {
-  debug_print(map);
-  util.print('\n\nMap:\n');
+  util.print('Map:\n');
   util.print('[ ');
 
   for (var i = 0; i < map.rows; i++) {
@@ -21,7 +20,22 @@ function print_map(map) {
       util.print('\n  ');
   }
 
-  util.print(' ]');
+  util.print(' ]\n\n');
 }
 
-print_map(game.map);
+function iterate() {
+  console.log('Iteration ' + game.turn + '\n===================================');
+  print_map(game.map);
+  game.turn++;
+}
+
+function game_on() {
+  var keep_playing = true;
+  keep_playing = turn_exceeded();  
+  return keep_playing;
+}
+
+function turn_exceeded() { return game.turn <= game.max_turns; }
+function game_engine() { do iterate(); while (game_on()); }
+
+game_engine();

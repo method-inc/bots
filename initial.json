@@ -16,7 +16,7 @@
       }
   ],
   "turn": 1,
-  "max_turns": 100,
+  "max_turns": 5,
   "load_time": 5000,
   "turn_time": 2000,
   "attack_radius": 5,
