@@ -1,0 +1,24 @@
+{
+  "version": 0.1,
+  "map": {
+    "rows": 50,
+    "cols": 100,
+    "data": "!.....#...@....%.$............................"
+  },
+  "players": [
+      {
+        "name": "Eric",
+        "score": 0
+      },
+      {
+        "name": "Keith",
+        "score": 0
+      }
+  ],
+  "turn": 1,
+  "max_turns": 100,
+  "load_time": 5000,
+  "turn_time": 2000,
+  "attack_radius": 5,
+  "food_radius": 1
+}
