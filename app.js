@@ -23,12 +23,26 @@ function print_map(map) {
   util.print(' ]\n\n');
 }
 
+
+/**
+ * RTS "turn"
+ */ 
 function iterate() {
   console.log('Iteration ' + game.turn + '\n===================================');
+
+  // Send game state to players
+
+  // Receive orders from players
+
+  // Perform phases and update game state
+
   print_map(game.map);
   game.turn++;
 }
 
+/**
+ * Any game terminiation criteria goes here
+ */ 
 function game_on() {
   var keep_playing = true;
   keep_playing = turn_exceeded();  
