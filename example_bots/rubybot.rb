@@ -5,8 +5,7 @@ PORT = 1337
 
 socket = TCPSocket.open(HOST, PORT)
 
-puts 'CONNECTED TO: ' + HOST.to_s + ':' + PORT.to_s
-socket.write 'Hello from the Ruby bot!'
+socket.write 'ready'
 
 puts 'RECEIVED DATA: ' + socket.gets
 

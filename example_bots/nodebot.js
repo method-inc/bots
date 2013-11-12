@@ -4,11 +4,9 @@ var HOST = '127.0.0.1';
 var PORT = 1337;
 
 var socket = new net.Socket();
+
 socket.connect(PORT, HOST, function() {
-
-  console.log('CONNECTED TO: ' + HOST + ':' + PORT);
-  socket.write('Hello from the Node bot!');
-
+  socket.write('ready');
 });
 
 socket.on('data', function(data) {

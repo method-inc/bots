@@ -1,26 +1,38 @@
 var fs = require('fs');
 var _ = require('underscore');
 var util = require('util');
-var game = JSON.parse(fs.readFileSync('initial.json').toString());
+var game = require('./game.js');
 var net = require('net');
 
-var number_of_clients = 0;
+var numberOfClients = 0;
 var clients = [];
 function Client(stream) {
   this.name = null;
   this.stream = stream;
 }
 
+var gameState = {};
+
 var tcpServer = net.createServer(function(socket) {
-  number_of_clients++;
-  console.log('Client ' + number_of_clients + ' has connected');
+  numberOfClients++;
+  console.log('Client ' + numberOfClients + ' has connected');
   var client = new Client(socket);
-  client.name = 'Client ' + number_of_clients;
-  clients.push(client);
+  client.name = 'Client ' + numberOfClients;
 
   client.stream.on('data', function(data) {
     console.log('Data received from ' + client.name + ': ' + data);
-    client.stream.write('Hello from the server!\n');
+    data = ''+data;
+    if(data === 'ready') {
+      clients.push(client);
+
+      if(clients.length === 2) {
+        gameState = game.create();
+
+        clients.forEach(function(client) {
+          client.stream.write(JSON.stringify(gameState)+'\n');
+        });
+      }
+    }
   });
 
   client.stream.on('close', function() {
