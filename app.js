@@ -3,7 +3,6 @@ var _ = require('underscore');
 var util = require('util');
 var game = JSON.parse(fs.readFileSync('initial.json').toString());
 var net = require('net');
-var http = require('http');
 
 var number_of_clients = 0;
 var clients = [];
@@ -29,12 +28,3 @@ var tcpServer = net.createServer(function(socket) {
   });
 
 }).listen(1337, '127.0.0.1');
-
-var httpServer = http.createServer(function(req, res) {
-  res.writeHead(200, {'content-type':'text/plain'});
-  res.write('Clients:\n');
-  clients.forEach(function(client) {
-    res.write(client.name + '\n');
-  });
-  res.end();
-}).listen(3000);
