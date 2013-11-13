@@ -10,7 +10,8 @@ socket.connect(PORT, HOST, function() {
 });
 
 socket.on('data', function(data) {
-  console.log('RECEIVED DATA: ' + data.slice(0,-1));
+  var state = JSON.parse(data);
+  console.log('RECEIVED DATA: ' + state.grid);
   socket.destroy();
 });
 

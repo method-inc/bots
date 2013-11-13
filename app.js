@@ -37,6 +37,10 @@ var tcpServer = net.createServer(function(socket) {
 
   client.stream.on('close', function() {
     console.log(client.name + ' disconnected');
+    numberOfClients--;
+    if(numberOfClients === 0) {
+      tcpServer.close();
+    }
   });
 
 }).listen(1337, '127.0.0.1');
