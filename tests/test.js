@@ -28,4 +28,27 @@ describe('Game', function(){
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
   });
+
+  describe('#doTurn()', function(){
+    it('should spawn first aliens correctly', function() {
+      var beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:1, spawn:11},
+        p2:{food:1, spawn:38},
+        grid:'..................................................'
+      };
+      var createdState = game.doTurn(beginState, [], []);
+      var testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'...........a..........................b...........'
+      };
+
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+
+    });
+  });
 });
