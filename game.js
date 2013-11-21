@@ -51,13 +51,14 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
   // gather
 
   // fight
+  var p1Indices = getAllIndices(state.grid, gridIds.player1);
+  console.log(p1Indices);
+  var p2Indices = getAllIndices(state.grid, gridIds.player2);
+  console.log(p2Indices);
 
   // raze
 
   // spawn
-
-  // determine whether to continue/end game
-
   if(state.p1.food > 0 && state.grid[state.p1.spawn] === gridIds.empty) {
     state.p1.food -= 1;
     setIndex(state, state.p1.spawn, gridIds.player1);
@@ -66,6 +67,8 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
     state.p2.food -= 1;
     setIndex(state, state.p2.spawn, gridIds.player2);
   }
+
+  // determine whether to continue/end game
 
   return state;
 };
@@ -129,4 +132,12 @@ function adjacent(state, index1, index2) {
     return true;
   }
   return false;
+}
+function getAllIndices(grid, search) {
+  var arr = [];
+  var re = new RegExp(search, 'g');
+  while (m = re.exec(grid)) {
+    arr.push(m.index);
+  }
+  return arr;
 }
