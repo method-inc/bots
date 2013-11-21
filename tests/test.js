@@ -50,5 +50,28 @@ describe('Game', function(){
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
     });
+
+    it('should move aliens according to valid commands', function() {
+      var beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'...........a..........................b...........'
+      };
+      var p1Moves = [{from:11,to:10}];
+      var p2Moves = [{from:38,to:28}];
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'..........a.................b.....................'
+      };
+
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+
+    });
   });
 });

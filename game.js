@@ -34,9 +34,19 @@ exports.create = function(rows, cols) {
 };
 
 exports.doTurn = function(state, p1Moves, p2Moves) {
-  var newState = state;
-
   // move
+  p1Moves.forEach(function(move) {
+    if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player1) {
+      setIndex(state, move.from, gridIds.empty);
+      setIndex(state, move.to, gridIds.player1);
+    }
+  });
+  p2Moves.forEach(function(move) {
+    if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player2) {
+      setIndex(state, move.from, gridIds.empty);
+      setIndex(state, move.to, gridIds.player2);
+    }
+  });
 
   // gather
 
@@ -45,6 +55,9 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
   // raze
 
   // spawn
+
+  // determine whether to continue/end game
+
   if(state.p1.food > 0 && state.grid[state.p1.spawn] === gridIds.empty) {
     state.p1.food -= 1;
     setIndex(state, state.p1.spawn, gridIds.player1);
@@ -54,9 +67,7 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
     setIndex(state, state.p2.spawn, gridIds.player2);
   }
 
-  // determine whether to continue/end game
-
-  return newState;
+  return state;
 };
 
 // movement functions
@@ -99,8 +110,8 @@ function showGrid(state) {
   }
 }
 function indexToCoord(state, index) {
-  var x = index%state.grid.cols;
-  var y = ~~(index/state.grid.cols);
+  var x = index%state.cols;
+  var y = ~~(index/state.cols);
   return {x:x, y:y};
 }
 function coordToIndex(state, coord) {
@@ -108,4 +119,14 @@ function coordToIndex(state, coord) {
 }
 function makeEmptyGrid(rows, cols) {
   return Array(rows*cols+1).join(gridIds.empty);
+}
+function adjacent(state, index1, index2) {
+  var coord1 = indexToCoord(state, index1);
+  var coord2 = indexToCoord(state, index2);
+  var horizontal = Math.abs(coord1.x-coord2.x);
+  var vertical = Math.abs(coord1.y-coord2.y);
+  if((horizontal<=distance.move && vertical===0) || (vertical<=distance.move && horizontal===0)) {
+    return true;
+  }
+  return false;
 }
