@@ -52,9 +52,50 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
 
   // fight
   var p1Indices = getAllIndices(state.grid, gridIds.player1);
-  console.log(p1Indices);
   var p2Indices = getAllIndices(state.grid, gridIds.player2);
-  console.log(p2Indices);
+  var battleData = {p1:{}, p2:{}};
+  p1Indices.forEach(function(p1Index) {
+    battleData.p1[p1Index] = 0;
+    p2Indices.forEach(function(p2Index) {
+      if(adjacent(state, p1Index, p2Index)) {
+        battleData.p1[p1Index] += 1;
+        if(battleData.p2[p2Index]) {
+          battleData.p2[p2Index] += 1;
+        }
+        else {
+          battleData.p2[p2Index] = 1;
+        }
+      }
+    });
+  });
+
+  var dead = [];
+  p1Indices.forEach(function(p1Index) {
+    var surroundingP1 = battleData.p1[p1Index];
+    getAdjacentIndices(state, p1Index).forEach(function(adjIndex) {
+      if(battleData.p2[adjIndex]) {
+        var surroundingP2 = battleData.p2[adjIndex];
+        if(surroundingP1 > surroundingP2) {
+          if(dead.indexOf(p1Index) === -1)
+            dead.push(p1Index);
+        }
+        else if(surroundingP1 === surroundingP2) {
+          if(dead.indexOf(p1Index) === -1)
+            dead.push(p1Index);
+          if(dead.indexOf(adjIndex) === -1)
+            dead.push(adjIndex);
+        }
+        else {
+          if(dead.indexOf(adjIndex) === -1)
+            dead.push(adjIndex);
+        }
+      }
+    });
+  });
+
+  dead.forEach(function(index) {
+    setIndex(state, index, gridIds.empty);
+  })
 
   // raze
 
@@ -140,4 +181,14 @@ function getAllIndices(grid, search) {
     arr.push(m.index);
   }
   return arr;
+}
+function getAdjacentIndices(state, index) {
+  var indices = [];
+  var coord = indexToCoord(state, index);
+  indices.push(coordToIndex(state, {x:coord.x-1, y:coord.y}));
+  indices.push(coordToIndex(state, {x:coord.x+1, y:coord.y}));
+  indices.push(coordToIndex(state, {x:coord.x, y:coord.y-1}));
+  indices.push(coordToIndex(state, {x:coord.x, y:coord.y+1}));
+
+  return indices;
 }
