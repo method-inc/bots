@@ -188,7 +188,27 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'.................b......b.........b............b..'
       };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+    });
 
+    it('should disable spawns when razed', function() {
+      var beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'..........a.b........b............................'
+      };
+      var p1Moves = [];
+      var p2Moves = [{from:12,to:11}, {from:21,to:20}];
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11, spawnDisabled:true},
+        p2:{food:0, spawn:38},
+        grid:'...........b........b.............................'
+      };
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
   });

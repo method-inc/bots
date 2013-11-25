@@ -132,13 +132,19 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
   })
 
   // raze
+  if(state.grid[state.p1.spawn] === gridIds.player2) {
+    state.p1.spawnDisabled = true;
+  }
+  if(state.grid[state.p2.spawn] === gridIds.player1) {
+    state.p2.spawnDisabled = true;
+  }
 
   // spawn
-  if(state.p1.food > 0 && state.grid[state.p1.spawn] === gridIds.empty) {
+  if(!state.p1.spawnDisabled && state.p1.food > 0 && state.grid[state.p1.spawn] === gridIds.empty) {
     state.p1.food -= 1;
     setIndex(state, state.p1.spawn, gridIds.player1);
   }
-  if(state.p2.food > 0 && state.grid[state.p2.spawn] === gridIds.empty) {
+  if(!state.p2.spawnDisabled && state.p2.food > 0 && state.grid[state.p2.spawn] === gridIds.empty) {
     state.p2.food -= 1;
     setIndex(state, state.p2.spawn, gridIds.player2);
   }
