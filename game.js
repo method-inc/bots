@@ -35,18 +35,52 @@ exports.create = function(rows, cols) {
 
 exports.doTurn = function(state, p1Moves, p2Moves) {
   // move
+  var re = new RegExp(gridIds.player1+'|'+gridIds.player2, 'g');
+  var newState = copyObj(state);
+  newState.grid = newState.grid.replace(re, gridIds.empty);
   p1Moves.forEach(function(move) {
     if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player1) {
+      setIndex(newState, move.from, gridIds.empty);
       setIndex(state, move.from, gridIds.empty);
-      setIndex(state, move.to, gridIds.player1);
+      if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
+        setIndex(newState, move.to, gridIds.empty);
+      }
+      else {
+        setIndex(newState, move.to, gridIds.player1);
+      }
     }
   });
   p2Moves.forEach(function(move) {
     if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player2) {
+      setIndex(newState, move.from, gridIds.empty);
       setIndex(state, move.from, gridIds.empty);
-      setIndex(state, move.to, gridIds.player2);
+      if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
+        setIndex(newState, move.to, gridIds.empty);
+      }
+      else {
+        setIndex(newState, move.to, gridIds.player2);
+      }
     }
   });
+  var unmovedP1s = getAllIndices(state.grid, gridIds.player1);
+  var unmovedP2s = getAllIndices(state.grid, gridIds.player2);
+  unmovedP1s.forEach(function(index) {
+    if(newState.grid[index]===gridIds.player1 || newState.grid[index]===gridIds.player2) {
+      setIndex(newState, index, gridIds.empty);
+    }
+    else {
+      setIndex(newState, index, gridIds.player1);
+    }
+  });
+  unmovedP2s.forEach(function(index) {
+    if(newState.grid[index]===gridIds.player1 || newState.grid[index]===gridIds.player2) {
+      setIndex(newState, index, gridIds.empty);
+    }
+    else {
+      setIndex(newState, index, gridIds.player2);
+    }
+  });
+  state = newState;
 
   // gather
 
@@ -191,4 +225,8 @@ function getAdjacentIndices(state, index) {
   indices.push(coordToIndex(state, {x:coord.x, y:coord.y+1}));
 
   return indices;
+}
+
+function copyObj(object) {
+  return JSON.parse(JSON.stringify(object)); 
 }

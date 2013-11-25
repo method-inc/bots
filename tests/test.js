@@ -96,6 +96,46 @@ describe('Game', function(){
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 
+    it('should kill aliens that move to the same position', function() {
+      var beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'........................a..........b..............'
+      };
+      var p1Moves = [{from:24,to:25}];
+      var p2Moves = [{from:35,to:25}];
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'..................................................'
+      };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+
+      beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'.......................a..b......a..b.............'
+      };
+      p1Moves = [{from:33,to:23}];
+      p2Moves = [{from:26,to:27}, {from:36,to:26}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'..........................bb......................'
+      };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+    });
+
     it('should conduct combat correctly', function() {
       var beginState = {
         rows:5,
