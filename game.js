@@ -33,7 +33,7 @@ exports.create = function(rows, cols) {
   return gameState;
 };
 
-exports.doTurn = function(state, p1Moves, p2Moves) {
+exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   // move
   var re = new RegExp(gridIds.player1+'|'+gridIds.player2, 'g');
   var newState = copyObj(state);
@@ -173,6 +173,27 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
     }
   });
 
+  // spawn food
+  if(!testing) {
+    var generateNum = state.rows*state.cols/50;
+    var allEmptyIndices = getAllIndices(state.grid, gridIds.empty);
+    var available = [];
+    allEmptyIndices.forEach(function(index) {
+      var mirrored = getMirroredIndex(state, index);
+      if(mirrored >= 0) {
+        if(allEmptyIndices.indexOf(mirrored) >= 0) {
+          available.push(index);
+        }
+      }
+    });
+    if(available.length) {
+      var randomIndex = available[Math.floor(Math.random()*available.length)];
+      var mirroredIndex = getMirroredIndex(state, randomIndex);
+      setIndex(state, randomIndex, gridIds.food);
+      setIndex(state, mirroredIndex, gridIds.food);
+    }
+  }
+
   // determine whether to continue/end game
   var numP1 = getAllIndices(state.grid, gridIds.player1).length;
   var numP2 = getAllIndices(state.grid, gridIds.player2).length;
@@ -256,6 +277,17 @@ function getAdjacentIndices(state, index) {
   indices.push(coordToIndex(state, {x:coord.x, y:coord.y+1}));
 
   return indices;
+}
+function getMirroredIndex(state, index) {
+  var coord = indexToCoord(state, index);
+  var mirroredCoord = {x:state.cols-1-coord.x, y:state.rows-1-coord.y};
+  var mirroredIndex = coordToIndex(state, mirroredCoord);
+  if(mirroredIndex !== index) {
+    return mirroredIndex;
+  }
+  else {
+    return -1;
+  }
 }
 
 function copyObj(object) {

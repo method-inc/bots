@@ -38,7 +38,7 @@ describe('Game', function(){
         p2:{food:1, spawn:38},
         grid:'..................................................'
       };
-      var createdState = game.doTurn(beginState, [], []);
+      var createdState = game.doTurn(beginState, [], [], true);
       var testState = {
         rows:5,
         cols:10,
@@ -61,7 +61,7 @@ describe('Game', function(){
       };
       var p1Moves = [{from:11,to:10}];
       var p2Moves = [{from:38,to:28}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       var testState = {
         rows:5,
         cols:10,
@@ -84,7 +84,7 @@ describe('Game', function(){
       };
       var p1Moves = [{from:11,to:0}];
       var p2Moves = [{from:32,to:28}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       var testState = {
         rows:5,
         cols:10,
@@ -106,7 +106,7 @@ describe('Game', function(){
       };
       var p1Moves = [{from:24,to:25}];
       var p2Moves = [{from:35,to:25}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       var testState = {
         rows:5,
         cols:10,
@@ -126,7 +126,7 @@ describe('Game', function(){
       };
       p1Moves = [{from:33,to:23}];
       p2Moves = [{from:26,to:27}, {from:36,to:26}];
-      createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState = {
         rows:5,
         cols:10,
@@ -148,7 +148,7 @@ describe('Game', function(){
       };
       var p1Moves = [{from:23,to:33}, {from:36,to:35}];
       var p2Moves = [{from:44,to:34}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       var testState = {
         rows:5,
         cols:10,
@@ -166,7 +166,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'................ab......aba.........b.............'
       };
-      createdState = game.doTurn(beginState, [], []);
+      createdState = game.doTurn(beginState, [], [], true);
       testState = {
         rows:5,
         cols:10,
@@ -183,7 +183,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'................ab......bab.......bab.........ab..'
       };
-      createdState = game.doTurn(beginState, [], []);
+      createdState = game.doTurn(beginState, [], [], true);
       testState = {
         rows:5,
         cols:10,
@@ -205,7 +205,7 @@ describe('Game', function(){
       };
       var p1Moves = [];
       var p2Moves = [{from:12,to:11}, {from:21,to:20}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves);
+      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       var testState = {
         rows:5,
         cols:10,
@@ -225,13 +225,32 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'......................b*.b*a......................'
       };
-      var createdState = game.doTurn(beginState, [], []);
+      var createdState = game.doTurn(beginState, [], [], true);
       var testState = {
         rows:5,
         cols:10,
         p1:{food:0, spawn:11},
         p2:{food:1, spawn:38},
         grid:'......................b..b.a......................'
+      };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+
+      beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'.............a.........*...b...................*..'
+      };
+      var p1Moves = [{from:13,to:23}];
+      var p2Moves = [{from:27,to:37}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:1, spawn:38},
+        grid:'.......................a.............b............'
       };
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
@@ -244,7 +263,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'a.................................................'
       };
-      var createdState = game.doTurn(beginState, [], []);
+      var createdState = game.doTurn(beginState, [], [], true);
       var testState = {
         rows:5,
         cols:10,
@@ -262,7 +281,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'b.................................................'
       };
-      createdState = game.doTurn(beginState, [], []);
+      createdState = game.doTurn(beginState, [], [], true);
       testState = {
         rows:5,
         cols:10,
@@ -280,7 +299,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'..................................................'
       };
-      createdState = game.doTurn(beginState, [], []);
+      createdState = game.doTurn(beginState, [], [], true);
       testState = {
         rows:5,
         cols:10,
