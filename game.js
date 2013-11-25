@@ -82,8 +82,6 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
   });
   state = newState;
 
-  // gather
-
   // fight
   var p1Indices = getAllIndices(state.grid, gridIds.player1);
   var p2Indices = getAllIndices(state.grid, gridIds.player2);
@@ -149,6 +147,32 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
     setIndex(state, state.p2.spawn, gridIds.player2);
   }
 
+  // gather
+  var food = getAllIndices(state.grid, '\\'+gridIds.food);
+  food.forEach(function(foodIndex) {
+    var surroundingP1 = 0;
+    var surroundingP2 = 0;
+    getAdjacentIndices(state, foodIndex).forEach(function(adjIndex) {
+      if(state.grid[adjIndex]===gridIds.player1) {
+        surroundingP1++;
+      }
+      else if(state.grid[adjIndex]===gridIds.player2) {
+        surroundingP2++;
+      }
+    });
+    if(surroundingP1 && surroundingP2) {
+      setIndex(state, foodIndex, gridIds.empty);
+    }
+    else if(surroundingP1) {
+      setIndex(state, foodIndex, gridIds.empty);
+      state.p1.food++;
+    }
+    else if(surroundingP2) {
+      setIndex(state, foodIndex, gridIds.empty);
+      state.p2.food++;
+    }
+  });
+
   // determine whether to continue/end game
   var numP1 = getAllIndices(state.grid, gridIds.player1).length;
   var numP2 = getAllIndices(state.grid, gridIds.player2).length;
@@ -172,10 +196,6 @@ function validMove(state, move, playerSymbol) {
     return false;
   }
 }
-function movePlayer(state, move) {
-
-}
-
 
 // grid functions
 function getCoord(state, coord) {

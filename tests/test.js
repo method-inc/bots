@@ -217,6 +217,25 @@ describe('Game', function(){
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 
+    it('should deal with food-gathering correctly', function() {
+      var beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'......................b*.b*a......................'
+      };
+      var createdState = game.doTurn(beginState, [], []);
+      var testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:1, spawn:38},
+        grid:'......................b..b.a......................'
+      };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+    });
+
     it('should declare winners correctly', function() {
       var beginState = {
         rows:5,
