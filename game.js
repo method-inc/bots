@@ -150,6 +150,11 @@ exports.doTurn = function(state, p1Moves, p2Moves) {
   }
 
   // determine whether to continue/end game
+  var numP1 = getAllIndices(state.grid, gridIds.player1).length;
+  var numP2 = getAllIndices(state.grid, gridIds.player2).length;
+  if(!numP1 && !numP2) state.winner = gridIds.empty;
+  else if(!numP1) state.winner = gridIds.player2;
+  else if(!numP2) state.winner = gridIds.player1;
 
   return state;
 };
