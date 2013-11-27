@@ -35,12 +35,10 @@ exports.create = function(rows, cols) {
 
 exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   if(!validMoves(p1Moves)) {
-    console.log('invalid: ' + JSON.stringify(p1Moves));
     state.winner = gridIds.player2;
     return state;
   }
   else if(!validMoves(p2Moves)) {
-    console.log('invalid: ' + JSON.stringify(p2Moves));
     state.winner = gridIds.player1;
     return state;
   }
@@ -217,15 +215,12 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
 
 // movement functions
 function validMoves(moves) {
-  console.log(JSON.stringify(moves));
   if(!Array.isArray(moves)) {
-    console.log('not an array');
     return false;
   }
   var allMovesValid = true;
   moves.forEach(function(move) {
     if(typeof move.from !== 'number' || typeof move.to !== 'number') {
-      console.log('no from and to attributes');
       allMovesValid = false;
     }
   });
