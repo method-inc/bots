@@ -10,9 +10,9 @@ socket.connect(PORT, HOST, function() {
 });
 
 socket.on('data', function(data) {
-  var state = JSON.parse(data);
-  console.log('RECEIVED DATA: ' + state.grid);
-  socket.destroy();
+  var game = JSON.parse(data);
+  console.log(JSON.stringify(game));
+  socket.write('[{"from":0,"to":0}]')
 });
 
 socket.on('close', function() {

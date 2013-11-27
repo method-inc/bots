@@ -9,10 +9,8 @@ socket = TCPSocket.open(HOST, PORT)
 socket.write 'ready'
 
 while data=socket.gets do
-  puts data.chop
-  # state = JSON.parse(socket.gets)
-
-  # puts 'RECEIVED DATA: ' + state['grid'].to_s
+  game = JSON.parse data
+  puts JSON.generate game
   socket.write '[{"from":0,"to":0}]'
 end
 
