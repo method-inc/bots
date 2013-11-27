@@ -27,11 +27,11 @@ var tcpServer = net.createServer(function(socket) {
     data = ''+data;
     if(gameStarted) {
       if(client.name === 'Client 1') {
-        console.log('client 1 data');
+        console.log('Client 1 data: ' + data);
         p1Moves = JSON.parse(data);
       }
       else if(client.name === 'Client 2') {
-        console.log('client 2 data');
+        console.log('Client 2 data: ' + data);
         p2Moves = JSON.parse(data);
       }
 
@@ -45,7 +45,19 @@ var tcpServer = net.createServer(function(socket) {
           client.stream.write(JSON.stringify(gameState)+'\n');
         });
 
-        if(turns >= 20) {
+        if(turns >= 20 || gameState.winner) {
+          console.log('GAME ENDED');
+          if(gameState.winner) {
+            if(gameState.winner == 'a')
+              console.log('Client 1 wins');
+            else if(gameState.winner == 'b')
+              console.log('Client 2 wins');
+            else
+              console.log('Tie');
+          }
+          else {
+            console.log('Too many turns have elapsed; tie.')
+          }
           clients.forEach(function(client) {
             client.stream.end();
             gameStarted = false;

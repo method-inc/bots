@@ -92,7 +92,46 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'...........a..........................b...........'
       };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
+      beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'...........a..........................b...........'
+      };
+      p1Moves = [{begin:11,end:0}];
+      p2Moves = [{from:38,to:28}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'...........a..........................b...........',
+        winner:'b'
+      };
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+
+      beginState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'...........a..........................b...........'
+      };
+      p1Moves = {from:11, to:3};
+      p2Moves = [{from:38,to:28}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState = {
+        rows:5,
+        cols:10,
+        p1:{food:0, spawn:11},
+        p2:{food:0, spawn:38},
+        grid:'...........a..........................b...........',
+        winner:'b'
+      };
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 

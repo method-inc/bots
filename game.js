@@ -34,6 +34,17 @@ exports.create = function(rows, cols) {
 };
 
 exports.doTurn = function(state, p1Moves, p2Moves, testing) {
+  if(!validMoves(p1Moves)) {
+    console.log('invalid: ' + JSON.stringify(p1Moves));
+    state.winner = gridIds.player2;
+    return state;
+  }
+  else if(!validMoves(p2Moves)) {
+    console.log('invalid: ' + JSON.stringify(p2Moves));
+    state.winner = gridIds.player1;
+    return state;
+  }
+
   // move
   var re = new RegExp(gridIds.player1+'|'+gridIds.player2, 'g');
   var newState = copyObj(state);
@@ -205,17 +216,22 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
 };
 
 // movement functions
-function validMove(state, move, playerSymbol) {
-  if(move.from<numCoords && move.from>=0
-      && move.to<numCoords && move.to>=0
-      && state.grid[move.from]===playerSymbol
-      && state.grid[move.to]!==gridIds.p1Spawn
-      && state.grid[move.to]!==gridIds.p2Spawn) {
-    return true;
-  }
-  else {
+function validMoves(moves) {
+  console.log(JSON.stringify(moves));
+  if(!Array.isArray(moves)) {
+    console.log('not an array');
     return false;
   }
+  var allMovesValid = true;
+  moves.forEach(function(move) {
+    if(typeof move.from !== 'number' || typeof move.to !== 'number') {
+      console.log('no from and to attributes');
+      allMovesValid = false;
+    }
+  });
+  if(!allMovesValid)
+    return false;
+  return true;
 }
 
 // grid functions
