@@ -1,21 +1,42 @@
 var _ = require('underscore');
 var assert = require('assert');
 var game = require('../game.js');
+var beginState = {};
+var p1Moves = [];
+var p2Moves = [];
+var createdState = {};
+var testState = {};
 
 describe('Game', function(){
+  beforeEach(function(done){
+    beginState = {
+      rows:5,
+      cols:10,
+      p1:{food:0, spawn:11},
+      p2:{food:0, spawn:38},
+      grid:'...........a..........................b...........'
+    };
+    p1Moves = [];
+    p2Moves = [];
+    createdState = {};
+    testState = {
+      rows:5,
+      cols:10,
+      p1:{food:0, spawn:11},
+      p2:{food:0, spawn:38},
+      grid:'...........a..........................b...........'
+    };
+    done();
+  });
   describe('#create()', function(){
     it('should properly initialize a game state', function(){
-      var createdState = game.create(5,10);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:1, spawn:11},
-        p2:{food:1, spawn:38},
-        grid:'..................................................'
-      };
-
+      createdState = game.create(5,10);
+      testState.p1.food = 1;
+      testState.p2.food = 1;
+      testState.grid = '..................................................';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
+      // put this into a separate test
       createdState = game.create(6,4);
       testState = {
         rows:6,
@@ -24,76 +45,34 @@ describe('Game', function(){
         p2:{food:1, spawn:18},
         grid:'........................'
       };
-
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
   });
 
   describe('#doTurn()', function(){
     it('should spawn first aliens correctly', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:1, spawn:11},
-        p2:{food:1, spawn:38},
-        grid:'..................................................'
-      };
-      var createdState = game.doTurn(beginState, [], [], true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'...........a..........................b...........'
-      };
-
+      beginState.p1.food = 1;
+      beginState.p2.food = 1;
+      beginState.grid = '..................................................';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
-
     });
 
     it('should move aliens according to valid commands', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'...........a..........................b...........'
-      };
-      var p1Moves = [{from:11,to:10}];
-      var p2Moves = [{from:38,to:28}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'..........a.................b.....................'
-      };
-
+      p1Moves = [{from:11,to:10}];
+      p2Moves = [{from:38,to:28}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '..........a.................b.....................';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
-
     });
 
     it('should ignore invalid commands', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'...........a..........................b...........'
-      };
-      var p1Moves = [{from:11,to:0}];
-      var p2Moves = [{from:32,to:28}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'...........a..........................b...........'
-      };
+      p1Moves = [{from:11,to:0}];
+      p2Moves = [{from:32,to:28}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
+      // put these into separate tests
       beginState = {
         rows:5,
         cols:10,
@@ -136,26 +115,15 @@ describe('Game', function(){
     });
 
     it('should kill aliens that move to the same position', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'........................a..........b..............'
-      };
-      var p1Moves = [{from:24,to:25}];
-      var p2Moves = [{from:35,to:25}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'..................................................',
-        winner:'.'
-      };
+      beginState.grid = '........................a..........b..............';
+      p1Moves = [{from:24,to:25}];
+      p2Moves = [{from:35,to:25}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '..................................................';
+      testState.winner = '.';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
+      // put this into another test
       beginState = {
         rows:5,
         cols:10,
@@ -178,26 +146,15 @@ describe('Game', function(){
     });
 
     it('should conduct combat correctly', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'.......................a............a.......b.....'
-      };
-      var p1Moves = [{from:23,to:33}, {from:36,to:35}];
-      var p2Moves = [{from:44,to:34}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'.................................a.a..............',
-        winner:'a'
-      };
+      beginState.grid = '.......................a............a.......b.....';
+      p1Moves = [{from:23,to:33}, {from:36,to:35}];
+      p2Moves = [{from:44,to:34}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '.................................a.a..............';
+      testState.winner = 'a';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
+      // put these into another test
       beginState = {
         rows:5,
         cols:10,
@@ -205,7 +162,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'................ab......aba.........b.............'
       };
-      createdState = game.doTurn(beginState, [], [], true);
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState = {
         rows:5,
         cols:10,
@@ -222,7 +179,7 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'................ab......bab.......bab.........ab..'
       };
-      createdState = game.doTurn(beginState, [], [], true);
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState = {
         rows:5,
         cols:10,
@@ -235,45 +192,23 @@ describe('Game', function(){
     });
 
     it('should disable spawns when razed', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'..........a.b........b............................'
-      };
-      var p1Moves = [];
-      var p2Moves = [{from:12,to:11}, {from:21,to:20}];
-      var createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11, spawnDisabled:true},
-        p2:{food:0, spawn:38},
-        grid:'...........b........b.............................',
-        winner:'b'
-      };
+      beginState.grid = '..........a.b........b............................';
+      p2Moves = [{from:12,to:11}, {from:21,to:20}];
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '...........b........b.............................';
+      testState.p1.spawnDisabled = true;
+      testState.winner = 'b';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 
     it('should deal with food-gathering correctly', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'......................b*.b*a......................'
-      };
-      var createdState = game.doTurn(beginState, [], [], true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:1, spawn:38},
-        grid:'......................b..b.a......................'
-      };
+      beginState.grid = '......................b*.b*a......................';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '......................b..b.a......................';
+      testState.p2.food = 1;
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
+      // move this to another test
       beginState = {
         rows:5,
         cols:10,
@@ -281,8 +216,8 @@ describe('Game', function(){
         p2:{food:0, spawn:38},
         grid:'.............a.........*...b...................*..'
       };
-      var p1Moves = [{from:13,to:23}];
-      var p2Moves = [{from:27,to:37}];
+      p1Moves = [{from:13,to:23}];
+      p2Moves = [{from:27,to:37}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState = {
         rows:5,
@@ -295,58 +230,22 @@ describe('Game', function(){
     });
 
     it('should declare winners correctly', function() {
-      var beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'a.................................................'
-      };
-      var createdState = game.doTurn(beginState, [], [], true);
-      var testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'a.................................................',
-        winner:'a'
-      };
+      beginState.grid = 'a.................................................';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = 'a.................................................';
+      testState.winner = 'a';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
-      beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'b.................................................'
-      };
-      createdState = game.doTurn(beginState, [], [], true);
-      testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'b.................................................',
-        winner:'b'
-      };
+      beginState.grid = 'b.................................................';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = 'b.................................................';
+      testState.winner = 'b';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
 
-      beginState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'..................................................'
-      };
-      createdState = game.doTurn(beginState, [], [], true);
-      testState = {
-        rows:5,
-        cols:10,
-        p1:{food:0, spawn:11},
-        p2:{food:0, spawn:38},
-        grid:'..................................................',
-        winner:'.'
-      };
+      beginState.grid = '..................................................';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '..................................................';
+      testState.winner = '.';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
   });
