@@ -13,8 +13,8 @@ function Client(stream) {
 
 var gameState = {};
 var gameStarted = false;
-var p1Moves = [];
-var p2Moves = [];
+var p1Moves = null;
+var p2Moves = null;
 var turns = 0;
 
 var tcpServer = net.createServer(function(socket) {
@@ -35,12 +35,12 @@ var tcpServer = net.createServer(function(socket) {
         p2Moves = JSON.parse(data);
       }
 
-      if(p1Moves.length && p2Moves.length) {
+      if(p1Moves && p2Moves) {
         gameState = game.doTurn(gameState, p1Moves, p2Moves);
         turns++;
 
-        p1Moves = [];
-        p2Moves = [];
+        p1Moves = null;
+        p2Moves = null;
         clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
         clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
@@ -72,9 +72,8 @@ var tcpServer = net.createServer(function(socket) {
           gameState = game.create(20, 20);
           gameStarted = true;
 
-          clients.forEach(function(client) {
-            client.stream.write(JSON.stringify(gameState)+'\n');
-          });
+          clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
+          clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
         }
       }
     }
