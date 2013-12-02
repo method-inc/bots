@@ -34,11 +34,17 @@ exports.create = function(rows, cols) {
 };
 
 exports.doTurn = function(state, p1Moves, p2Moves, testing) {
-  if(!validMoves(p1Moves)) {
+  var p1Valid = validMoves(p1Moves);
+  var p2Valid = validMoves(p2Moves);
+  if(!p1Valid && !p2Valid) {
+    state.winner = gridIds.empty;
+    return state;
+  }
+  else if(!p1Valid) {
     state.winner = gridIds.player2;
     return state;
   }
-  else if(!validMoves(p2Moves)) {
+  else if(!p2Valid) {
     state.winner = gridIds.player1;
     return state;
   }

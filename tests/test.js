@@ -82,9 +82,9 @@ describe('Game', function(){
 
     it('should ignore commands that are not provided in an array', function() {
       p1Moves = {from:11, to:3};
-      p2Moves = [{from:38,to:28}];
+      p2Moves = "[{from:38,to:28}]";
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.winner = 'b';
+      testState.winner = '.';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 
