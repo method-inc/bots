@@ -93,7 +93,7 @@ describe('Game', function(){
       p1Moves = [{from:24,to:25}];
       p2Moves = [{from:35,to:25}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '..................................................';
+      testState.grid = '.........................x........................';
       testState.winner = '.';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
@@ -103,7 +103,7 @@ describe('Game', function(){
       p1Moves = [{from:33,to:23}];
       p2Moves = [{from:26,to:27}, {from:36,to:26}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '..........................bb......................';
+      testState.grid = '.......................x..bb......................';
       testState.winner = 'b';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     })
@@ -113,7 +113,7 @@ describe('Game', function(){
       p1Moves = [{from:23,to:33}, {from:36,to:35}];
       p2Moves = [{from:44,to:34}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.................................a.a..............';
+      testState.grid = '.................................axa..............';
       testState.winner = 'a';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
@@ -121,14 +121,14 @@ describe('Game', function(){
     it('should conduct more complex combat correctly (1)', function() {
       beginState.grid = '................ab......aba.........b.............';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '........................a...........b.............';
+      testState.grid = '................xx......axx.........b.............';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 
     it('should conduct more complex combat correctly (2)', function() {
       beginState.grid = '................ab......bab.......bab.........ab..';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.................b......b.........b............b..';
+      testState.grid = '................xb......bxx.......bxx.........xb..';
       testState.winner = 'b';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
@@ -137,7 +137,7 @@ describe('Game', function(){
       beginState.grid = '..........a.b........b............................';
       p2Moves = [{from:12,to:11}, {from:21,to:20}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '...........b........b.............................';
+      testState.grid = '..........xb........b.............................';
       testState.p1.spawnDisabled = true;
       testState.winner = 'b';
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));

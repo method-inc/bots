@@ -3,6 +3,7 @@ var gridIds = {
   p2Spawn:'1',
   player1:'a',
   player2:'b',
+  dead:'x',
   food:'*',
   empty:'.'
 };
@@ -50,7 +51,9 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   }
 
   // move
-  var re = new RegExp(gridIds.player1+'|'+gridIds.player2, 'g');
+  var re = new RegExp(gridIds.dead, 'g');
+  state.grid = state.grid.replace(re, gridIds.empty);
+  re = new RegExp(gridIds.player1+'|'+gridIds.player2, 'g');
   var newState = copyObj(state);
   newState.grid = newState.grid.replace(re, gridIds.empty);
   p1Moves.forEach(function(move) {
@@ -58,7 +61,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
       setIndex(newState, move.from, gridIds.empty);
       setIndex(state, move.from, gridIds.empty);
       if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
-        setIndex(newState, move.to, gridIds.empty);
+        setIndex(newState, move.to, gridIds.dead);
       }
       else {
         setIndex(newState, move.to, gridIds.player1);
@@ -70,7 +73,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
       setIndex(newState, move.from, gridIds.empty);
       setIndex(state, move.from, gridIds.empty);
       if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
-        setIndex(newState, move.to, gridIds.empty);
+        setIndex(newState, move.to, gridIds.dead);
       }
       else {
         setIndex(newState, move.to, gridIds.player2);
@@ -81,7 +84,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   var unmovedP2s = getAllIndices(state.grid, gridIds.player2);
   unmovedP1s.forEach(function(index) {
     if(newState.grid[index]===gridIds.player1 || newState.grid[index]===gridIds.player2) {
-      setIndex(newState, index, gridIds.empty);
+      setIndex(newState, index, gridIds.dead);
     }
     else {
       setIndex(newState, index, gridIds.player1);
@@ -89,7 +92,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   });
   unmovedP2s.forEach(function(index) {
     if(newState.grid[index]===gridIds.player1 || newState.grid[index]===gridIds.player2) {
-      setIndex(newState, index, gridIds.empty);
+      setIndex(newState, index, gridIds.dead);
     }
     else {
       setIndex(newState, index, gridIds.player2);
@@ -141,7 +144,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   });
 
   dead.forEach(function(index) {
-    setIndex(state, index, gridIds.empty);
+    setIndex(state, index, gridIds.dead);
   })
 
   // raze
