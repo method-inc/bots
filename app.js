@@ -39,11 +39,10 @@ var tcpServer = net.createServer(function(socket) {
         gameState = game.doTurn(gameState, p1Moves, p2Moves);
         turns++;
 
-        clients.forEach(function(client) {
-          p1Moves = [];
-          p2Moves = [];
-          client.stream.write(JSON.stringify(gameState)+'\n');
-        });
+        p1Moves = [];
+        p2Moves = [];
+        clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
+        clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
         if(turns >= 20 || gameState.winner) {
           console.log('GAME ENDED');
