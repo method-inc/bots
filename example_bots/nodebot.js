@@ -74,10 +74,14 @@ function getAllIndices(grid, search) {
 function getAdjacentIndices(state, index) {
   var indices = [];
   var coord = indexToCoord(state, index);
-  indices.push(coordToIndex(state, {x:coord.x-1, y:coord.y}));
-  indices.push(coordToIndex(state, {x:coord.x+1, y:coord.y}));
-  indices.push(coordToIndex(state, {x:coord.x, y:coord.y-1}));
-  indices.push(coordToIndex(state, {x:coord.x, y:coord.y+1}));
+  if(coord.x > 0)
+    indices.push(coordToIndex(state, {x:coord.x-1, y:coord.y}));
+  if(coord.x < state.cols-1)
+    indices.push(coordToIndex(state, {x:coord.x+1, y:coord.y}));
+  if(coord.y > 0)
+    indices.push(coordToIndex(state, {x:coord.x, y:coord.y-1}));
+  if(coord.y < state.rows-1)
+    indices.push(coordToIndex(state, {x:coord.x, y:coord.y+1}));
 
   return indices;
 }
