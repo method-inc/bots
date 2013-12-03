@@ -3,9 +3,13 @@ var _ = require('underscore');
 var util = require('util');
 var game = require('./game.js');
 var net = require('net');
+var http = require('http');
+var fs = require('fs');
+var index = fs.readFileSync(__dirname + '/index.html');
 
 var numberOfClients = 0;
 var clients = [];
+var viewers = [];
 function Client(stream) {
   this.name = null;
   this.stream = stream;
@@ -44,6 +48,10 @@ var tcpServer = net.createServer(function(socket) {
         clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
         clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
+        viewers.forEach(function(viewer) {
+          viewer.emit('game', gameState);
+        });
+
         if(turns >= 20 || gameState.winner) {
           console.log('GAME ENDED');
           if(gameState.winner) {
@@ -74,6 +82,10 @@ var tcpServer = net.createServer(function(socket) {
 
           clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
           clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+          viewers.forEach(function(viewer) {
+            viewer.emit('game', gameState);
+          });
         }
       }
     }
@@ -88,3 +100,16 @@ var tcpServer = net.createServer(function(socket) {
   });
 
 }).listen(1337, '127.0.0.1');
+
+var app = http.createServer(function(req, res) {
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    res.end(index);
+});
+var io = require('socket.io').listen(app);
+
+io.sockets.on('connection', function (socket) {
+  viewers.push(socket);
+  socket.emit('message', 'hello!');
+});
+
+app.listen(3000);
