@@ -65,6 +65,7 @@ function coordToIndex(state, coord) {
 }
 function getAllIndices(grid, search) {
   var arr = [];
+  if(search === '.') search = '\\.';
   var re = new RegExp(search, 'g');
   while (m = re.exec(grid)) {
     arr.push(m.index);
