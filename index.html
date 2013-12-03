@@ -2,18 +2,44 @@
 <html>
     <head>
         <script src="/socket.io/socket.io.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>
-          console.log('hello');
+          var gameTurns = [];
+          var turn = 0;
           var socket = io.connect('http://localhost:3000');
+
           socket.on('message', function(data) {
             console.log(data);
           });
           socket.on('game', function(data) {
             console.log(data);
-          })
+            gameTurns.push(data);
+            $('#turns').append('<li turn='+turn+'>'+turn+'</li>');
+            turn++;
+          });
+
+          $(document).on('click', 'li', function(e) {
+            console.log('li clicked');
+            var i = ~~$(this).attr('turn');
+            showTurn(gameTurns[i]);
+          });
+
+          function showTurn(state) {
+            console.log(state.grid);
+          }
         </script>
+
+        <style type='text/css'>
+          li {
+            text-decoration:none;
+            display:inline-block;
+            padding:10px;
+          }
+        </style>
     </head>
     <body>
-      <canvas id='game' width=200 height=200></canvas>
+      <canvas id='game' width=500 height=500></canvas>
+      <ul id='turns'>
+      </ul>
     </body>
 </html>
