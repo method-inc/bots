@@ -22,6 +22,7 @@
             console.log(data);
             gameTurns.push(data);
             $('#turns').append('<li turn='+turn+'>'+turn+'</li>');
+            showTurn(data);
             turn++;
           });
 
@@ -34,6 +35,7 @@
           function showTurn(state) {
             console.log(state.grid);
             ctx.clearRect (0, 0, c.width, c.height);
+            ctx.strokeStyle = 'lightgrey';
             var coordWidth = c.width/state.cols;
             for(var i=1; i<state.cols; i++) {
               var x = i*coordWidth;
@@ -51,6 +53,70 @@
               ctx.lineTo(c.width, y);
               ctx.stroke();
             }
+
+            var p1Spawn = indexToCoord(state, state.p1.spawn);
+            ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+            ctx.beginPath();
+            ctx.rect(p1Spawn.x*coordWidth, p1Spawn.y*coordHeight, coordWidth, coordHeight);
+            ctx.fill();
+            var p2Spawn = indexToCoord(state, state.p2.spawn);
+            ctx.beginPath();
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.25)';
+            ctx.rect(p2Spawn.x*coordWidth, p2Spawn.y*coordHeight, coordWidth, coordHeight);
+            ctx.fill();
+
+            for(var i=0; i<state.grid.length; i++) {
+              var gridId = state.grid[i];
+              if(gridId !== '.') {
+                var coord = indexToCoord(state, i);
+                var x = coord.x*coordWidth + coordWidth/2;
+                var y = coord.y*coordHeight + coordHeight/2;
+
+                switch(gridId) {
+                  case 'a':
+                    ctx.fillStyle = 'red';
+                    ctx.beginPath();
+                    ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
+                    ctx.fill();
+                    break;
+                  case 'b':
+                    ctx.fillStyle = 'blue';
+                    ctx.beginPath();
+                    ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
+                    ctx.fill();
+                    break;
+                  case '*':
+                    ctx.fillStyle = 'brown';
+                    ctx.beginPath();
+                    ctx.arc(x, y, coordWidth/4, 0, 2*Math.PI);
+                    ctx.fill();
+                    break;
+                  case 'x':
+                    ctx.fillStyle = 'grey';
+                    ctx.beginPath();
+                    ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
+                    ctx.fill();
+                    ctx.strokeStyle = 'black';
+                    ctx.beginPath();
+                    ctx.moveTo(x-coordWidth/4, y-coordWidth/4);
+                    ctx.lineTo(x+coordWidth/4, y+coordWidth/4);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x-coordWidth/4, y+coordWidth/4);
+                    ctx.lineTo(x+coordWidth/4, y-coordWidth/4);
+                    ctx.stroke();
+                    break;
+                  default:
+                    console.log(gridId);
+                }
+              }
+            }
+          }
+
+          function indexToCoord(state, index) {
+            var x = index%state.cols;
+            var y = ~~(index/state.cols);
+            return {x:x, y:y};
           }
         </script>
 
