@@ -5,6 +5,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>
           var gameTurns = [];
+          var currentDisplayed = 0;
           var turn = 0;
           var socket = io.connect('http://localhost:3000');
           var c;
@@ -23,6 +24,7 @@
             gameTurns.push(data);
             $('#turns').append('<li turn='+turn+'>'+turn+'</li>');
             showTurn(data);
+            currentDisplayed = turn;
             turn++;
           });
 
@@ -30,6 +32,20 @@
             console.log('li clicked');
             var i = ~~$(this).attr('turn');
             showTurn(gameTurns[i]);
+            currentDisplayed = i;
+          });
+          $(document).keydown(function(e) {
+            if (e.keyCode === 37) {
+              currentDisplayed--;
+            }
+            else if(e.keyCode === 39) {
+              currentDisplayed++;
+            }
+
+            if(currentDisplayed < 0) currentDisplayed = 0;
+            else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
+
+            showTurn(gameTurns[currentDisplayed]);
           });
 
           function showTurn(state) {
