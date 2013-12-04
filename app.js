@@ -68,6 +68,8 @@ var tcpServer = net.createServer(function(socket) {
           clients.forEach(function(client) {
             client.stream.end();
             gameStarted = false;
+            clients = [];
+            turns = 0;
           });
         }
       }
@@ -94,9 +96,6 @@ var tcpServer = net.createServer(function(socket) {
   client.stream.on('close', function() {
     console.log(client.name + ' disconnected');
     numberOfClients--;
-    if(numberOfClients === 0) {
-      tcpServer.close();
-    }
   });
 
 }).listen(1337, '127.0.0.1');
