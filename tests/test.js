@@ -65,6 +65,15 @@ describe('Game', function(){
       assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
     });
 
+    it('should allow aliens to "swap" places', function() {
+      p1Moves = [{from:11,to:12}, {from:12,to:11}];
+      p2Moves = [{from:18,to:28}, {from:28,to:18}];
+      beginState.grid = '...........aa.....b.........b.....................';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '...........aa.....b.........b.....................';
+      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+    });
+
     it('should ignore commands to move to an invalid location', function() {
       p1Moves = [{from:11,to:0}];
       p2Moves = [{from:32,to:28}];

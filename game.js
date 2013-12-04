@@ -58,7 +58,6 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   newState.grid = newState.grid.replace(re, gridIds.empty);
   p1Moves.forEach(function(move) {
     if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player1) {
-      setIndex(newState, move.from, gridIds.empty);
       setIndex(state, move.from, gridIds.empty);
       if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
         setIndex(newState, move.to, gridIds.dead);
@@ -70,7 +69,6 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   });
   p2Moves.forEach(function(move) {
     if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player2) {
-      setIndex(newState, move.from, gridIds.empty);
       setIndex(state, move.from, gridIds.empty);
       if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
         setIndex(newState, move.to, gridIds.dead);
