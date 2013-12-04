@@ -7,6 +7,13 @@
           var gameTurns = [];
           var turn = 0;
           var socket = io.connect('http://localhost:3000');
+          var c;
+          var ctx;
+
+          window.onload = function() {
+            c=document.getElementById('game');
+            ctx=c.getContext('2d');
+          }
 
           socket.on('message', function(data) {
             console.log(data);
@@ -26,6 +33,24 @@
 
           function showTurn(state) {
             console.log(state.grid);
+            ctx.clearRect (0, 0, c.width, c.height);
+            var coordWidth = c.width/state.cols;
+            for(var i=1; i<state.cols; i++) {
+              var x = i*coordWidth;
+              ctx.beginPath();
+              ctx.moveTo(x, 0);
+              ctx.lineTo(x, c.height);
+              ctx.stroke();
+            }
+
+            var coordHeight = c.height/state.rows;
+            for(var i=1; i<state.rows; i++) {
+              var y = i*coordHeight;
+              ctx.beginPath();
+              ctx.moveTo(0, y);
+              ctx.lineTo(c.width, y);
+              ctx.stroke();
+            }
           }
         </script>
 
@@ -34,6 +59,9 @@
             text-decoration:none;
             display:inline-block;
             padding:10px;
+          }
+          canvas {
+            border:1px solid black;
           }
         </style>
     </head>
