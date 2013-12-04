@@ -73,17 +73,20 @@
               ctx.lineTo(c.width, y);
               ctx.stroke();
             }
-
-            var p1Spawn = indexToCoord(state, state.p1.spawn);
-            ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
-            ctx.beginPath();
-            ctx.rect(p1Spawn.x*coordWidth, p1Spawn.y*coordHeight, coordWidth, coordHeight);
-            ctx.fill();
-            var p2Spawn = indexToCoord(state, state.p2.spawn);
-            ctx.beginPath();
-            ctx.fillStyle = 'rgba(0, 0, 255, 0.25)';
-            ctx.rect(p2Spawn.x*coordWidth, p2Spawn.y*coordHeight, coordWidth, coordHeight);
-            ctx.fill();
+            if(!state.p1.spawnDisabled) {
+              var p1Spawn = indexToCoord(state, state.p1.spawn);
+              ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+              ctx.beginPath();
+              ctx.rect(p1Spawn.x*coordWidth, p1Spawn.y*coordHeight, coordWidth, coordHeight);
+              ctx.fill();
+            }
+            if(!state.p2.spawnDisabled) {
+              var p2Spawn = indexToCoord(state, state.p2.spawn);
+              ctx.beginPath();
+              ctx.fillStyle = 'rgba(0, 0, 255, 0.25)';
+              ctx.rect(p2Spawn.x*coordWidth, p2Spawn.y*coordHeight, coordWidth, coordHeight);
+              ctx.fill();
+            }
 
             for(var i=0; i<state.grid.length; i++) {
               var gridId = state.grid[i];
