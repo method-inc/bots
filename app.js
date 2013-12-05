@@ -88,6 +88,7 @@ var tcpServer = net.createServer(function(socket) {
           clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
           viewers.forEach(function(viewer) {
+            viewer.emit('message', 'new');
             viewer.emit('game', gameState);
           });
         }
@@ -103,8 +104,8 @@ var tcpServer = net.createServer(function(socket) {
 }).listen(1337, '127.0.0.1');
 
 var app = http.createServer(function(req, res) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end(index);
+  res.writeHead(200, {'Content-Type': 'text/html'});
+  res.end(index);
 });
 var io = require('socket.io').listen(app);
 

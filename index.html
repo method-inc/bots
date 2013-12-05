@@ -17,7 +17,9 @@
           }
 
           socket.on('message', function(data) {
-            console.log(data);
+            if(data === 'new') {
+              resetGame();
+            }
           });
           socket.on('game', function(data) {
             console.log(data);
@@ -52,13 +54,16 @@
             $('li[turn='+currentDisplayed+']').addClass('selected');
           });
           $(document).on('click', '#newgame', function(e) {
+            socket.emit('start', 'node ruby');
+          });
+
+          function resetGame() {
             gameTurns = [];
             currentDisplayed = 0;
             turn = 0;
             $('#turns li').remove();
             ctx.clearRect (0, 0, c.width, c.height);
-            socket.emit('start', 'node ruby');
-          });
+          }
 
           function showTurn(state) {
             console.log(state.grid);
