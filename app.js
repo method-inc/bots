@@ -1,5 +1,4 @@
 var fs = require('fs');
-var _ = require('underscore');
 var util = require('util');
 var game = require('./game.js');
 var net = require('net');
