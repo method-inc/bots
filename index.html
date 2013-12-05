@@ -52,6 +52,11 @@
             $('li[turn='+currentDisplayed+']').addClass('selected');
           });
           $(document).on('click', '#newgame', function(e) {
+            gameTurns = [];
+            currentDisplayed = 0;
+            turn = 0;
+            $('#turns li').remove();
+            ctx.clearRect (0, 0, c.width, c.height);
             socket.emit('start', 'node ruby');
           });
 
