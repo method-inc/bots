@@ -8,6 +8,7 @@ var childProcess = require('child_process');
 var index = fs.readFileSync(__dirname + '/index.html');
 var nodeBot = __dirname + '/example_bots/nodebot.js';
 var rubyBot = __dirname + '/example_bots/rubybot.rb';
+var port = process.env.PORT || 3000;
 
 var numberOfClients = 0;
 var clients = [];
@@ -132,4 +133,4 @@ io.sockets.on('connection', function (socket) {
   });
 });
 
-app.listen(3000);
+app.listen(port);
