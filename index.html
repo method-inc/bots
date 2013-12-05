@@ -51,6 +51,9 @@
             $('li.selected').removeClass('selected');
             $('li[turn='+currentDisplayed+']').addClass('selected');
           });
+          $(document).on('click', '#newgame', function(e) {
+            socket.emit('start', 'node ruby');
+          });
 
           function showTurn(state) {
             console.log(state.grid);
@@ -144,6 +147,9 @@
         </script>
 
         <style type='text/css'>
+          body {
+            font-family:helvetica;
+          }
           ul {
             text-align:center;
             padding:0;
@@ -161,9 +167,19 @@
             margin:auto;
             display:block;
           }
+          #newgame {
+            background-color:orange;
+            margin:10px auto;
+            padding:10px;
+            border-radius:2px;
+            text-align:center;
+            width:100px;
+            cursor:pointer;
+          }
         </style>
     </head>
     <body>
+      <div id='newgame'>new game</div>
       <canvas id='game' width=500 height=500></canvas>
       <ul id='turns'>
       </ul>

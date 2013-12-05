@@ -4,8 +4,10 @@ var util = require('util');
 var game = require('./game.js');
 var net = require('net');
 var http = require('http');
-var fs = require('fs');
+var childProcess = require('child_process');
 var index = fs.readFileSync(__dirname + '/index.html');
+var nodeBot = __dirname + '/example_bots/nodebot.js';
+var rubyBot = __dirname + '/example_bots/rubybot.rb';
 
 var numberOfClients = 0;
 var clients = [];
@@ -109,6 +111,24 @@ var io = require('socket.io').listen(app);
 io.sockets.on('connection', function (socket) {
   viewers.push(socket);
   socket.emit('message', 'hello!');
+  socket.on('start', function(data) {
+    if(data === 'node ruby') {
+      childProcess.exec('node ' + nodeBot, function (error, stdout, stderr) {
+        if (error) {
+          console.log(error.stack);
+          console.log('Error code: '+error.code);
+          console.log('Signal received: '+error.signal);
+        }
+      });
+      childProcess.exec('ruby ' + rubyBot, function (error, stdout, stderr) {
+        if (error) {
+          console.log(error.stack);
+          console.log('Error code: '+error.code);
+          console.log('Signal received: '+error.signal);
+        }
+      });
+    }
+  });
 });
 
 app.listen(3000);
