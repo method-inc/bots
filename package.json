@@ -2,6 +2,7 @@
   "name": "aliens",
 
   "dependencies": {
+    "socket.io": "~0.9.6"
   },
 
   "engines": {
