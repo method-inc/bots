@@ -24,83 +24,84 @@ var p2Moves = null;
 var turns = 0;
 
 var tcpServer = net.createServer(function(socket) {
-  numberOfClients++;
-  console.log('Client ' + numberOfClients + ' has connected');
-  var client = new Client(socket);
-  client.name = 'Client ' + numberOfClients;
+  if(numberOfClients < 2) {
+    numberOfClients++;
+    console.log('Client ' + numberOfClients + ' has connected');
+    var client = new Client(socket);
+    client.name = 'Client ' + numberOfClients;
 
-  client.stream.on('data', function(data) {
-    data = ''+data;
-    if(gameStarted) {
-      if(client.name === 'Client 1') {
-        console.log('Client 1 data: ' + data);
-        p1Moves = JSON.parse(data);
-      }
-      else if(client.name === 'Client 2') {
-        console.log('Client 2 data: ' + data);
-        p2Moves = JSON.parse(data);
-      }
-
-      if(p1Moves && p2Moves) {
-        gameState = game.doTurn(gameState, p1Moves, p2Moves);
-        turns++;
-
-        p1Moves = null;
-        p2Moves = null;
-        clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
-        clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
-
-        viewers.forEach(function(viewer) {
-          viewer.emit('game', gameState);
-        });
-
-        if(turns >= 20 || gameState.winner) {
-          console.log('GAME ENDED');
-          if(gameState.winner) {
-            if(gameState.winner == 'a')
-              console.log('Client 1 wins');
-            else if(gameState.winner == 'b')
-              console.log('Client 2 wins');
-            else
-              console.log('Tie');
-          }
-          else {
-            console.log('Too many turns have elapsed; tie.')
-          }
-          clients.forEach(function(client) {
-            client.stream.end();
-            gameStarted = false;
-            clients = [];
-            turns = 0;
-          });
+    client.stream.on('data', function(data) {
+      data = ''+data;
+      if(gameStarted) {
+        if(client.name === 'Client 1') {
+          console.log('Client 1 data: ' + data);
+          p1Moves = JSON.parse(data);
         }
-      }
-    }
-    else {
-      if(data === 'ready') {
-        clients.push(client);
+        else if(client.name === 'Client 2') {
+          console.log('Client 2 data: ' + data);
+          p2Moves = JSON.parse(data);
+        }
 
-        if(clients.length === 2) {
-          gameState = game.create(20, 20);
-          gameStarted = true;
+        if(p1Moves && p2Moves) {
+          gameState = game.doTurn(gameState, p1Moves, p2Moves);
+          turns++;
 
+          p1Moves = null;
+          p2Moves = null;
           clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
           clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
           viewers.forEach(function(viewer) {
-            viewer.emit('message', 'new');
             viewer.emit('game', gameState);
           });
+
+          if(turns >= 20 || gameState.winner) {
+            console.log('GAME ENDED');
+            if(gameState.winner) {
+              if(gameState.winner == 'a')
+                console.log('Client 1 wins');
+              else if(gameState.winner == 'b')
+                console.log('Client 2 wins');
+              else
+                console.log('Tie');
+            }
+            else {
+              console.log('Too many turns have elapsed; tie.')
+            }
+            clients.forEach(function(client) {
+              client.stream.end();
+              gameStarted = false;
+              clients = [];
+              turns = 0;
+            });
+          }
         }
       }
-    }
-  });
+      else {
+        if(data === 'ready') {
+          clients.push(client);
 
-  client.stream.on('close', function() {
-    console.log(client.name + ' disconnected');
-    numberOfClients--;
-  });
+          if(clients.length === 2) {
+            gameState = game.create(20, 20);
+            gameStarted = true;
 
+            clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
+            clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+            viewers.forEach(function(viewer) {
+              viewer.emit('message', 'new');
+              viewer.emit('game', gameState);
+            });
+          }
+        }
+      }
+    });
+
+    client.stream.on('close', function() {
+      console.log(client.name + ' disconnected');
+      numberOfClients--;
+    });
+  }
 }).listen(1337, '127.0.0.1');
 
 var app = http.createServer(function(req, res) {
