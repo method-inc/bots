@@ -1,12 +1,24 @@
 {
-  "name": "aliens",
-
-  "dependencies": {
-    "socket.io": "~0.9.6"
+  "name": "skookum-aliens",
+  "preferGlobal": true,
+  "version": "0.3.0",
+  "description": "Skookum Alien Bot Challenge",
+  "contributors": [ 
+    {
+      "name": "Maximillian von Briesen",
+      "email": "moby@skookum.com"
+    },
+    {
+      "name": "Eric LaForce",
+      "email": "eric@skookum.com"
+    } 
+  ],
+  "dependencies" : {
+    "underscore"   :  "*",
+    "socket.io"   :  "*"
   },
-
+  "license": "MIT",
   "engines": {
-    "node": ">= 0.8.x",
-    "npm":  ">= 1.1.x"
+    "node": ">=0.6"
   }
 }

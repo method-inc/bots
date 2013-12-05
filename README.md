@@ -1,5 +1,7 @@
 aliens
 ======
+After cloning the repo run `npm install`
+
 In order to set up the server, run `node app.js` in your terminal.
 
 Go to `http://localhost:3000` in your browser.
