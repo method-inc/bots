@@ -114,7 +114,7 @@ var io = require('socket.io').listen(app);
 
 io.sockets.on('connection', function (socket) {
   viewers.push(socket);
-  socket.emit('message', 'hello!');
+  sendBots();
   socket.on('start', function(data) {
     if(data === 'node ruby') {
       childProcess.exec('node ' + nodeBot, function (error, stdout, stderr) {
@@ -137,18 +137,31 @@ io.sockets.on('connection', function (socket) {
   socket.on('newbot', function(botData) {
     if(botData.url.substr(0,5) === 'https') {
       https.get(botData.url, function(res) {
-        saveBot(botData, res);
+        saveBot(botData, res, function() {
+          sendBots();
+        });
       });
     }
     else {
       http.get(botData.url, function(res) {
-        saveBot(botData, res);
+        saveBot(botData, res, sendBots);
       });
     }
   });
+
+  function sendBots() {
+    fs.readFile(botsDir+'bots.json', function(err, data) {
+      var currentBots = JSON.parse(data);
+      var toSend = [];
+      currentBots.forEach(function(bot, index) {
+        toSend.push({name:bot.name, index:index});
+      });
+      socket.emit('bots', toSend);
+    });
+  }
 });
 
-function saveBot(botData, res) {
+function saveBot(botData, res, cb) {
   fs.readFile(botsDir+'bots.json', function(err, data) {
     var toWrite = '';
     var currentBots = JSON.parse(data);
@@ -159,10 +172,11 @@ function saveBot(botData, res) {
     });
     res.on('end', function() {
       fs.writeFile(file, toWrite, function() {
-        var newBot = {file:file, lang:botData.lang};
+        var newBot = {file:file, lang:botData.lang, name:newBotName};
         currentBots.push(newBot);
         fs.writeFile(botsDir+'bots.json', JSON.stringify(currentBots), function() {
           console.log('bot successfully saved');
+          cb();
         })
       })
     });

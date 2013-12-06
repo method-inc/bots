@@ -31,6 +31,14 @@
             currentDisplayed = turn;
             turn++;
           });
+          socket.on('bots', function(data) {
+            $('#botlist1').html('');
+            $('#botlist2').html('');
+            data.forEach(function(bot) {
+              $('#botlist1').append('<option value='+bot.index+'>'+bot.name+'</option>');
+              $('#botlist2').append('<option value='+bot.index+'>'+bot.name+'</option>');
+            });
+          });
 
           $(document).on('click', 'li', function(e) {
             console.log('li clicked');
@@ -187,28 +195,34 @@
           #newgame, #newbot {
             background-color:orange;
             margin:10px auto;
-            padding:10px;
+            padding:2px;
             border-radius:2px;
             text-align:center;
             width:100px;
             cursor:pointer;
-          }
-          #newbot {
             display:inline-block;
-            padding:2px;
           }
         </style>
     </head>
     <body>
-      <label>Your bot url:</label>
-      <input type='text' id='bot-url'>
-      <label>Language:</label>
-      <select id='bot-lang'>
-        <option value='js'>Javascript</option>
-        <option value='rb'>Ruby</option>
-      </select>
-      <div id='newbot'>create bot</div>
-      <div id='newgame'>new game</div>
+      <form>
+        <label>Your bot url:</label>
+        <input type='text' id='bot-url'>
+        <label>Language:</label>
+        <select id='bot-lang'>
+          <option value='js'>Javascript</option>
+          <option value='rb'>Ruby</option>
+        </select>
+        <div id='newbot'>create bot</div>
+      </form>
+      <form>
+        <select id='botlist1'>
+        </select>
+        <label>vs</label>
+        <select id='botlist2'>
+        </select>
+        <div id='newgame'>new game</div>
+      </form>
       <canvas id='game' width=500 height=500></canvas>
       <ul id='turns'>
       </ul>
