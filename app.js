@@ -3,10 +3,12 @@ var util = require('util');
 var game = require('./game.js');
 var net = require('net');
 var http = require('http');
+var https = require('https');
 var childProcess = require('child_process');
 var index = fs.readFileSync(__dirname + '/index.html');
-var nodeBot = __dirname + '/example_bots/nodebot.js';
-var rubyBot = __dirname + '/example_bots/rubybot.rb';
+var nodeBot = __dirname + '/bots/nodebot.js';
+var rubyBot = __dirname + '/bots/rubybot.rb';
+var botsDir = __dirname + '/bots/';
 var port = process.env.PORT || 3000;
 
 var numberOfClients = 0;
@@ -131,6 +133,40 @@ io.sockets.on('connection', function (socket) {
       });
     }
   });
+
+  socket.on('newbot', function(botData) {
+    if(botData.url.substr(0,5) === 'https') {
+      https.get(botData.url, function(res) {
+        saveBot(botData, res);
+      });
+    }
+    else {
+      http.get(botData.url, function(res) {
+        saveBot(botData, res);
+      });
+    }
+  });
 });
+
+function saveBot(botData, res) {
+  fs.readFile(botsDir+'bots.json', function(err, data) {
+    var toWrite = '';
+    var currentBots = JSON.parse(data);
+    var newBotName = 'bot'+(currentBots.length+1);
+    var file = botsDir+newBotName;
+    res.on('data', function(chunk) {
+      toWrite += chunk;
+    });
+    res.on('end', function() {
+      fs.writeFile(file, toWrite, function() {
+        var newBot = {file:file, lang:botData.lang};
+        currentBots.push(newBot);
+        fs.writeFile(botsDir+'bots.json', JSON.stringify(currentBots), function() {
+          console.log('bot successfully saved');
+        })
+      })
+    });
+  });
+}
 
 app.listen(port);

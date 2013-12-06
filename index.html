@@ -56,6 +56,12 @@
           $(document).on('click', '#newgame', function(e) {
             socket.emit('start', 'node ruby');
           });
+          $(document).on('click', '#newbot', function(e) {
+            var botUrl = $('#bot-url').val();
+            $('#bot-url').val('');
+            var botLang = $('#bot-lang').val();
+            socket.emit('newbot', {url:botUrl, lang:botLang});
+          });
 
           function resetGame() {
             gameTurns = [];
@@ -159,6 +165,7 @@
         <style type='text/css'>
           body {
             font-family:helvetica;
+            text-align:center;
           }
           ul {
             text-align:center;
@@ -177,7 +184,7 @@
             margin:auto;
             display:block;
           }
-          #newgame {
+          #newgame, #newbot {
             background-color:orange;
             margin:10px auto;
             padding:10px;
@@ -186,9 +193,21 @@
             width:100px;
             cursor:pointer;
           }
+          #newbot {
+            display:inline-block;
+            padding:2px;
+          }
         </style>
     </head>
     <body>
+      <label>Your bot url:</label>
+      <input type='text' id='bot-url'>
+      <label>Language:</label>
+      <select id='bot-lang'>
+        <option value='js'>Javascript</option>
+        <option value='rb'>Ruby</option>
+      </select>
+      <div id='newbot'>create bot</div>
       <div id='newgame'>new game</div>
       <canvas id='game' width=500 height=500></canvas>
       <ul id='turns'>
