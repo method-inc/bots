@@ -116,22 +116,34 @@ io.sockets.on('connection', function (socket) {
   viewers.push(socket);
   sendBots();
   socket.on('start', function(data) {
-    if(data === 'node ruby') {
-      childProcess.exec('node ' + nodeBot, function (error, stdout, stderr) {
-        if (error) {
-          console.log(error.stack);
-          console.log('Error code: '+error.code);
-          console.log('Signal received: '+error.signal);
+    fs.readFile(botsDir+'bots.json', function(err, botData) {
+      var currentBots = JSON.parse(botData);
+      var bots = [];
+      bots.push(currentBots[data.bot1]);
+      bots.push(currentBots[data.bot2]);
+      bots.forEach(function(bot) {
+        if(bot.lang === 'js') {
+          console.log('STARTING NODE BOT: ' + bot.name);
+          childProcess.exec('node ' + bot.file, function (error, stdout, stderr) {
+            if (error) {
+              console.log(error.stack);
+              console.log('Error code: '+error.code);
+              console.log('Signal received: '+error.signal);
+            }
+          });
+        }
+        else if(bot.lang === 'rb') {
+          console.log('STARTING RUBY BOT: ' + bot.name);
+          childProcess.exec('ruby ' + bot.file, function (error, stdout, stderr) {
+            if (error) {
+              console.log(error.stack);
+              console.log('Error code: '+error.code);
+              console.log('Signal received: '+error.signal);
+            }
+          });
         }
       });
-      childProcess.exec('ruby ' + rubyBot, function (error, stdout, stderr) {
-        if (error) {
-          console.log(error.stack);
-          console.log('Error code: '+error.code);
-          console.log('Signal received: '+error.signal);
-        }
-      });
-    }
+    });
   });
 
   socket.on('newbot', function(botData) {

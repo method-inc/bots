@@ -62,7 +62,9 @@
             $('li[turn='+currentDisplayed+']').addClass('selected');
           });
           $(document).on('click', '#newgame', function(e) {
-            socket.emit('start', 'node ruby');
+            var bot1 = $('#botlist1').val() || 0;
+            var bot2 = $('#botlist2').val() || 0;
+            socket.emit('start', {bot1:bot1,bot2:bot2});
           });
           $(document).on('click', '#newbot', function(e) {
             var botUrl = $('#bot-url').val();
