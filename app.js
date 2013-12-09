@@ -9,7 +9,7 @@ var fs = require('fs')
   , mongoose = require('mongoose')
   , path = require('path')
   , childProcess = require('child_process')
-  , index = fs.readFileSync(__dirname + '/index.html')
+  , siofu = require('socketio-file-upload')
   , nodeBot = __dirname + '/bots/nodebot.js'
   , rubyBot = __dirname + '/bots/rubybot.rb'
   , botsDir = __dirname + '/bots/'
@@ -41,6 +41,7 @@ app.use(express.session({
 app.use(app.router);
 app.use(require('stylus').middleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(siofu.router);
 
 mongoose.connect(uristring);
 
@@ -149,6 +150,17 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
+  var uploader = new siofu();
+  uploader.dir = botsDir;
+  uploader.listen(socket);
+  uploader.on('saved', function(e) {
+    console.log('saved');
+    console.log(e.file);
+  });
+  uploader.on('error', function(e) {
+    console.log('error from uploader', e);
+  });
+
   viewers.push(socket);
   sendBots();
   socket.on('start', function(data) {

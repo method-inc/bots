@@ -3,10 +3,15 @@ html
   head
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
     script(src='/socket.io/socket.io.js')
+    script(src='/siofu/client.js')
     script(src='/scripts/aliens.js')
     link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
     title aliens
   body
+    div#upload-area
+      h3 Upload Bot
+      input#bot-upload(type='file')
+      div#bot-drop(dropzone='copy') drop file
     form
       label Your bot url:
       input#bot-url(type='text')

@@ -2,12 +2,21 @@ var gameTurns = [];
 var currentDisplayed = 0;
 var turn = 0;
 var socket = io.connect(window.location.hostname);
+var siofu = new SocketIOFileUpload(socket);
 var c;
 var ctx;
 
 window.onload = function() {
   c=document.getElementById('game');
   ctx=c.getContext('2d');
+
+  siofu.listenOnInput($('#bot-upload')[0]);
+  siofu.listenOnDrop($('#bot-drop')[0]);
+
+  siofu.addEventListener("complete", function(event){
+    console.log(event.success);
+    console.log(event.file);
+  });
 }
 
 socket.on('message', function(data) {

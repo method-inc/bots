@@ -21,6 +21,7 @@
     "express-sessions" : "*",
     "stylus" : "*",
     "jade" : "*",
+    "socketio-file-upload" : "*",
     "everyauth" : "*"
   },
   "license": "MIT",
