@@ -7,6 +7,7 @@ var fs = require('fs')
   , everyauth = require('everyauth')
   , express = require('express')
   , mongoose = require('mongoose')
+  , Schema = mongoose.Schema
   , path = require('path')
   , childProcess = require('child_process')
   , siofu = require('socketio-file-upload')
@@ -16,6 +17,43 @@ var fs = require('fs')
   , app = express()
   , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
 
+var usersById = {};
+var nextUserId = 0;
+var usersByGoogleId = {};
+
+var User = mongoose.model('User', new Schema({
+  name: { type: String, required: true },
+  bot: { type: String },
+  googleId: { type: Number, required: true }
+}));
+
+everyauth.everymodule
+  .findUserById( function (req, id, callback) {
+    User.findById(id, callback);
+  });
+everyauth.google
+  .appId('3335216477.apps.googleusercontent.com')
+  .appSecret('PJMW_uP39nogdu0WpBuqMhtB')
+  .scope('https://www.googleapis.com/auth/userinfo.profile https://www.google.com/m8/feeds/')
+  .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
+    var promise = this.Promise();
+    User.findOne({googleId:googleUser.id}, function(err, user) {
+      if(!user) {
+        new User({googleId:googleUser.id, name:googleUser.name}).save(function(err, newUser) {
+          if(err)
+            return promise.fail(err);
+          return promise.fulfill(newUser);
+        });
+      }
+      else {
+        promise.fulfill(user);
+      }
+      return promise.fulfill(user);
+    });
+    return promise;
+  })
+  .redirectPath('/');
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -23,6 +61,7 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
+app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(express.cookieParser());
 app.use(express.session({
@@ -38,6 +77,7 @@ app.use(express.session({
     expire: 2*365*24*60*60*1000
   })
 }));
+app.use(everyauth.middleware(app));
 app.use(app.router);
 app.use(require('stylus').middleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -141,7 +181,13 @@ var tcpServer = net.createServer(function(socket) {
 }).listen(1337, '127.0.0.1');
 
 app.get('/', function(req, res) {
-  res.render('index');
+  if(!req.user) {
+    res.redirect('/auth/google');
+  }
+  else {
+    console.log(req.user.id);
+    res.render('index', {name:req.user.name});
+  }
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
