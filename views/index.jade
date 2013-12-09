@@ -1,0 +1,24 @@
+doctype 5
+html
+  head
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
+    script(src='/socket.io/socket.io.js')
+    script(src='/scripts/aliens.js')
+    link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
+    title aliens
+  body
+    form
+      label Your bot url:
+      input#bot-url(type='text')
+      label Language:
+      select#bot-lang
+        option(value='js') Javascript
+        option(value='rb') Ruby
+      div#newbot create bot
+    form
+      select#botlist1
+      label vs
+      select#botlist2
+      div#newgame new game
+    canvas#game(width=500, height=500)
+    ul#turns

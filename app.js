@@ -1,15 +1,48 @@
-var fs = require('fs');
-var util = require('util');
-var game = require('./game.js');
-var net = require('net');
-var http = require('http');
-var https = require('https');
-var childProcess = require('child_process');
-var index = fs.readFileSync(__dirname + '/index.html');
-var nodeBot = __dirname + '/bots/nodebot.js';
-var rubyBot = __dirname + '/bots/rubybot.rb';
-var botsDir = __dirname + '/bots/';
-var port = process.env.PORT || 3000;
+var fs = require('fs')
+  , util = require('util')
+  , game = require('./game.js')
+  , net = require('net')
+  , http = require('http')
+  , https = require('https')
+  , everyauth = require('everyauth')
+  , express = require('express')
+  , mongoose = require('mongoose')
+  , path = require('path')
+  , childProcess = require('child_process')
+  , index = fs.readFileSync(__dirname + '/index.html')
+  , nodeBot = __dirname + '/bots/nodebot.js'
+  , rubyBot = __dirname + '/bots/rubybot.rb'
+  , botsDir = __dirname + '/bots/'
+  , app = express()
+  , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
+
+app.set('port', process.env.PORT || 3000);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+app.use(express.favicon());
+app.use(express.logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(express.methodOverride());
+app.use(express.cookieParser());
+app.use(express.session({
+  secret:'4J6YlRpJhFvgNmg',
+  cookie: {maxAge:2*365*24*60*60*1000},
+  store: new (require('express-sessions'))({
+    storage: 'mongodb',
+    instance: mongoose,
+    host: process.env.MONGO_HOST || 'localhost',
+    port: process.env.MONGO_PORT || 27017,
+    db: process.env.MONGO_DATABASE || 'aliens',
+    collection: 'sessions',
+    expire: 2*365*24*60*60*1000
+  })
+}));
+app.use(app.router);
+app.use(require('stylus').middleware(__dirname + '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
+
+mongoose.connect(uristring);
 
 var numberOfClients = 0;
 var clients = [];
@@ -106,12 +139,15 @@ var tcpServer = net.createServer(function(socket) {
   }
 }).listen(1337, '127.0.0.1');
 
-var app = http.createServer(function(req, res) {
-  res.writeHead(200, {'Content-Type': 'text/html'});
-  res.end(index);
+app.get('/', function(req, res) {
+  res.render('index');
 });
-var io = require('socket.io').listen(app);
 
+var server = http.createServer(app).listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
+});
+
+var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket) {
   viewers.push(socket);
   sendBots();
@@ -194,5 +230,3 @@ function saveBot(botData, res, cb) {
     });
   });
 }
-
-app.listen(port);

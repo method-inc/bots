@@ -14,8 +14,14 @@
     } 
   ],
   "dependencies" : {
-    "underscore"   :  "*",
-    "socket.io"   :  "*"
+    "underscore" : "*",
+    "socket.io" : "*",
+    "express" : "*",
+    "mongoose" : "*",
+    "express-sessions" : "*",
+    "stylus" : "*",
+    "jade" : "*",
+    "everyauth" : "*"
   },
   "license": "MIT",
   "engines": {
