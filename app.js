@@ -39,10 +39,12 @@ everyauth.google
     var promise = this.Promise();
     User.findOne({googleId:googleUser.id}, function(err, user) {
       if(!user) {
-        new User({googleId:googleUser.id, name:googleUser.name}).save(function(err, newUser) {
-          if(err)
-            return promise.fail(err);
-          return promise.fulfill(newUser);
+        user = new User();
+        user.googleId = googleUser.id;
+        user.name = googleUser.name;
+        user.save(function(err) {
+          if(err) throw err;
+          promise.fulfill(user);
         });
       }
       else {
