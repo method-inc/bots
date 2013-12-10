@@ -56,6 +56,15 @@ everyauth.google
   })
   .redirectPath('/');
 
+var sessionStore = new (require('express-sessions'))({
+    storage: 'mongodb',
+    instance: mongoose,
+    host: process.env.MONGO_HOST || 'localhost',
+    port: process.env.MONGO_PORT || 27017,
+    db: process.env.MONGO_DATABASE || 'aliens',
+    collection: 'sessions',
+    expire: 2*365*24*60*60*1000
+  });
 app.set('port', process.env.PORT || 3000);
 app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
@@ -69,15 +78,7 @@ app.use(express.cookieParser());
 app.use(express.session({
   secret:'4J6YlRpJhFvgNmg',
   cookie: {maxAge:2*365*24*60*60*1000},
-  store: new (require('express-sessions'))({
-    storage: 'mongodb',
-    instance: mongoose,
-    host: process.env.MONGO_HOST || 'localhost',
-    port: process.env.MONGO_PORT || 27017,
-    db: process.env.MONGO_DATABASE || 'aliens',
-    collection: 'sessions',
-    expire: 2*365*24*60*60*1000
-  })
+  store: sessionStore
 }));
 app.use(everyauth.middleware(app));
 app.use(app.router);
@@ -187,7 +188,6 @@ app.get('/', function(req, res) {
     res.redirect('/auth/google');
   }
   else {
-    console.log(req.user.id);
     res.render('index', {name:req.user.name});
   }
 });
@@ -197,13 +197,32 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 });
 
 var io = require('socket.io').listen(server);
+io.set('authorization', function (data, accept) {
+  var sid = parseSessionCookie(data.headers.cookie, 'connect.sid', '4J6YlRpJhFvgNmg');
+  if (sid) {
+    sessionStore.get(sid, function(err, session) {
+      if (err || !session) {
+        accept('Error', false);
+      } else {
+        data.session = session;
+        accept(null, true);
+      }
+    });
+  } else {
+    return accept('No cookie transmitted.', false);
+  }
+});
 io.sockets.on('connection', function (socket) {
   var uploader = new siofu();
   uploader.dir = botsDir;
   uploader.listen(socket);
   uploader.on('saved', function(e) {
-    console.log('saved');
-    console.log(e.file);
+    User.findById(socket.handshake.session.auth.userId, function(err, user) {
+      if(user) {
+        user.bot = e.file.pathName;
+        user.save();
+      }
+    });
   });
   uploader.on('error', function(e) {
     console.log('error from uploader', e);
@@ -289,4 +308,10 @@ function saveBot(botData, res, cb) {
       })
     });
   });
+}
+
+function parseSessionCookie(cookie, sid, secret) {
+  var cookies = require('express/node_modules/cookie').parse(cookie)
+    , parsed = require('express/node_modules/connect/lib/utils').parseSignedCookies(cookies, secret);
+  return parsed[sid] || null;
 }
