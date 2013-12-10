@@ -220,7 +220,9 @@ io.sockets.on('connection', function (socket) {
     User.findById(socket.handshake.session.auth.userId, function(err, user) {
       if(user) {
         user.bot = e.file.pathName;
-        user.save();
+        user.save(function() {
+          sendBots();
+        });
       }
     });
   });
@@ -277,11 +279,10 @@ io.sockets.on('connection', function (socket) {
   });
 
   function sendBots() {
-    fs.readFile(botsDir+'bots.json', function(err, data) {
-      var currentBots = JSON.parse(data);
+    User.find({bot: { $exists: true } }, function(err, users) {
       var toSend = [];
-      currentBots.forEach(function(bot, index) {
-        toSend.push({name:bot.name, index:index});
+      users.forEach(function(user) {
+        toSend.push({name:user.name, userId:user.id});
       });
       socket.emit('bots', toSend);
     });
