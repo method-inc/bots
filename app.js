@@ -23,6 +23,7 @@ var usersByGoogleId = {};
 
 var User = mongoose.model('User', new Schema({
   name: { type: String, required: true },
+  email: { type: String, required: true },
   bot: { type: String },
   googleId: { type: Number, required: true }
 }));
@@ -34,13 +35,14 @@ everyauth.everymodule
 everyauth.google
   .appId('3335216477.apps.googleusercontent.com')
   .appSecret('PJMW_uP39nogdu0WpBuqMhtB')
-  .scope('https://www.googleapis.com/auth/userinfo.profile https://www.google.com/m8/feeds/')
+  .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
   .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
     var promise = this.Promise();
     User.findOne({googleId:googleUser.id}, function(err, user) {
       if(!user) {
         user = new User();
         user.googleId = googleUser.id;
+        user.email = googleUser.email;
         user.name = googleUser.name;
         user.save(function(err) {
           if(err) throw err;
