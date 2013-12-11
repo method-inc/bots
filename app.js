@@ -190,7 +190,7 @@ app.get('/', function(req, res) {
     res.redirect('/auth/google');
   }
   else {
-    res.render('index', {name:req.user.name});
+    res.render('index', {email:req.user.email});
   }
 });
 
@@ -235,30 +235,31 @@ io.sockets.on('connection', function (socket) {
   viewers.push(socket);
   sendBots();
   socket.on('start', function(data) {
-    fs.readFile(botsDir+'bots.json', function(err, botData) {
-      var currentBots = JSON.parse(botData);
-      var bots = [];
-      bots.push(currentBots[data.bot1]);
-      bots.push(currentBots[data.bot2]);
-      bots.forEach(function(bot) {
-        if(bot.lang === 'js') {
-          console.log('STARTING NODE BOT: ' + bot.name);
-          childProcess.exec('node ' + bot.file, function (error, stdout, stderr) {
-            if (error) {
-              console.log(error.stack);
-              console.log('Error code: '+error.code);
-              console.log('Signal received: '+error.signal);
-            }
+    var bots = [];
+    [data.bot1, data.bot2].forEach(function(botName) {
+      var botPath = '';
+      User.findOne({email:botName}, function(err, user) {
+        if(user) {
+          botPath = user.bot;
+        }
+        else if(botName === 'nodebot') {
+          botPath = nodeBot;
+        }
+        else if(botName === 'rubybot') {
+          botPath = rubyBot;
+        }
+
+        var ext = botPath.slice(-3);
+        if(ext === '.js') {
+          console.log('STARTING NODE BOT: ' + botPath);
+          childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
+            if (error) console.log(error);
           });
         }
-        else if(bot.lang === 'rb') {
-          console.log('STARTING RUBY BOT: ' + bot.name);
-          childProcess.exec('ruby ' + bot.file, function (error, stdout, stderr) {
-            if (error) {
-              console.log(error.stack);
-              console.log('Error code: '+error.code);
-              console.log('Signal received: '+error.signal);
-            }
+        else if(ext === '.rb') {
+          console.log('STARTING RUBY BOT: ' + botPath);
+          childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
+            if (error) console.log(error);
           });
         }
       });
@@ -283,8 +284,10 @@ io.sockets.on('connection', function (socket) {
   function sendBots() {
     User.find({bot: { $exists: true } }, function(err, users) {
       var toSend = [];
+      toSend.push({name:'nodebot'});
+      toSend.push({name:'rubybot'})
       users.forEach(function(user) {
-        toSend.push({name:user.name, userId:user.id});
+        toSend.push({name:user.email});
       });
       socket.emit('bots', toSend);
     });

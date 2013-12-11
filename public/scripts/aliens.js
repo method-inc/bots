@@ -38,8 +38,8 @@ socket.on('bots', function(data) {
   $('#botlist1').html('');
   $('#botlist2').html('');
   data.forEach(function(bot) {
-    $('#botlist1').append('<option value='+bot.index+'>'+bot.name+'</option>');
-    $('#botlist2').append('<option value='+bot.index+'>'+bot.name+'</option>');
+    $('#botlist1').append('<option value='+bot.name+'>'+bot.name+'</option>');
+    $('#botlist2').append('<option value='+bot.name+'>'+bot.name+'</option>');
   });
 });
 
