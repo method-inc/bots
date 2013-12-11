@@ -14,6 +14,7 @@ var distance = {
   food:0,
   spawn:1
 };
+var spawnFrequency = 3;
 
 exports.create = function(rows, cols, maxTurns) {
   var gameState = {
@@ -192,7 +193,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   });
 
   // spawn food
-  if(!testing) {
+  if(!testing && state.turnsElapsed%spawnFrequency===0) {
     var generateNum = state.rows*state.cols/50;
     var allEmptyIndices = getAllIndices(state.grid, gridIds.empty);
     var available = [];
