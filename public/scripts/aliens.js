@@ -69,12 +69,6 @@ $(document).on('click', '#newgame', function(e) {
   var bot2 = $('#botlist2').val() || 0;
   socket.emit('start', {bot1:bot1,bot2:bot2});
 });
-$(document).on('click', '#newbot', function(e) {
-  var botUrl = $('#bot-url').val();
-  $('#bot-url').val('');
-  var botLang = $('#bot-lang').val();
-  socket.emit('newbot', {url:botUrl, lang:botLang});
-});
 
 function resetGame() {
   gameTurns = [];

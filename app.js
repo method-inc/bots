@@ -3,7 +3,6 @@ var fs = require('fs')
   , game = require('./game.js')
   , net = require('net')
   , http = require('http')
-  , https = require('https')
   , everyauth = require('everyauth')
   , express = require('express')
   , mongoose = require('mongoose')
@@ -266,21 +265,6 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  socket.on('newbot', function(botData) {
-    if(botData.url.substr(0,5) === 'https') {
-      https.get(botData.url, function(res) {
-        saveBot(botData, res, function() {
-          sendBots();
-        });
-      });
-    }
-    else {
-      http.get(botData.url, function(res) {
-        saveBot(botData, res, sendBots);
-      });
-    }
-  });
-
   function sendBots() {
     User.find({bot: { $exists: true } }, function(err, users) {
       var toSend = [];
@@ -293,28 +277,6 @@ io.sockets.on('connection', function (socket) {
     });
   }
 });
-
-function saveBot(botData, res, cb) {
-  fs.readFile(botsDir+'bots.json', function(err, data) {
-    var toWrite = '';
-    var currentBots = JSON.parse(data);
-    var newBotName = 'bot'+(currentBots.length+1);
-    var file = botsDir+newBotName;
-    res.on('data', function(chunk) {
-      toWrite += chunk;
-    });
-    res.on('end', function() {
-      fs.writeFile(file, toWrite, function() {
-        var newBot = {file:file, lang:botData.lang, name:newBotName};
-        currentBots.push(newBot);
-        fs.writeFile(botsDir+'bots.json', JSON.stringify(currentBots), function() {
-          console.log('bot successfully saved');
-          cb();
-        })
-      })
-    });
-  });
-}
 
 function parseSessionCookie(cookie, sid, secret) {
   var cookies = require('express/node_modules/cookie').parse(cookie)
