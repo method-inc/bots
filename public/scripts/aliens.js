@@ -5,6 +5,7 @@ var socket = io.connect(window.location.hostname);
 var siofu = new SocketIOFileUpload(socket);
 var c;
 var ctx;
+var turnSpeed = 1000;
 
 window.onload = function() {
   c=document.getElementById('game');
@@ -17,6 +18,8 @@ window.onload = function() {
     console.log(event.success);
     console.log(event.file);
   });
+
+  turnSpeed = 1000-$('#turn-speed').val();
 }
 
 socket.on('message', function(data) {
@@ -25,7 +28,6 @@ socket.on('message', function(data) {
   }
 });
 socket.on('game', function(data) {
-  console.log(data);
   gameTurns.push(data);
   $('#turns').append('<li turn='+turn+'>'+turn+'</li>');
   showTurn(data);
@@ -65,10 +67,35 @@ $(document).keydown(function(e) {
   $('li[turn='+currentDisplayed+']').addClass('selected');
 });
 $(document).on('click', '#newgame', function(e) {
+  e.preventDefault();
   var bot1 = $('#botlist1').val() || 0;
   var bot2 = $('#botlist2').val() || 0;
   socket.emit('start', {bot1:bot1,bot2:bot2});
 });
+$(document).on('click', '#animate-game', function(e) {
+  if(gameTurns.length) {
+    currentDisplayed = 0;
+    animateNextTurn();
+  }
+});
+$(document).on('change', '#turn-speed', function(e) {
+  turnSpeed = 1000-$('#turn-speed').val();
+});
+
+function animateNextTurn() {
+  setTimeout(function() {
+    showTurn(gameTurns[currentDisplayed]);
+    $('li.selected').removeClass('selected');
+    $('li[turn='+currentDisplayed+']').addClass('selected');
+    currentDisplayed++;
+    if(currentDisplayed >= gameTurns.length) {
+      currentDisplayed = gameTurns.length-1;
+    }
+    else {
+      animateNextTurn();
+    }
+  }, turnSpeed);
+}
 
 function resetGame() {
   gameTurns = [];
@@ -79,7 +106,6 @@ function resetGame() {
 }
 
 function showTurn(state) {
-  console.log(state.grid);
   ctx.clearRect (0, 0, c.width, c.height);
   ctx.strokeStyle = 'lightgrey';
   var coordWidth = c.width/state.cols;
