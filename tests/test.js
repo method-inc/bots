@@ -179,6 +179,14 @@ describe('Game', function(){
       assert.deepEqual(createdState, testState);
     });
 
+    it('should end the game after a certain number of turns have passed', function() {
+      beginState.turnsElapsed = 19;
+      testState.turnsElapsed = 20;
+      testState.winner = '.';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      assert.deepEqual(createdState, testState);
+    });
+
     it('should declare winners correctly', function() {
       beginState.grid = 'a.................................................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
