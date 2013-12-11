@@ -14,7 +14,9 @@ describe('Game', function(){
       cols:10,
       p1:{food:0, spawn:11},
       p2:{food:0, spawn:38},
-      grid:'...........a..........................b...........'
+      grid:'...........a..........................b...........',
+      maxTurns:20,
+      turnsElapsed:0
     };
     p1Moves = [];
     p2Moves = [];
@@ -24,7 +26,9 @@ describe('Game', function(){
       cols:10,
       p1:{food:0, spawn:11},
       p2:{food:0, spawn:38},
-      grid:'...........a..........................b...........'
+      grid:'...........a..........................b...........',
+      maxTurns:20,
+      turnsElapsed:1
     };
     done();
   });
@@ -34,17 +38,20 @@ describe('Game', function(){
       testState.p1.food = 1;
       testState.p2.food = 1;
       testState.grid = '..................................................';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      testState.turnsElapsed = 0;
+      assert.deepEqual(createdState, testState);
     });
 
     it('should properly initialize a game state for a 6x4 grid', function(){
-      createdState = game.create(6,4);
+      createdState = game.create(6,4, 30);
       testState.rows = 6;
       testState.cols = 4;
       testState.p1 = {food:1, spawn:5};
       testState.p2 = {food:1, spawn:18};
       testState.grid = '........................';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      testState.maxTurns = 30;
+      testState.turnsElapsed = 0;
+      assert.deepEqual(createdState, testState);
     });
   });
 
@@ -54,7 +61,7 @@ describe('Game', function(){
       beginState.p2.food = 1;
       beginState.grid = '..................................................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should move aliens according to valid commands', function() {
@@ -62,7 +69,7 @@ describe('Game', function(){
       p2Moves = [{from:38,to:28}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '..........a.................b.....................';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should allow aliens to "swap" places', function() {
@@ -71,14 +78,14 @@ describe('Game', function(){
       beginState.grid = '...........aa.....b.........b.....................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '...........aa.....b.........b.....................';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should ignore commands to move to an invalid location', function() {
       p1Moves = [{from:11,to:0}];
       p2Moves = [{from:32,to:28}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should ignore commands without "to" and "from" properties', function() {
@@ -86,7 +93,8 @@ describe('Game', function(){
       p2Moves = [{from:38,to:28}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.winner = 'b';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      testState.turnsElapsed = 0;
+      assert.deepEqual(createdState, testState);
     });
 
     it('should ignore commands that are not provided in an array', function() {
@@ -94,7 +102,8 @@ describe('Game', function(){
       p2Moves = "[{from:38,to:28}]";
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.winner = '.';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      testState.turnsElapsed = 0;
+      assert.deepEqual(createdState, testState);
     });
 
     it('should kill aliens of different teams that move to the same position', function() {
@@ -104,7 +113,7 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '.........................x........................';
       testState.winner = '.';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should kill aliens of the same team that move to the same position', function() {
@@ -114,7 +123,7 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '.......................x..bb......................';
       testState.winner = 'b';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     })
 
     it('should conduct simple combat correctly', function() {
@@ -124,14 +133,14 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '.................................axa..............';
       testState.winner = 'a';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should conduct more complex combat correctly (1)', function() {
       beginState.grid = '................ab......aba.........b.............';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '................xx......axx.........b.............';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should conduct more complex combat correctly (2)', function() {
@@ -139,7 +148,7 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '................xb......bxx.......bxx.........xb..';
       testState.winner = 'b';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should disable spawns when razed', function() {
@@ -149,7 +158,7 @@ describe('Game', function(){
       testState.grid = '..........xb........b.............................';
       testState.p1.spawnDisabled = true;
       testState.winner = 'b';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should deal with food-gathering correctly (1)', function() {
@@ -157,7 +166,7 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '......................b..b.a......................';
       testState.p2.food = 1;
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should deal with food-gathering correctly (2)', function() {
@@ -167,7 +176,7 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.p2.food = 1;
       testState.grid = '.......................a.............b............';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
 
     it('should declare winners correctly', function() {
@@ -175,19 +184,19 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = 'a.................................................';
       testState.winner = 'a';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
 
       beginState.grid = 'b.................................................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = 'b.................................................';
       testState.winner = 'b';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
 
       beginState.grid = '..................................................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '..................................................';
       testState.winner = '.';
-      assert.equal(JSON.stringify(createdState), JSON.stringify(testState));
+      assert.deepEqual(createdState, testState);
     });
   });
 });

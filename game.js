@@ -15,10 +15,12 @@ var distance = {
   spawn:1
 };
 
-exports.create = function(rows, cols) {
+exports.create = function(rows, cols, maxTurns) {
   var gameState = {
     rows:rows,
-    cols:cols
+    cols:cols,
+    maxTurns:maxTurns || 20,
+    turnsElapsed:0
   };
 
   gameState.p1 = {
@@ -210,12 +212,15 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
     }
   }
 
+  state.turnsElapsed++;
+
   // determine whether to continue/end game
   var numP1 = getAllIndices(state.grid, gridIds.player1).length;
   var numP2 = getAllIndices(state.grid, gridIds.player2).length;
   if(!numP1 && !numP2) state.winner = gridIds.empty;
   else if(!numP1) state.winner = gridIds.player2;
   else if(!numP2) state.winner = gridIds.player1;
+  else if(state.turnsElapsed >= state.maxTurns) state.winner = gridIds.empty;
 
   return state;
 };

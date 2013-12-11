@@ -101,7 +101,6 @@ var gameState = {};
 var gameStarted = false;
 var p1Moves = null;
 var p2Moves = null;
-var turns = 0;
 
 var tcpServer = net.createServer(function(socket) {
   if(numberOfClients < 2) {
@@ -124,7 +123,6 @@ var tcpServer = net.createServer(function(socket) {
 
         if(p1Moves && p2Moves) {
           gameState = game.doTurn(gameState, p1Moves, p2Moves);
-          turns++;
 
           p1Moves = null;
           p2Moves = null;
@@ -135,7 +133,7 @@ var tcpServer = net.createServer(function(socket) {
             viewer.emit('game', gameState);
           });
 
-          if(turns >= 20 || gameState.winner) {
+          if(gameState.winner) {
             console.log('GAME ENDED');
             if(gameState.winner) {
               if(gameState.winner == 'a')
@@ -145,14 +143,10 @@ var tcpServer = net.createServer(function(socket) {
               else
                 console.log('Tie');
             }
-            else {
-              console.log('Too many turns have elapsed; tie.')
-            }
             clients.forEach(function(client) {
               client.stream.end();
               gameStarted = false;
               clients = [];
-              turns = 0;
             });
           }
         }
