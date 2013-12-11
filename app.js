@@ -156,7 +156,7 @@ var tcpServer = net.createServer(function(socket) {
           clients.push(client);
 
           if(clients.length === 2) {
-            gameState = game.create(20, 20);
+            gameState = game.create(20, 20, 100);
             gameStarted = true;
 
             clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
