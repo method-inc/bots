@@ -240,7 +240,7 @@ io.sockets.on('connection', function (socket) {
     [data.bot1, data.bot2].forEach(function(botName) {
       var botPath = '';
       User.findOne({email:botName}, function(err, user) {
-        if(user && user.botPath) {
+        if(user && user.bot) {
           botPath = user.bot;
         }
         else if(botName === 'nodebot') {
@@ -269,7 +269,7 @@ io.sockets.on('connection', function (socket) {
         else if(ext === '.rb') {
           if(!failed) {
             console.log('STARTING RUBY BOT: ' + botPath);
-            var child = childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
+            var child = childProcess.exec('ruby ' + botPath, function (error, stdout, stderr) {
               if (error) {
                 console.log('error starting ' + botPath);
                 console.log('killing ' + processes.length + ' child processes');
@@ -282,7 +282,7 @@ io.sockets.on('connection', function (socket) {
           }
         }
         else {
-          console.log('invalid file or extension');
+          console.log('invalid file or extension: ' + botPath);
           console.log('killing ' + processes.length + ' child processes');
           processes.forEach(function(p) {p.kill()});
           processes = [];
