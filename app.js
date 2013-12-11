@@ -235,10 +235,12 @@ io.sockets.on('connection', function (socket) {
   sendBots();
   socket.on('start', function(data) {
     var bots = [];
+    var processes = [];
+    var failed = false;
     [data.bot1, data.bot2].forEach(function(botName) {
       var botPath = '';
       User.findOne({email:botName}, function(err, user) {
-        if(user) {
+        if(user && user.botPath) {
           botPath = user.bot;
         }
         else if(botName === 'nodebot') {
@@ -250,16 +252,41 @@ io.sockets.on('connection', function (socket) {
 
         var ext = botPath.slice(-3);
         if(ext === '.js') {
-          console.log('STARTING NODE BOT: ' + botPath);
-          childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
-            if (error) console.log(error);
-          });
+          if(!failed) {
+            console.log('STARTING NODE BOT: ' + botPath);
+            var child = childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
+              if (error) {
+                console.log('error starting ' + botPath);
+                console.log('killing ' + processes.length + ' child processes');
+                processes.forEach(function(p) {p.kill()});
+                processes = [];
+                failed = true;
+              }
+            });
+            processes.push(child);
+          }
         }
         else if(ext === '.rb') {
-          console.log('STARTING RUBY BOT: ' + botPath);
-          childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
-            if (error) console.log(error);
-          });
+          if(!failed) {
+            console.log('STARTING RUBY BOT: ' + botPath);
+            var child = childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
+              if (error) {
+                console.log('error starting ' + botPath);
+                console.log('killing ' + processes.length + ' child processes');
+                processes.forEach(function(p) {p.kill()});
+                processes = [];
+                failed = true;
+              }
+            });
+            processes.push(child);
+          }
+        }
+        else {
+          console.log('invalid file or extension');
+          console.log('killing ' + processes.length + ' child processes');
+          processes.forEach(function(p) {p.kill()});
+          processes = [];
+          failed = true;
         }
       });
     });
