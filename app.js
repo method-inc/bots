@@ -33,8 +33,8 @@ everyauth.everymodule
     User.findById(id, callback);
   });
 everyauth.google
-  .appId('3335216477.apps.googleusercontent.com')
-  .appSecret('PJMW_uP39nogdu0WpBuqMhtB')
+  .appId(process.env.GOOGLE_APP_ID || '3335216477.apps.googleusercontent.com')
+  .appSecret(process.env.GOOGLE_APP_SECRET || 'PJMW_uP39nogdu0WpBuqMhtB')
   .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email')
   .findOrCreateUser( function (sess, accessToken, extra, googleUser) {
     var promise = this.Promise();
