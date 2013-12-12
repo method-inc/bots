@@ -6,26 +6,19 @@ var fs = require('fs')
   , everyauth = require('everyauth')
   , express = require('express')
   , mongoose = require('mongoose')
-  , Schema = mongoose.Schema
   , path = require('path')
   , childProcess = require('child_process')
   , siofu = require('socketio-file-upload')
   , nodeBot = __dirname + '/bots/nodebot.js'
   , rubyBot = __dirname + '/bots/rubybot.rb'
   , botsDir = __dirname + '/bots/'
+  , User = require('./models/User.js')
   , app = express()
   , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
 
 var usersById = {};
 var nextUserId = 0;
 var usersByGoogleId = {};
-
-var User = mongoose.model('User', new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  bot: { type: String },
-  googleId: { type: Number, required: true }
-}));
 
 everyauth.everymodule
   .findUserById( function (req, id, callback) {
