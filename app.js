@@ -126,6 +126,9 @@ io.sockets.on('connection', function (socket) {
       }
     });
   });
+  io.sockets.on('error', function(e) {
+    console.log('socket io error: ' + e);
+  });
   uploader.on('error', function(e) {
     console.log('error from uploader', e);
   });
