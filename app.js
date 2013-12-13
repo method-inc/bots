@@ -1,7 +1,6 @@
 var fs = require('fs')
   , util = require('util')
   , game = require('./game.js')
-  , net = require('net')
   , http = require('http')
   , everyauth = require('everyauth')
   , express = require('express')
@@ -13,6 +12,7 @@ var fs = require('fs')
   , rubyBot = __dirname + '/bots/rubybot.rb'
   , botsDir = __dirname + '/bots/'
   , User = require('./models/User.js')
+  , Game = require('./models/Game.js')
   , app = express()
   , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
 
@@ -82,95 +82,6 @@ app.use(siofu.router);
 
 mongoose.connect(uristring);
 
-var numberOfClients = 0;
-var clients = [];
-var viewers = [];
-function Client(stream) {
-  this.name = null;
-  this.stream = stream;
-}
-
-var gameState = {};
-var gameStarted = false;
-var p1Moves = null;
-var p2Moves = null;
-
-var tcpServer = net.createServer(function(socket) {
-  if(numberOfClients < 2) {
-    numberOfClients++;
-    console.log('Client ' + numberOfClients + ' has connected');
-    var client = new Client(socket);
-    client.name = 'Client ' + numberOfClients;
-
-    client.stream.on('data', function(data) {
-      data = ''+data;
-      if(gameStarted) {
-        if(client.name === 'Client 1') {
-          console.log('Client 1 data: ' + data);
-          p1Moves = JSON.parse(data);
-        }
-        else if(client.name === 'Client 2') {
-          console.log('Client 2 data: ' + data);
-          p2Moves = JSON.parse(data);
-        }
-
-        if(p1Moves && p2Moves) {
-          gameState = game.doTurn(gameState, p1Moves, p2Moves);
-
-          p1Moves = null;
-          p2Moves = null;
-          clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
-          clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
-
-          viewers.forEach(function(viewer) {
-            viewer.emit('game', gameState);
-          });
-
-          if(gameState.winner) {
-            console.log('GAME ENDED');
-            if(gameState.winner) {
-              if(gameState.winner == 'a')
-                console.log('Client 1 wins');
-              else if(gameState.winner == 'b')
-                console.log('Client 2 wins');
-              else
-                console.log('Tie');
-            }
-            clients.forEach(function(client) {
-              client.stream.end();
-              gameStarted = false;
-              clients = [];
-            });
-          }
-        }
-      }
-      else {
-        if(data === 'ready') {
-          clients.push(client);
-
-          if(clients.length === 2) {
-            gameState = game.create(20, 20, 100);
-            gameStarted = true;
-
-            clients[0].stream.write(JSON.stringify({player:'a', state:gameState})+'\n');
-            clients[1].stream.write(JSON.stringify({player:'b', state:gameState})+'\n');
-
-            viewers.forEach(function(viewer) {
-              viewer.emit('message', 'new');
-              viewer.emit('game', gameState);
-            });
-          }
-        }
-      }
-    });
-
-    client.stream.on('close', function() {
-      console.log(client.name + ' disconnected');
-      numberOfClients--;
-    });
-  }
-}).listen(1337, '127.0.0.1');
-
 app.get('/', function(req, res) {
   if(!req.user) {
     res.redirect('/auth/google');
@@ -184,6 +95,7 @@ var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
 });
 
+var viewers = [];
 var io = require('socket.io').listen(server);
 io.set('authorization', function (data, accept) {
   var sid = parseSessionCookie(data.headers.cookie, 'connect.sid', '4J6YlRpJhFvgNmg');
@@ -251,6 +163,9 @@ io.sockets.on('connection', function (socket) {
               }
             });
             processes.push(child);
+            if(processes.length === 2) {
+              startGame(processes);
+            }
           }
         }
         else if(ext === '.rb') {
@@ -266,6 +181,9 @@ io.sockets.on('connection', function (socket) {
               }
             });
             processes.push(child);
+            if(processes.length === 2) {
+              startGame(processes);
+            }
           }
         }
         else {
@@ -296,4 +214,71 @@ function parseSessionCookie(cookie, sid, secret) {
   var cookies = require('express/node_modules/cookie').parse(cookie)
     , parsed = require('express/node_modules/connect/lib/utils').parseSignedCookies(cookies, secret);
   return parsed[sid] || null;
+}
+
+function startGame(processes) {
+  var gameState = {};
+  var gameStarted = false;
+  var p1Moves = null;
+  var p2Moves = null;
+  var ready = 0;
+  processes.forEach(function(process, index) {
+    process.stdout.on('data', function(data) {
+      data = (''+data).trim();
+      console.log('data received: ' + data);
+      if(gameStarted) {
+        if(index === 0) {
+          p1Moves = JSON.parse(data);
+        }
+        else if(index === 1) {
+          p2Moves = JSON.parse(data);
+        }
+
+        if(p1Moves && p2Moves) {
+          gameState = game.doTurn(gameState, p1Moves, p2Moves);
+
+          p1Moves = null;
+          p2Moves = null;
+          processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+          processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+          viewers.forEach(function(viewer) {
+            viewer.emit('game', gameState);
+          });
+
+          if(gameState.winner) {
+            console.log('GAME ENDED');
+            if(gameState.winner) {
+              if(gameState.winner == 'a')
+                console.log('Client 1 wins');
+              else if(gameState.winner == 'b')
+                console.log('Client 2 wins');
+              else
+                console.log('Tie');
+            }
+            processes.forEach(function(process) {
+              process.kill();
+              gameStarted = false;
+              ready = 0;
+            });
+          }
+        }
+      }
+      else {
+        if(data === 'ready') ready++;
+        if(ready === 2) {
+          gameState = game.create(20, 20, 100);
+          gameStarted = true;
+
+          processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+          processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+          viewers.forEach(function(viewer) {
+            viewer.emit('message', 'new');
+            viewer.emit('game', gameState);
+          });
+        }
+      }
+    });
+  });
 }

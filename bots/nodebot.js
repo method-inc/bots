@@ -1,23 +1,9 @@
-var net = require('net');
+console.log('ready');
 
-var HOST = '127.0.0.1';
-var PORT = 1337;
-
-var socket = new net.Socket();
-
-socket.connect(PORT, HOST, function() {
-  socket.write('ready');
-});
-
-socket.on('data', function(data) {
+process.stdin.on('data', function(data) {
   var game = JSON.parse(data);
   moves = getMoves(game.state, game.player);
-  console.log(JSON.stringify(game));
-  socket.write(JSON.stringify(moves));
-});
-
-socket.on('close', function() {
-  console.log('Connection closed');
+  console.log(JSON.stringify(moves));
 });
 
 function getMoves(state, player) {
