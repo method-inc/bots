@@ -97,6 +97,10 @@ var server = http.createServer(app).listen(app.get('port'), function(){
 
 var viewers = [];
 var io = require('socket.io').listen(server);
+io.configure(function () { 
+  io.set('transports', ['xhr-polling']); 
+  io.set('polling duration', 10); 
+});
 io.set('authorization', function (data, accept) {
   var sid = parseSessionCookie(data.headers.cookie, 'connect.sid', '4J6YlRpJhFvgNmg');
   if (sid) {
