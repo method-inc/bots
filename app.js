@@ -12,7 +12,7 @@ var fs = require('fs')
   , rubyBot = __dirname + '/bots/rubybot.rb'
   , botsDir = __dirname + '/bots/'
   , User = require('./models/User.js')
-  , Game = require('./models/Game.js')
+  , GameStore = require('./models/Game.js')
   , app = express()
   , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
 
@@ -136,6 +136,10 @@ io.sockets.on('connection', function (socket) {
     var bots = [];
     var processes = [];
     var failed = false;
+    var gameStore = new GameStore();
+    gameStore.p1 = data.bot1;
+    gameStore.p2 = data.bot2;
+    gameStore.save();
     [data.bot1, data.bot2].forEach(function(botName) {
       var botPath = '';
       User.findOne({email:botName}, function(err, user) {
@@ -164,7 +168,7 @@ io.sockets.on('connection', function (socket) {
             });
             processes.push(child);
             if(processes.length === 2) {
-              startGame(processes);
+              startGame(processes, gameStore);
             }
           }
         }
@@ -182,7 +186,7 @@ io.sockets.on('connection', function (socket) {
             });
             processes.push(child);
             if(processes.length === 2) {
-              startGame(processes);
+              startGame(processes, gameStore);
             }
           }
         }
@@ -216,7 +220,7 @@ function parseSessionCookie(cookie, sid, secret) {
   return parsed[sid] || null;
 }
 
-function startGame(processes) {
+function startGame(processes, gameStore) {
   var gameState = game.create(20, 20, 100);
   var p1Moves = null;
   var p2Moves = null;
@@ -228,6 +232,8 @@ function startGame(processes) {
     viewer.emit('message', 'new');
     viewer.emit('game', gameState);
   });
+  gameStore.turns.push(gameState);
+  gameStore.save();
 
   processes.forEach(function(process, index) {
     process.stdout.on('data', function(data) {
@@ -251,6 +257,8 @@ function startGame(processes) {
         viewers.forEach(function(viewer) {
           viewer.emit('game', gameState);
         });
+        gameStore.turns.push(gameState);
+        gameStore.save();
 
         if(gameState.winner) {
           console.log('GAME ENDED');
