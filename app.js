@@ -139,7 +139,6 @@ io.sockets.on('connection', function (socket) {
     var gameStore = new GameStore();
     gameStore.p1 = data.bot1;
     gameStore.p2 = data.bot2;
-    gameStore.save();
     [data.bot1, data.bot2].forEach(function(botName) {
       var botPath = '';
       User.findOne({email:botName}, function(err, user) {
@@ -233,7 +232,6 @@ function startGame(processes, gameStore) {
     viewer.emit('game', gameState);
   });
   gameStore.turns.push(gameState);
-  gameStore.save();
 
   processes.forEach(function(process, index) {
     process.stdout.on('data', function(data) {
@@ -258,7 +256,6 @@ function startGame(processes, gameStore) {
           viewer.emit('game', gameState);
         });
         gameStore.turns.push(gameState);
-        gameStore.save();
 
         if(gameState.winner) {
           console.log('GAME ENDED');
@@ -274,6 +271,7 @@ function startGame(processes, gameStore) {
             process.kill();
             gameStarted = false;
             ready = 0;
+            gameStore.save();
           });
         }
       }
