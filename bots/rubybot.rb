@@ -1,5 +1,5 @@
-require 'socket'
 require 'json'
+STDOUT.sync = true
 
 def get_moves(state, player)
   moves = Array.new
@@ -65,19 +65,8 @@ def get_adjacent_indices(state, index)
   indices
 end
 
-HOST = '127.0.0.1'
-PORT = 1337
-
-socket = TCPSocket.open(HOST, PORT)
-
-socket.write 'ready'
-
-while data=socket.gets do
+while data=gets do
   game = JSON.parse data
   moves = get_moves(game['state'], game['player'])
-  puts JSON.generate game
-  socket.write JSON.generate moves
+  print JSON.generate moves
 end
-
-socket.close
-puts 'Connection closed'

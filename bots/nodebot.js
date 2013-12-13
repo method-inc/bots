@@ -1,5 +1,3 @@
-console.log('ready');
-
 process.stdin.on('data', function(data) {
   var game = JSON.parse(data);
   moves = getMoves(game.state, game.player);

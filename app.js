@@ -217,65 +217,55 @@ function parseSessionCookie(cookie, sid, secret) {
 }
 
 function startGame(processes) {
-  var gameState = {};
-  var gameStarted = false;
+  var gameState = game.create(20, 20, 100);
   var p1Moves = null;
   var p2Moves = null;
-  var ready = 0;
+
+  processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+  processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+  viewers.forEach(function(viewer) {
+    viewer.emit('message', 'new');
+    viewer.emit('game', gameState);
+  });
+
   processes.forEach(function(process, index) {
     process.stdout.on('data', function(data) {
       data = (''+data).trim();
       console.log('data received: ' + data);
-      if(gameStarted) {
-        if(index === 0) {
-          p1Moves = JSON.parse(data);
-        }
-        else if(index === 1) {
-          p2Moves = JSON.parse(data);
-        }
-
-        if(p1Moves && p2Moves) {
-          gameState = game.doTurn(gameState, p1Moves, p2Moves);
-
-          p1Moves = null;
-          p2Moves = null;
-          processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
-          processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
-
-          viewers.forEach(function(viewer) {
-            viewer.emit('game', gameState);
-          });
-
-          if(gameState.winner) {
-            console.log('GAME ENDED');
-            if(gameState.winner) {
-              if(gameState.winner == 'a')
-                console.log('Client 1 wins');
-              else if(gameState.winner == 'b')
-                console.log('Client 2 wins');
-              else
-                console.log('Tie');
-            }
-            processes.forEach(function(process) {
-              process.kill();
-              gameStarted = false;
-              ready = 0;
-            });
-          }
-        }
+      if(index === 0) {
+        p1Moves = JSON.parse(data);
       }
-      else {
-        if(data === 'ready') ready++;
-        if(ready === 2) {
-          gameState = game.create(20, 20, 100);
-          gameStarted = true;
+      else if(index === 1) {
+        p2Moves = JSON.parse(data);
+      }
 
-          processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
-          processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+      if(p1Moves && p2Moves) {
+        gameState = game.doTurn(gameState, p1Moves, p2Moves);
 
-          viewers.forEach(function(viewer) {
-            viewer.emit('message', 'new');
-            viewer.emit('game', gameState);
+        p1Moves = null;
+        p2Moves = null;
+        processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+        processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+        viewers.forEach(function(viewer) {
+          viewer.emit('game', gameState);
+        });
+
+        if(gameState.winner) {
+          console.log('GAME ENDED');
+          if(gameState.winner) {
+            if(gameState.winner == 'a')
+              console.log('Client 1 wins');
+            else if(gameState.winner == 'b')
+              console.log('Client 2 wins');
+            else
+              console.log('Tie');
+          }
+          processes.forEach(function(process) {
+            process.kill();
+            gameStarted = false;
+            ready = 0;
           });
         }
       }
