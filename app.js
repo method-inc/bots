@@ -230,6 +230,7 @@ function startGame(processes, gameStore) {
   var gameState = game.create(20, 20, 100);
   var p1Moves = null;
   var p2Moves = null;
+  var gameStarted = true;
 
   processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
   processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
@@ -251,7 +252,7 @@ function startGame(processes, gameStore) {
         p2Moves = JSON.parse(data);
       }
 
-      if(p1Moves && p2Moves) {
+      if(p1Moves && p2Moves && gameStarted) {
         gameState = game.doTurn(gameState, p1Moves, p2Moves);
 
         p1Moves = null;
