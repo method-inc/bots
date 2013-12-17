@@ -7,7 +7,6 @@ var fs = require('fs')
   , mongoose = require('mongoose')
   , path = require('path')
   , childProcess = require('child_process')
-  , siofu = require('socketio-file-upload')
   , nodeBot = __dirname + '/bots/nodebot.js'
   , rubyBot = __dirname + '/bots/rubybot.rb'
   , botsDir = __dirname + '/bots/'
@@ -78,7 +77,6 @@ app.use(everyauth.middleware(app));
 app.use(app.router);
 app.use(require('stylus').middleware(__dirname + '/public'));
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(siofu.router);
 
 mongoose.connect(uristring);
 
@@ -113,24 +111,24 @@ io.set('authorization', function (data, accept) {
   }
 });
 io.sockets.on('connection', function (socket) {
-  var uploader = new siofu();
-  uploader.dir = botsDir;
-  uploader.listen(socket);
-  uploader.on('saved', function(e) {
+  socket.on('send-file', function(name, bot) {
     User.findById(socket.handshake.session.auth.userId, function(err, user) {
       if(user) {
-        user.bot = e.file.pathName;
+        user.bot = {};
+        var ext = name.slice(-3);
+        if(ext === '.js') {
+          user.bot.lang = 'node';
+        }
+        else if(ext === '.rb') {
+          user.bot.lang = 'ruby';
+        }
+        user.bot.body = bot;
+        console.log('user bot: ' + bot);
         user.save(function() {
           sendBots();
         });
       }
     });
-  });
-  io.sockets.on('error', function(e) {
-    console.log('socket io error: ' + e);
-  });
-  uploader.on('error', function(e) {
-    console.log('error from uploader', e);
   });
 
   viewers.push(socket);

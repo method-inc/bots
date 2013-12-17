@@ -2,22 +2,24 @@ var gameTurns = [];
 var currentDisplayed = 0;
 var turn = 0;
 var socket = io.connect(window.location.hostname);
-var siofu = new SocketIOFileUpload(socket);
 var c;
 var ctx;
 var turnSpeed = 1000;
+var file;
 
 window.onload = function() {
   c=document.getElementById('game');
   ctx=c.getContext('2d');
 
-  siofu.listenOnInput($('#bot-upload')[0]);
-  siofu.listenOnDrop($('#bot-drop')[0]);
-
-  siofu.addEventListener("complete", function(event){
-    console.log(event.success);
-    console.log(event.file);
-  });
+  filesUpload = $('#bot-file')[0];
+  filesUpload.addEventListener('change', function(e) {
+    var files = e.target.files || e.dataTransfer.files;
+    if (files) {
+      file = files[0];
+      console.log('file changed');
+      console.log(file);
+    }
+  }, false);
 
   turnSpeed = 1000-$('#turn-speed').val();
 }
@@ -65,6 +67,19 @@ $(document).keydown(function(e) {
   showTurn(gameTurns[currentDisplayed]);
   $('li.selected').removeClass('selected');
   $('li[turn='+currentDisplayed+']').addClass('selected');
+});
+$(document).on('click', '#bot-upload', function(e) {
+  e.preventDefault();
+  console.log('uploading bot');
+  if (file) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      console.log('Sending file...');
+      var buffer = e.target.result;
+      socket.emit('send-file', file.name, buffer);
+    };
+    reader.readAsText(file);
+  }
 });
 $(document).on('click', '#newgame', function(e) {
   e.preventDefault();
