@@ -138,68 +138,45 @@ io.sockets.on('connection', function (socket) {
     var processes = [];
     var failed = false;
     var gameStore = new GameStore();
+    var fileNumber = 1;
     gameStore.p1 = data.bot1;
     gameStore.p2 = data.bot2;
+
     [data.bot1, data.bot2].forEach(function(botName) {
-      var botPath = '';
       User.findOne({email:botName}, function(err, user) {
         if(user && user.bot) {
-          botPath = user.bot;
+          var dir = botsDir + 'user'+fileNumber;
+          fileNumber++;
+          fs.writeFile(dir, user.bot.body, function(err) {
+            console.log('bot saved to ' + dir);
+            startBot(user.bot.lang, dir, processes);
+            if(processes.length >= 2) startGame(processes, gameStore);
+          });
         }
         else if(botName === 'nodebot') {
-          botPath = nodeBot;
+          startBot('node', nodeBot, processes);
+          if(processes.length >= 2) startGame(processes, gameStore);
         }
         else if(botName === 'rubybot') {
-          botPath = rubyBot;
-        }
-
-        var ext = botPath.slice(-3);
-        if(ext === '.js') {
-          if(!failed) {
-            console.log('STARTING NODE BOT: ' + botPath);
-            var child = childProcess.exec('node ' + botPath, function (error, stdout, stderr) {
-              if (error) {
-                console.log('error starting ' + botPath);
-                console.log('killing ' + processes.length + ' child processes');
-                processes.forEach(function(p) {p.kill()});
-                processes = [];
-                failed = true;
-              }
-            });
-            processes.push(child);
-            if(processes.length === 2) {
-              startGame(processes, gameStore);
-            }
-          }
-        }
-        else if(ext === '.rb') {
-          if(!failed) {
-            console.log('STARTING RUBY BOT: ' + botPath);
-            var child = childProcess.exec('ruby ' + botPath, function (error, stdout, stderr) {
-              if (error) {
-                console.log('error starting ' + botPath);
-                console.log('killing ' + processes.length + ' child processes');
-                processes.forEach(function(p) {p.kill()});
-                processes = [];
-                failed = true;
-              }
-            });
-            processes.push(child);
-            if(processes.length === 2) {
-              startGame(processes, gameStore);
-            }
-          }
-        }
-        else {
-          console.log('invalid file or extension: ' + botPath);
-          console.log('killing ' + processes.length + ' child processes');
-          processes.forEach(function(p) {p.kill()});
-          processes = [];
-          failed = true;
+          startBot('ruby', rubyBot, processes);
+          if(processes.length >= 2) startGame(processes, gameStore);
         }
       });
     });
   });
+
+  function startBot(lang, path, processes, failed) {
+    console.log('starting ' + lang + ' bot: ' + path);
+    var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
+      if (error) {
+        console.log('error starting ' + path);
+        console.log('killing ' + processes.length + ' child processes');
+        processes.forEach(function(p) {p.kill()});
+        processes = [];
+      }
+    });
+    processes.push(child);
+  }
 
   function sendBots() {
     User.find({bot: { $exists: true } }, function(err, users) {
