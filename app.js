@@ -122,6 +122,9 @@ io.sockets.on('connection', function (socket) {
         else if(ext === '.rb') {
           user.bot.lang = 'ruby';
         }
+        else {
+          user.bot.lang = 'node';
+        }
         user.bot.body = bot;
         console.log('user bot: ' + bot);
         user.save(function() {
@@ -203,6 +206,15 @@ function startGame(processes, gameStore) {
   var p2Moves = null;
   var gameStarted = true;
 
+  var timeout = setTimeout(function() {
+    processes.forEach(function(process) {
+      process.kill();
+      gameStarted = false;
+      ready = 0;
+      gameStore.save();
+    });
+  }, 2000);
+
   processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
   processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
@@ -224,12 +236,9 @@ function startGame(processes, gameStore) {
       }
 
       if(p1Moves && p2Moves && gameStarted) {
-        gameState = game.doTurn(gameState, p1Moves, p2Moves);
+        clearTimeout(timeout);
 
-        p1Moves = null;
-        p2Moves = null;
-        processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
-        processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+        gameState = game.doTurn(gameState, p1Moves, p2Moves);
 
         viewers.forEach(function(viewer) {
           viewer.emit('game', gameState);
@@ -252,6 +261,21 @@ function startGame(processes, gameStore) {
             ready = 0;
             gameStore.save();
           });
+        }
+        else {
+          p1Moves = null;
+          p2Moves = null;
+          processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+          processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+          timeout = setTimeout(function() {
+            processes.forEach(function(process) {
+              process.kill();
+              gameStarted = false;
+              ready = 0;
+              gameStore.save();
+            });
+          }, 2000);
         }
       }
     });
