@@ -152,30 +152,36 @@ io.sockets.on('connection', function (socket) {
           fileNumber++;
           fs.writeFile(dir, user.bot.body, function(err) {
             console.log('bot saved to ' + dir);
-            startBot(user.bot.lang, dir, processes);
+            startBot(user.bot.lang, dir, processes, gameStore, botName);
             if(processes.length >= 2) startGame(processes, gameStore);
           });
         }
         else if(botName === 'nodebot') {
-          startBot('node', nodeBot, processes);
+          startBot('node', nodeBot, processes, gameStore, botName);
           if(processes.length >= 2) startGame(processes, gameStore);
         }
         else if(botName === 'rubybot') {
-          startBot('ruby', rubyBot, processes);
+          startBot('ruby', rubyBot, processes, gameStore, botName);
           if(processes.length >= 2) startGame(processes, gameStore);
         }
       });
     });
   });
 
-  function startBot(lang, path, processes, failed) {
+  function startBot(lang, path, processes, gameStore, bot) {
     console.log('starting ' + lang + ' bot: ' + path);
     var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
       if (error) {
-        console.log('error starting ' + path);
-        console.log('killing ' + processes.length + ' child processes');
-        processes.forEach(function(p) {p.kill()});
-        processes = [];
+        if(error.code === 143 || error.signal === 'SIGTERM') {
+          console.log('bot did not crash');
+        }
+        else {
+          console.log('bot crashed');
+          gameStore.end = bot + ' crashed.';
+          gameStore.save();
+          processes.forEach(function(p) {p.kill()});
+          processes = [];
+        }
       }
     });
     processes.push(child);
@@ -207,6 +213,18 @@ function startGame(processes, gameStore) {
   var gameStarted = true;
 
   var timeout = setTimeout(function() {
+    if(gameStore.end === 'elegant') {
+      if(!p1Moves && !p2Moves) {
+        gameStore.end = 'p1 and p2 timeout';
+      }
+      else if(!p1Moves) {
+        gameStore.end = 'p1 timeout';
+      }
+      else if(!p2Moves) {
+        gameStore.end = 'p2 timeout';
+      }
+    }
+
     processes.forEach(function(process) {
       process.kill();
       gameStarted = false;
@@ -269,6 +287,18 @@ function startGame(processes, gameStore) {
           processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
           timeout = setTimeout(function() {
+            if(gameStore.end === 'elegant') {
+              if(!p1Moves && !p2Moves) {
+                gameStore.end = 'p1 and p2 timeout';
+              }
+              else if(!p1Moves) {
+                gameStore.end = 'p1 timeout';
+              }
+              else if(!p2Moves) {
+                gameStore.end = 'p2 timeout';
+              }
+            }
+
             processes.forEach(function(process) {
               process.kill();
               gameStarted = false;
