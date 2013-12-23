@@ -190,6 +190,8 @@ io.sockets.on('connection', function (socket) {
         else {
           console.log('bot crashed');
           gameStore.end = bot + ' crashed.';
+          if(gameStore.p1 === bot) gameStore.winner = gameStore.p2;
+          else gameStore.winner = gameStore.p1;
           gameStore.save();
           processes.forEach(function(p) {p.kill()});
           processes = [];
@@ -244,9 +246,11 @@ function startGame(processes, gameStore) {
       }
       else if(!p1Moves) {
         gameStore.end = 'p1 timeout';
+        gameStore.winner = gameStore.p2;
       }
       else if(!p2Moves) {
         gameStore.end = 'p2 timeout';
+        gameStore.winner = gameStore.p1;
       }
     }
 
@@ -286,10 +290,14 @@ function startGame(processes, gameStore) {
         if(gameState.winner) {
           console.log('GAME ENDED');
           if(gameState.winner) {
-            if(gameState.winner == 'a')
+            if(gameState.winner == 'a') {
               console.log('Client 1 wins');
-            else if(gameState.winner == 'b')
+              gameStore.winner = gameStore.p1;
+            }
+            else if(gameState.winner == 'b') {
               console.log('Client 2 wins');
+              gameStore.winner = gameStore.p2;
+            }
             else
               console.log('Tie');
           }
@@ -313,11 +321,13 @@ function startGame(processes, gameStore) {
               }
               else if(!p1Moves) {
                 gameStore.end = 'p1 timeout';
+                gameStore.winner = gameStore.p2;
               }
-              else if(!p2Moves) {}
-
+              else if(!p2Moves) {
                 gameStore.end = 'p2 timeout';
-                          }
+                gameStore.winner = gameStore.p1;
+              }
+            }
 
             processes.forEach(function(process) {
               process.kill();
