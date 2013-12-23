@@ -46,6 +46,12 @@ socket.on('bots', function(data) {
     $('#botlist2').append('<option value='+bot.name+'>'+bot.name+'</option>');
   });
 });
+socket.on('games', function(data) {
+  $('#gamelist').html('');
+  data.forEach(function(game) {
+    $('#gamelist').append('<option value='+game.id+'>'+game.label+'</option>');
+  });
+});
 
 $(document).on('click', 'li', function(e) {
   console.log('li clicked');
@@ -86,6 +92,11 @@ $(document).on('click', '#newgame', function(e) {
   var bot1 = $('#botlist1').val() || 0;
   var bot2 = $('#botlist2').val() || 0;
   socket.emit('start', {bot1:bot1,bot2:bot2});
+});
+$(document).on('click', '#showgame', function(e) {
+  e.preventDefault();
+  var gameId = $('#gamelist').val();
+  socket.emit('show', {id:gameId});
 });
 $(document).on('click', '#animate-game', function(e) {
   if(gameTurns.length) {

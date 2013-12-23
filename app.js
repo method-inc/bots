@@ -136,6 +136,7 @@ io.sockets.on('connection', function (socket) {
 
   viewers.push(socket);
   sendBots();
+  sendGames();
   socket.on('start', function(data) {
     var bots = [];
     var processes = [];
@@ -168,6 +169,17 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  socket.on('show', function(data) {
+    socket.emit('message', 'new');
+    GameStore.findById(data.id, function(err, game) {
+      if(game) {
+        game.turns.forEach(function(turn) {
+          socket.emit('game', turn);
+        });
+      }
+    });
+  });
+
   function startBot(lang, path, processes, gameStore, bot) {
     console.log('starting ' + lang + ' bot: ' + path);
     var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
@@ -196,6 +208,19 @@ io.sockets.on('connection', function (socket) {
         toSend.push({name:user.email});
       });
       socket.emit('bots', toSend);
+    });
+  }
+
+  function sendGames() {
+    GameStore
+    .find({})
+    .sort('-createdAt')
+    .exec(function(err, games) {
+      var toSend = [];
+      games.forEach(function(game) {
+        toSend.push({id:game.id, label:game.p1 + ' vs. ' + game.p2});
+      });
+      socket.emit('games', toSend);
     });
   }
 });
@@ -236,11 +261,8 @@ function startGame(processes, gameStore) {
   processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
   processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
-  viewers.forEach(function(viewer) {
-    viewer.emit('message', 'new');
-    viewer.emit('game', gameState);
-  });
   gameStore.turns.push(gameState);
+  gameStore.save();
 
   processes.forEach(function(process, index) {
     process.stdout.on('data', function(data) {
@@ -258,10 +280,8 @@ function startGame(processes, gameStore) {
 
         gameState = game.doTurn(gameState, p1Moves, p2Moves);
 
-        viewers.forEach(function(viewer) {
-          viewer.emit('game', gameState);
-        });
         gameStore.turns.push(gameState);
+        gameStore.save();
 
         if(gameState.winner) {
           console.log('GAME ENDED');
@@ -294,10 +314,10 @@ function startGame(processes, gameStore) {
               else if(!p1Moves) {
                 gameStore.end = 'p1 timeout';
               }
-              else if(!p2Moves) {
+              else if(!p2Moves) {}
+
                 gameStore.end = 'p2 timeout';
-              }
-            }
+                          }
 
             processes.forEach(function(process) {
               process.kill();

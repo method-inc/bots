@@ -3,7 +3,6 @@ html
   head
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
     script(src='/socket.io/socket.io.js')
-    script(src='/siofu/client.js')
     script(src='/scripts/aliens.js')
     link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
     title aliens
@@ -14,6 +13,9 @@ html
       h3 Upload Bot
       input#bot-file(type='file')
       button#bot-upload upload bot
+    form
+      select#gamelist
+      button#showgame show game
     form
       select#botlist1
       label vs
