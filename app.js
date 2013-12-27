@@ -7,6 +7,7 @@ var fs = require('fs')
   , mongoose = require('mongoose')
   , path = require('path')
   , childProcess = require('child_process')
+  , schedule = require('node-schedule')
   , nodeBot = __dirname + '/bots/nodebot.js'
   , rubyBot = __dirname + '/bots/rubybot.rb'
   , botsDir = __dirname + '/bots/'
@@ -342,3 +343,10 @@ function startGame(processes, gameStore) {
     });
   });
 }
+
+var now = new Date().valueOf();
+var runDate = new Date(now+30000);
+console.log('start');
+var task = schedule.scheduleJob(runDate, function() {
+  console.log('thirty seconds after start');
+});

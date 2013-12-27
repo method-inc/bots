@@ -21,7 +21,8 @@
     "express-sessions" : "*",
     "stylus" : "*",
     "jade" : "*",
-    "everyauth" : "*"
+    "everyauth" : "*",
+    "node-schedule" : "*"
   },
   "license": "MIT",
   "engines": {
