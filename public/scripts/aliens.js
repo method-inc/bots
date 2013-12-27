@@ -38,6 +38,29 @@ socket.on('game', function(data) {
   currentDisplayed = turn;
   turn++;
 });
+socket.on('game-data', function(data) {
+  console.log(data);
+  $('#game-title').html(data.p1 + ' (red) vs. ' + data.p2 + ' (blue)');
+
+  var winnerText = '';
+  if(data.end === 'elegant') {
+    if(data.winner) {
+      winnerText = 'winner: ' + data.winner;
+    }
+    else {
+      winnerText = 'tie'
+    }
+  }
+  else {
+    if(data.winner) {
+      winnerText = 'winner: ' + data.winner + ' (' + data.end + ')';
+    }
+    else {
+      winnerText = 'tie (' + data.end + ')';
+    }
+  }
+  $('#game-winner').html(winnerText);
+});
 socket.on('bots', function(data) {
   $('#botlist1').html('');
   $('#botlist2').html('');

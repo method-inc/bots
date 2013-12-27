@@ -173,6 +173,7 @@ io.sockets.on('connection', function (socket) {
     socket.emit('message', 'new');
     GameStore.findById(data.id, function(err, game) {
       if(game) {
+        socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
         game.turns.forEach(function(turn) {
           socket.emit('game', turn);
         });
@@ -242,14 +243,14 @@ function startGame(processes, gameStore) {
   var timeout = setTimeout(function() {
     if(gameStore.end === 'elegant') {
       if(!p1Moves && !p2Moves) {
-        gameStore.end = 'p1 and p2 timeout';
+        gameStore.end = gameStore.p1 + ' and ' + gameStore.p2 + ' timeout';
       }
       else if(!p1Moves) {
-        gameStore.end = 'p1 timeout';
+        gameStore.end = gameStore.p1 + ' timeout';
         gameStore.winner = gameStore.p2;
       }
       else if(!p2Moves) {
-        gameStore.end = 'p2 timeout';
+        gameStore.end = gameStore.p2 + ' timeout';
         gameStore.winner = gameStore.p1;
       }
     }

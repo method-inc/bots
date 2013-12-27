@@ -10,7 +10,6 @@ html
     p Logged in as #{email} 
       a(href='/logout') (log out)
     div#upload-area
-      h3 Upload Bot
       input#bot-file(type='file')
       button#bot-upload upload bot
     form
@@ -25,5 +24,8 @@ html
     span slow
     input#turn-speed(type='range', min='0', max='950')
     span fast
+
+    h1#game-title
+    h2#game-winner
     canvas#game(width=500, height=500)
     ul#turns
