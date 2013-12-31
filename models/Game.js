@@ -7,5 +7,8 @@ module.exports = mongoose.model('Game', new Schema({
   turns: { type: Array },
   end: { type: String, default:'elegant' },
   winner: { type: String },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  tournament: { type: Number },
+  round : { type: Number },
+  scheduleTime: { type: Date }
 }));
