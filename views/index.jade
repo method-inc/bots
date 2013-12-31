@@ -20,6 +20,9 @@ html
       label vs
       select#botlist2
       button#newgame new game
+    -if(admin)
+      form
+        button#start-tournament start tournament
     button#animate-game animate game
     span slow
     input#turn-speed(type='range', min='0', max='950')

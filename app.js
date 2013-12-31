@@ -19,6 +19,7 @@ var fs = require('fs')
 var usersById = {};
 var nextUserId = 0;
 var usersByGoogleId = {};
+var admins = ['mbriesen@skookum.com'];
 
 everyauth.everymodule
   .findUserById( function (req, id, callback) {
@@ -86,7 +87,9 @@ app.get('/', function(req, res) {
     res.redirect('/auth/google');
   }
   else {
-    res.render('index', {email:req.user.email});
+    var isAdmin = false;
+    if(admins.indexOf(req.user.email) !== -1) isAdmin = true;
+    res.render('index', {email:req.user.email, admin:isAdmin});
   }
 });
 
@@ -179,6 +182,13 @@ io.sockets.on('connection', function (socket) {
           socket.emit('game', turn);
         });
       }
+    });
+  });
+
+  socket.on('tournament', function() {
+    User.find({bot: { $exists: true } }, 'email', function(err, users) {
+      console.log('users playing:');
+      console.log(users);
     });
   });
 

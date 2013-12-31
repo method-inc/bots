@@ -127,6 +127,10 @@ $(document).on('click', '#animate-game', function(e) {
     animateNextTurn();
   }
 });
+$(document).on('click', '#start-tournament', function(e) {
+  e.preventDefault();
+  socket.emit('tournament');
+});
 $(document).on('change', '#turn-speed', function(e) {
   turnSpeed = 1000-$('#turn-speed').val();
 });

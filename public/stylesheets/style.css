@@ -19,13 +19,6 @@ canvas {
   margin: auto;
   display: block;
 }
-#bot-drop {
-  background-color: #d3d3d3;
-  height: 20px;
-  width: 200px;
-  padding: 10px;
-  margin: 10px auto;
-}
 #animate-game {
   margin-right: 10px;
 }
