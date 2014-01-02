@@ -238,19 +238,37 @@ io.sockets.on('connection', function (socket) {
     });
   }
 
+  function startTournament() {
+    var players = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
+    var round = 1;
+    console.log('starting tournament with ' + players.length + ' players');
+    tournamentRound(1, round, players);
+  }
   function tournamentRound(tournament, round, players) {
-    // if number of players is one, declare victor
-    // otherwise, shuffle players array
-    // if players.length is odd, remove the first player
-    // split array into groups of two players to go against each other
-    // schedule to run a game for each group
-    // save empty game in db with tournament number, round number, and competing players
-    // callback for last game:
-    //  increment round
-    //  find winners of each of the previous games and put them into an array
-    //  if players tied in previous game, put them both into that array
-    //  if the first player in players was previously removed, put it into the new array
-    //  call tournamentRound with the tournament, round, and new player array
+    if(players.length > 1) {
+      var numPlayers = players.length;
+      var losers = [];
+      var numPlaying = Math.pow(2, ~~log2(numPlayers));
+      console.log('round ' + round + '. ' + numPlayers + ' players (' + numPlaying + ' playing).');
+      for(var i=0; i<numPlaying-1; i+=2) {
+        console.log(players[i] + ' vs. ' + players[i+1]);
+        losers.push(players[i+1]); // change to actual loser of game later
+      }
+      losers.forEach(function(loser) {
+        var i = players.indexOf(loser);
+        players.splice(i, 1);
+        console.log(loser + ' eliminated');
+      });
+
+      round++;
+      tournamentRound(tournament, round, players);
+    }
+    else {
+      console.log(players[0] + ' wins!');
+    }
+  }
+  function log2(num) {
+    return Math.log(num)/Math.log(2);
   }
 });
 
