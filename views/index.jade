@@ -1,34 +1,27 @@
-doctype 5
-html
-  head
-    script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
-    script(src='/socket.io/socket.io.js')
-    script(src='/scripts/aliens.js')
-    link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
-    title aliens
-  body
-    p Logged in as #{email} 
-      a(href='/logout') (log out)
-    div#upload-area
-      input#bot-file(type='file')
-      button#bot-upload upload bot
+extends layout
+block head
+  script(src='/scripts/aliens.js')
+block content
+  div#upload-area
+    input#bot-file(type='file')
+    button#bot-upload upload bot
+  form
+    select#gamelist
+    button#showgame show game
+  form
+    select#botlist1
+    label vs
+    select#botlist2
+    button#newgame new game
+  -if(admin)
     form
-      select#gamelist
-      button#showgame show game
-    form
-      select#botlist1
-      label vs
-      select#botlist2
-      button#newgame new game
-    -if(admin)
-      form
-        button#start-tournament start tournament
-    button#animate-game animate game
-    span slow
-    input#turn-speed(type='range', min='0', max='950')
-    span fast
+      button#start-tournament start tournament
+  button#animate-game animate game
+  span slow
+  input#turn-speed(type='range', min='0', max='950')
+  span fast
 
-    h1#game-title
-    h2#game-winner
-    canvas#game(width=500, height=500)
-    ul#turns
+  h1#game-title
+  h2#game-winner
+  canvas#game(width=500, height=500)
+  ul#turns

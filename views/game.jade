@@ -1,0 +1,14 @@
+extends layout
+block head
+  script(src='/scripts/game.js')
+block content
+  div#game-id.hidden #{id}
+  button#animate-game animate game
+  span slow
+  input#turn-speed(type='range', min='0', max='950')
+  span fast
+
+  h1#game-title
+  h2#game-winner
+  canvas#game(width=500, height=500)
+  ul#turns

@@ -37,6 +37,7 @@ everyauth.google
         user.googleId = googleUser.id;
         user.email = googleUser.email;
         user.name = googleUser.name;
+        user.picture = googleUser.picture;
         user.save(function(err) {
           if(err) throw err;
           promise.fulfill(user);
@@ -91,6 +92,16 @@ app.get('/', function(req, res) {
     if(admins.indexOf(req.user.email) !== -1) isAdmin = true;
     res.render('index', {email:req.user.email, admin:isAdmin});
   }
+});
+app.get('/game/:id', function(req, res) {
+  GameStore.findById(req.params.id, function(err, game) {
+    if(game) {
+      res.render('game', {id:req.params.id});
+    }
+    else {
+      console.log('no game');
+    }
+  });
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
