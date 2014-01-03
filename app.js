@@ -13,6 +13,7 @@ var fs = require('fs')
   , botsDir = __dirname + '/bots/'
   , User = require('./models/User.js')
   , GameStore = require('./models/Game.js')
+  , Tournament = require('./models/Tournament.js')
   , app = express()
   , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
 
@@ -100,6 +101,16 @@ app.get('/game/:id', function(req, res) {
     }
     else {
       console.log('no game');
+    }
+  });
+});
+app.get('/tournament/:id', function(req, res) {
+  Tournament.findById(req.params.id, function(err, tournament) {
+    if(tournament) {
+      res.render('tournament', {tournament:tournament});
+    }
+    else {
+      console.log('no tournament');
     }
   });
 });
@@ -249,37 +260,52 @@ io.sockets.on('connection', function (socket) {
     });
   }
 
-  function startTournament() {
+  function organizeTournament() {
     var players = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
     var round = 1;
     console.log('starting tournament with ' + players.length + ' players');
-    tournamentRound(1, round, players);
+    var tournament = new Tournament();
+    console.log(tournament.id);
+    tournamentRound(tournament, round, players, []);
   }
-  function tournamentRound(tournament, round, players) {
+  function tournamentRound(tournament, round, players, assigned) {
     if(players.length > 1) {
       var numPlayers = players.length;
-      var losers = [];
+      var eliminated = [];
       var numPlaying = Math.pow(2, ~~log2(numPlayers));
-      console.log('round ' + round + '. ' + numPlayers + ' players (' + numPlaying + ' playing).');
+      tournament.games[round-1] = [];
       for(var i=0; i<numPlaying-1; i+=2) {
-        console.log(players[i] + ' vs. ' + players[i+1]);
-        losers.push(players[i+1]); // change to actual loser of game later
+        var newGame = new GameStore();
+        var p1 = players[i];
+        var p2 = players[i+1];
+        if(assigned.indexOf(p1) === -1) {
+          newGame.p1 = p1;
+          assigned.push(p1);
+        }
+        if(assigned.indexOf(p2) === -1) {
+          newGame.p2 = p2;
+          assigned.push(p2);
+        }
+        newGame.save();
+        tournament.games[round-1].push({id:newGame.id, p1:newGame.p1, p2:newGame.p2});
+        tournament.save();
+        eliminated.push(players[i+1]);
       }
-      losers.forEach(function(loser) {
+      eliminated.forEach(function(loser) {
         var i = players.indexOf(loser);
         players.splice(i, 1);
-        console.log(loser + ' eliminated');
       });
 
       round++;
-      tournamentRound(tournament, round, players);
-    }
-    else {
-      console.log(players[0] + ' wins!');
+      tournamentRound(tournament, round, players, assigned);
     }
   }
   function log2(num) {
     return Math.log(num)/Math.log(2);
+  }
+
+  function startTournament() {
+    
   }
 });
 
