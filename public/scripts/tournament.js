@@ -1,8 +1,11 @@
-gracketData = [];
+var gracketData = [];
+var games = [];
+
 empty = 0;
 roundList.forEach(function(round) {
   roundArray = [];
   round.forEach(function(game) {
+    games.push(game.id);
     var p1 = '';
     var p2 = '';
     var p1Id = '';
@@ -32,4 +35,7 @@ gracketData.push([[ {name: '', id: 'empty'+empty}]]);
 
 $(document).ready(function() {
   $('.bracket').gracket({src:gracketData});
+  $('.g_game:not(.g_winner)').each(function(i) {
+    $(this).wrap('<a href="/game/' + games[i] + '""></a>');
+  });
 });
