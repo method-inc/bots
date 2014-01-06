@@ -45,6 +45,7 @@ a {
 .g_game {
   position: relative;
   margin-bottom: 15px;
+  min-width: 150px;
 }
 .g_gracket h3 {
   margin: 0;
@@ -54,10 +55,10 @@ a {
   color: #fff;
 }
 .g_team {
-  background: #3597ae;
+  background: #c00;
 }
 .g_team:last-child {
-  background: #fcb821;
+  background: #03c;
 }
 .g_round:last-child {
   margin-right: 20px;
@@ -70,7 +71,7 @@ a {
 }
 .g_current {
   cursor: pointer;
-  background: #a0b43c !important;
+  background: #444 !important;
 }
 .g_round_label {
   top: -5px;
