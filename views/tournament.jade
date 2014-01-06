@@ -5,4 +5,7 @@ block head
   script(src='/libs/jquery.gracket.min.js')
   script(src='/scripts/tournament.js')
 block content
+  - var nextGame = tournament.games[tournament.nextGame.round][tournament.nextGame.game];
+  - var time = (tournament.nextGame.time.getHours()+11)%12+1 + ':' + tournament.nextGame.time.getMinutes() + ':' + tournament.nextGame.time.getSeconds();
+  h2 Next game: #{nextGame.p1} vs. #{nextGame.p2}, scheduled for #{time}
   div.bracket

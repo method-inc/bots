@@ -299,13 +299,36 @@ io.sockets.on('connection', function (socket) {
       round++;
       tournamentRound(tournament, round, players, assigned);
     }
+    else {
+      startTournament(tournament);
+    }
   }
   function log2(num) {
     return Math.log(num)/Math.log(2);
   }
 
-  function startTournament() {
-    
+  function startTournament(tournament) {
+    nextGame(tournament, 0, 0);
+  }
+  function nextGame(tournament, round, game) {
+    var now = new Date().valueOf();
+    var scheduleDate = new Date(now+30000);
+    tournament.nextGame = {time:scheduleDate, round:round, game:game};
+    tournament.save();
+
+    var task = schedule.scheduleJob(scheduleDate, function() {
+      game++;
+      if(tournament.games[round].length === game) {
+        game = 0;
+        round++;
+      }
+      if(tournament.games.length === round) {
+        console.log('tournament done');
+      }
+      else {
+        nextGame(tournament, round, game);
+      }
+    });
   }
 });
 
