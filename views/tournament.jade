@@ -1,11 +1,8 @@
 extends layout
+block head
+  script
+    var roundList = !{JSON.stringify(tournament.games)};
+  script(src='/libs/jquery.gracket.min.js')
+  script(src='/scripts/tournament.js')
 block content
-  div.tournament
-    -for(var i=0; i<tournament.games.length; i++)
-      div.round
-        -for(var j=0; j<tournament.games[i].length; j++)
-          -game = tournament.games[i][j];
-          a(href='/games/'+game.id)
-            div.match
-              div.p1 #{game.p1}
-              div.p2 #{game.p2}
+  div.bracket
