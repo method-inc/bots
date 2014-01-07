@@ -259,77 +259,6 @@ io.sockets.on('connection', function (socket) {
       socket.emit('games', toSend);
     });
   }
-
-  function organizeTournament() {
-    var players = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
-    var round = 1;
-    console.log('starting tournament with ' + players.length + ' players');
-    var tournament = new Tournament();
-    console.log(tournament.id);
-    tournamentRound(tournament, round, players, []);
-  }
-  function tournamentRound(tournament, round, players, assigned) {
-    if(players.length > 1) {
-      var numPlayers = players.length;
-      var eliminated = [];
-      var numPlaying = Math.pow(2, ~~log2(numPlayers));
-      tournament.games[round-1] = [];
-      for(var i=0; i<numPlaying-1; i+=2) {
-        var newGame = new GameStore();
-        var p1 = players[i];
-        var p2 = players[i+1];
-        if(assigned.indexOf(p1) === -1) {
-          newGame.p1 = p1;
-          assigned.push(p1);
-        }
-        if(assigned.indexOf(p2) === -1) {
-          newGame.p2 = p2;
-          assigned.push(p2);
-        }
-        newGame.save();
-        tournament.games[round-1].push({id:newGame.id, p1:newGame.p1, p2:newGame.p2});
-        tournament.save();
-        eliminated.push(players[i+1]);
-      }
-      eliminated.forEach(function(loser) {
-        var i = players.indexOf(loser);
-        players.splice(i, 1);
-      });
-
-      round++;
-      tournamentRound(tournament, round, players, assigned);
-    }
-    else {
-      startTournament(tournament);
-    }
-  }
-  function log2(num) {
-    return Math.log(num)/Math.log(2);
-  }
-
-  function startTournament(tournament) {
-    nextGame(tournament, 0, 0);
-  }
-  function nextGame(tournament, round, game) {
-    var now = new Date().valueOf();
-    var scheduleDate = new Date(now+30000);
-    tournament.nextGame = {time:scheduleDate, round:round, game:game};
-    tournament.save();
-
-    var task = schedule.scheduleJob(scheduleDate, function() {
-      game++;
-      if(tournament.games[round].length === game) {
-        game = 0;
-        round++;
-      }
-      if(tournament.games.length === round) {
-        console.log('tournament done');
-      }
-      else {
-        nextGame(tournament, round, game);
-      }
-    });
-  }
 });
 
 function parseSessionCookie(cookie, sid, secret) {
@@ -441,6 +370,116 @@ function startGame(processes, gameStore) {
               gameStore.save();
             });
           }, 2000);
+        }
+      }
+    });
+  });
+}
+
+function organizeTournament() {
+  var players = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
+  var round = 1;
+  console.log('starting tournament with ' + players.length + ' players');
+  var tournament = new Tournament();
+  console.log(tournament.id);
+  tournamentRound(tournament, round, players, []);
+}
+function tournamentRound(tournament, round, players, assigned) {
+  if(players.length > 1) {
+    var numPlayers = players.length;
+    var eliminated = [];
+    var numPlaying = Math.pow(2, ~~log2(numPlayers));
+    tournament.games[round-1] = [];
+    for(var i=0; i<numPlaying-1; i+=2) {
+      var newGame = new GameStore();
+      var p1 = players[i];
+      var p2 = players[i+1];
+      if(assigned.indexOf(p1) === -1) {
+        newGame.p1 = p1;
+        assigned.push(p1);
+      }
+      if(assigned.indexOf(p2) === -1) {
+        newGame.p2 = p2;
+        assigned.push(p2);
+      }
+      newGame.save();
+      tournament.games[round-1].push({id:newGame.id, p1:newGame.p1, p2:newGame.p2});
+      tournament.save();
+      eliminated.push(players[i+1]);
+    }
+    eliminated.forEach(function(loser) {
+      var i = players.indexOf(loser);
+      players.splice(i, 1);
+    });
+
+    round++;
+    tournamentRound(tournament, round, players, assigned);
+  }
+  else {
+    startTournament(tournament);
+  }
+}
+function log2(num) {
+  return Math.log(num)/Math.log(2);
+}
+
+function startTournament(tournament) {
+  nextGame(tournament, 0, 0);
+}
+function nextGame(tournament, round, gameNum) {
+  var now = new Date().valueOf();
+  var scheduleDate = new Date(now+30000);
+  tournament.nextGame = {time:scheduleDate, round:round, game:gameNum};
+  tournament.save();
+
+  var task = schedule.scheduleJob(scheduleDate, function() {
+    var gameDetails = tournament.games[round][gameNum];
+    GameStore.findById(gameDetails.id, function(err, game) {
+      if(game) {
+        if(game.p1 && game.p2) {
+          // temporary
+          var winner;
+          var i = ~~(Math.random()*2);
+          if(i) winner = game.p1;
+          else winner = game.p2;
+
+          var winnerGame;
+          if(round+1 < tournament.games.length) {
+            var nextRound = round+1;
+            var nextGameNum = ~~(gameNum/2);
+            var nextRoundGame = tournament.games[nextRound][nextGameNum];
+            var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
+            GameStore.findById(nextRoundGame.id, function(err, game) {
+              if(nextRoundPlayer) {
+                game.p1 = winner;
+                tournament.games[nextRound][nextGameNum].p1 = winner;
+              }
+              else {
+                game.p2 = winner;
+                tournament.games[nextRound][nextGameNum].p2 = winner;
+              }
+              game.save();
+              tournament.markModified('games');
+              tournament.save();
+            });
+          }
+
+          gameNum++;
+          if(tournament.games[round].length === gameNum) {
+            gameNum = 0;
+            round++;
+          }
+          if(tournament.games.length === round) {
+            console.log('tournament done');
+            tournament.winner = winner;
+            tournament.save();
+          }
+          else {
+            nextGame(tournament, round, gameNum);
+          }
+        }
+        else {
+          console.log('p1 or p2 is missing');
         }
       }
     });

@@ -1,7 +1,7 @@
 extends layout
 block head
-  script
-    var roundList = !{JSON.stringify(tournament.games)};
+  script.
+    var tournament = !{JSON.stringify(tournament)};
   script(src='/libs/jquery.gracket.min.js')
   script(src='/scripts/tournament.js')
 block content

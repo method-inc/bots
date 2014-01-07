@@ -69,6 +69,10 @@ a {
 .g_winner .g_team {
   background: none;
 }
+.g_current {
+  cursor: pointer;
+  background: #800080 !important;
+}
 .g_round_label {
   top: -5px;
   font-weight: normal;

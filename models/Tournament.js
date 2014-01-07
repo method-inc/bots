@@ -3,7 +3,8 @@ var Schema = mongoose.Schema;
 
 module.exports = mongoose.model('Tournament', new Schema({
   games: { type: Array },
-  nextGame: { }
+  nextGame: { },
+  winner: { type: String }
 }));
 
 // model.games[n-1]: list of games for round n

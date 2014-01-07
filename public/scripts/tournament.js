@@ -1,5 +1,6 @@
 var gracketData = [];
 var games = [];
+var roundList = tournament.games;
 
 empty = 0;
 roundList.forEach(function(round) {
@@ -31,7 +32,10 @@ roundList.forEach(function(round) {
   });
   gracketData.push(roundArray);
 });
-gracketData.push([[ {name: '', id: 'empty'+empty}]]);
+if(tournament.winner)
+  gracketData.push([[{name: tournament.winner, id: tournament.winner}]]);
+else
+  gracketData.push([[{name: '', id: 'empty'+empty}]]);
 
 $(document).ready(function() {
   $('.bracket').gracket({src:gracketData});
