@@ -319,58 +319,58 @@ function startGame(processes, gameStore) {
         gameState = game.doTurn(gameState, p1Moves, p2Moves);
 
         gameStore.turns.push(gameState);
-        gameStore.save();
-
-        if(gameState.winner) {
-          console.log('GAME ENDED');
+        gameStore.save(function() {
           if(gameState.winner) {
-            if(gameState.winner == 'a') {
-              console.log('Client 1 wins');
-              gameStore.winner = gameStore.p1;
-            }
-            else if(gameState.winner == 'b') {
-              console.log('Client 2 wins');
-              gameStore.winner = gameStore.p2;
-            }
-            else
-              console.log('Tie');
-          }
-          processes.forEach(function(process) {
-            process.kill();
-            gameStarted = false;
-            ready = 0;
-            gameStore.save();
-          });
-        }
-        else {
-          p1Moves = null;
-          p2Moves = null;
-          processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
-          processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
-
-          timeout = setTimeout(function() {
-            if(gameStore.end === 'elegant') {
-              if(!p1Moves && !p2Moves) {
-                gameStore.end = 'p1 and p2 timeout';
-              }
-              else if(!p1Moves) {
-                gameStore.end = 'p1 timeout';
-                gameStore.winner = gameStore.p2;
-              }
-              else if(!p2Moves) {
-                gameStore.end = 'p2 timeout';
+            console.log('GAME ENDED');
+            if(gameState.winner) {
+              if(gameState.winner == 'a') {
+                console.log('Client 1 wins');
                 gameStore.winner = gameStore.p1;
               }
+              else if(gameState.winner == 'b') {
+                console.log('Client 2 wins');
+                gameStore.winner = gameStore.p2;
+              }
+              else
+                console.log('Tie');
             }
-
             processes.forEach(function(process) {
               process.kill();
               gameStarted = false;
               ready = 0;
               gameStore.save();
             });
-          }, 2000);
-        }
+          }
+          else {
+            p1Moves = null;
+            p2Moves = null;
+            processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+            processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+
+            timeout = setTimeout(function() {
+              if(gameStore.end === 'elegant') {
+                if(!p1Moves && !p2Moves) {
+                  gameStore.end = 'p1 and p2 timeout';
+                }
+                else if(!p1Moves) {
+                  gameStore.end = 'p1 timeout';
+                  gameStore.winner = gameStore.p2;
+                }
+                else if(!p2Moves) {
+                  gameStore.end = 'p2 timeout';
+                  gameStore.winner = gameStore.p1;
+                }
+              }
+
+              processes.forEach(function(process) {
+                process.kill();
+                gameStarted = false;
+                ready = 0;
+                gameStore.save();
+              });
+            }, 2000);
+          }
+        });
       }
     });
   });
