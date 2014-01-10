@@ -1,0 +1,12 @@
+extends layout
+block head
+  script(src='/scripts/upload.js')
+block content
+  h1 SDW Bot-Wars
+  h2 Update Your Bot
+  h2#logout
+    a(href='/logout') Log Out
+  h2#back
+    a(href='/') &#x25C0; Back
+  input#bot-file(type='file')
+  p.success Successfully Uploaded

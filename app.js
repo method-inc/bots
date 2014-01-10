@@ -114,6 +114,9 @@ app.get('/tournament/:id', function(req, res) {
     }
   });
 });
+app.get('/bot', function(req, res) {
+  res.render('bot')
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
