@@ -84,4 +84,4 @@ Bots should be written in Node or Ruby.
 
 [Example Ruby bot](/bots/rubybot.rb)
 
-[Example Node bot](/bots/nodebot.rb)
+[Example Node bot](/bots/nodebot.js)
