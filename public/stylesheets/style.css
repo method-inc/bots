@@ -1,16 +1,11 @@
 body {
-  font-family: helvetica;
+  font-family: "museo-sans" sans-serif;
   text-align: center;
-  margin: 0;
+  margin: 50px 0;
 }
 ul {
   text-align: center;
   padding: 0;
-}
-li {
-  text-decoration: none;
-  display: inline-block;
-  padding: 10px;
 }
 li.selected {
   background-color: #f00;
@@ -29,6 +24,83 @@ a {
 }
 .hidden {
   display: none;
+}
+h1,
+h2,
+h3 {
+  font-style: italic;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+h2 {
+  color: #d3d3d3;
+  font-size: 20px;
+}
+#logout {
+  color: #d3d3d3;
+  margin: 0;
+  position: absolute;
+  right: 50px;
+  top: 60px;
+}
+.howto {
+  width: 600px;
+  margin: auto;
+  color: #a9a9a9;
+}
+p,
+li,
+ol {
+  text-align: left;
+  list-style-type: decimal;
+}
+.examples {
+  margin: auto;
+  width: 175px;
+}
+.examples.json {
+  text-align: left;
+  width: 300px;
+}
+pre {
+  border: 1px solid #d3d3d3;
+  margin: 5px;
+  padding: 5px;
+}
+#path-select {
+  width: 1000px;
+  margin: auto;
+}
+#path-select .choice {
+  display: inline-block;
+  margin: 50px;
+}
+#update-bot .icon {
+  width: 200px;
+  height: 240px;
+  background: url("/images/botHead.png") no-repeat 0 0;
+  background-size: 100%;
+}
+#update-bot .icon:hover {
+  background-position: 0 -240px;
+}
+#view-tournament .icon {
+  width: 300px;
+  height: 299px;
+  background: url("/images/bracket.png") no-repeat 0 0;
+  background-size: 100%;
+}
+#view-tournament .icon:hover {
+  background-position: 0 -299px;
+}
+#view-history .icon {
+  width: 200px;
+  height: 176px;
+  background: url("/images/history.png") no-repeat 0 0;
+  background-size: 100%;
+}
+#view-history .icon:hover {
+  background-position: 0 -178px;
 }
 .g_gracket {
   width: 9999px;

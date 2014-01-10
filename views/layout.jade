@@ -1,12 +1,13 @@
 doctype 5
 html
   head
+    script(type='text/javascript' src='//use.typekit.net/bvy1xid.js')
+    script(type='text/javascript').
+      try{Typekit.load();}catch(e){}
     script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js')
     script(src='/socket.io/socket.io.js')
     link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
     title aliens
     block head
   body
-    p Logged in as #{email} 
-      a(href='/logout') (log out)
     block content

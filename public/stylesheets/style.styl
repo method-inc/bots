@@ -1,14 +1,10 @@
 body
-  font-family helvetica
+  font-family "museo-sans" sans-serif
   text-align center
-  margin 0
+  margin 50px 0
 ul
   text-align center
   padding 0
-li
-  text-decoration none
-  display inline-block
-  padding 10px
 li.selected
   background-color red
 canvas
@@ -22,14 +18,101 @@ a
   color #87ceeb
 .hidden
   display none
-.g_gracket { width: 9999px; background-color: #fff; padding: 55px 15px 5px; line-height: 100%; position: relative; overflow: hidden;}
-.g_round { float: left; margin-right: 70px; }
-.g_game { position: relative; margin-bottom: 15px; min-width: 150px; }
-.g_gracket h3 { margin: 0; padding: 10px 8px 8px; font-size: 18px; font-weight: normal; color: #fff}
-.g_team { background: #CC0000; }
-.g_team:last-child {  background: #0033CC; }
-.g_round:last-child { margin-right: 20px; }
-.g_winner { background: #444; }
-.g_winner .g_team { background: none; }
-.g_current { cursor: pointer; background: purple!important; }
-.g_round_label { top: -5px; font-weight: normal; color: #CCC; text-align: center; font-size: 18px; }
+h1, h2, h3
+  font-style italic
+  font-weight 900
+  text-transform uppercase
+h2
+  color lightgrey
+  font-size 20px
+#logout
+  color lightgrey
+  margin 0
+  position absolute
+  right 50px
+  top 60px
+.howto
+  width 600px
+  margin auto
+  color darkgrey
+p, li, ol
+  text-align left
+  list-style-type decimal
+.examples
+  margin auto
+  width 175px
+  &.json
+    text-align left
+    width 300px
+pre
+  border 1px solid lightgrey
+  margin 5px
+  padding 5px
+
+#path-select
+  width 1000px
+  margin auto
+  .choice
+    display inline-block
+    margin 50px
+#update-bot .icon
+  width 200px
+  height 240px
+  background url('/images/botHead.png') no-repeat 0 0
+  background-size 100%
+  &:hover
+    background-position 0 -240px
+#view-tournament .icon
+  width 300px
+  height 299px
+  background url('/images/bracket.png') no-repeat 0 0
+  background-size 100%
+  &:hover
+    background-position 0 -299px
+#view-history .icon
+  width 200px
+  height 176px
+  background url('/images/history.png') no-repeat 0 0
+  background-size 100%
+  &:hover
+    background-position 0 -178px
+
+.g_gracket
+  width 9999px
+  background-color #fff
+  padding 55px 15px 5px
+  line-height 100%
+  position relative
+  overflow hidden
+.g_round
+  float left
+  margin-right 70px
+.g_game
+  position relative
+  margin-bottom 15px
+  min-width 150px
+.g_gracket h3
+  margin 0
+  padding 10px 8px 8px
+  font-size 18px
+  font-weight normal
+  color #fff
+.g_team
+  background #CC0000
+.g_team:last-child
+   background #0033CC
+.g_round:last-child
+  margin-right 20px
+.g_winner
+  background #444
+.g_winner .g_team
+  background none
+.g_current
+  cursor pointer
+  background purple!important
+.g_round_label
+  top -5px
+  font-weight normal
+  color #CCC
+  text-align center
+  font-size 18px

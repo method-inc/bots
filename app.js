@@ -485,10 +485,3 @@ function nextGame(tournament, round, gameNum) {
     });
   });
 }
-
-var now = new Date().valueOf();
-var runDate = new Date(now+30000);
-console.log('start');
-var task = schedule.scheduleJob(runDate, function() {
-  console.log('thirty seconds after start');
-});
