@@ -10,7 +10,7 @@ ul {
 li.selected {
   background-color: #f00;
 }
-canvas {
+canvas#game {
   border: 1px solid #000;
   margin: auto;
   display: block;
