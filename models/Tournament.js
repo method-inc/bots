@@ -4,7 +4,8 @@ var Schema = mongoose.Schema;
 module.exports = mongoose.model('Tournament', new Schema({
   games: { type: Array },
   nextGame: { },
-  winner: { type: String }
+  winner: { type: String },
+  createdAt: { type: Date, default: Date.now }
 }));
 
 // model.games[n-1]: list of games for round n

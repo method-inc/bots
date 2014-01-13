@@ -110,9 +110,16 @@ pre {
   background-position: 0 -178px;
 }
 .success {
+  width: 600px;
+  margin: auto;
   display: none;
   color: #008000;
-  text-align: center;
+}
+.error {
+  width: 600px;
+  margin: auto;
+  display: none;
+  color: #f00;
 }
 .g_gracket {
   width: 9999px;

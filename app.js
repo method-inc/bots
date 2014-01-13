@@ -89,9 +89,7 @@ app.get('/', function(req, res) {
     res.redirect('/auth/google');
   }
   else {
-    var isAdmin = false;
-    if(admins.indexOf(req.user.email) !== -1) isAdmin = true;
-    res.render('index', {email:req.user.email, admin:isAdmin});
+    res.render('index', {email:req.user.email});
   }
 });
 app.get('/game/:id', function(req, res) {
@@ -100,9 +98,22 @@ app.get('/game/:id', function(req, res) {
       res.render('game', {id:req.params.id});
     }
     else {
-      console.log('no game');
+      res.redirect('/history');
     }
   });
+});
+app.get('/tournament', function(req, res) {
+  Tournament
+    .findOne({})
+    .sort('-createdAt')
+    .exec(function(err, tournament) {
+      if(tournament) {
+        res.redirect('/tournament/'+tournament.id);
+      }
+      else {
+        res.redirect('/');
+      }
+    });
 });
 app.get('/tournament/:id', function(req, res) {
   Tournament.findById(req.params.id, function(err, tournament) {
@@ -111,11 +122,18 @@ app.get('/tournament/:id', function(req, res) {
     }
     else {
       console.log('no tournament');
+      res.redirect('/');
     }
   });
 });
 app.get('/bot', function(req, res) {
   res.render('bot')
+});
+app.get('/starttournament', function(req, res) {
+  if(admins.indexOf(req.user.email) !== -1) {
+    organizeTournament();
+  }
+  res.redirect('/');
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
@@ -157,15 +175,41 @@ io.sockets.on('connection', function (socket) {
         user.bot.body = bot;
         console.log('user bot: ' + bot);
         user.save(function() {
-          sendBots();
+          // confirm bot doesn't crash/timeout
+          fs.writeFile(botsDir + 'test', user.bot.body, function(err) {
+            var crashed = false;
+            var child = childProcess.exec(user.bot.lang + ' ' + botsDir+'test', function (error, stdout, stderr) {
+              if (error) {
+                if(error.code === 143 || error.signal === 'SIGTERM') {
+                  console.log('bot did not crash');
+                }
+                else {
+                  socket.emit('crash', stderr);
+                  crashed = true;
+                }
+              }
+            });
+            child.stdin.write(JSON.stringify({player:'a', state:{rows:5,cols:10,p1:{food:0, spawn:11},p2:{food:0, spawn:38},grid:'...........a..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
+            
+            var timeout = setTimeout(function() {
+              child.kill();
+              if(!crashed) {
+                socket.emit('timeout');
+              }
+            }, 2000);
+            child.stdout.on('data', function(data) {
+              socket.emit('success');
+              clearTimeout(timeout);
+              child.kill();
+            });
+          });
         });
       }
     });
   });
 
   viewers.push(socket);
-  sendBots();
-  sendGames();
+
   socket.on('start', function(data) {
     var bots = [];
     var processes = [];
@@ -207,13 +251,6 @@ io.sockets.on('connection', function (socket) {
           socket.emit('game', turn);
         });
       }
-    });
-  });
-
-  socket.on('tournament', function() {
-    User.find({bot: { $exists: true } }, 'email', function(err, users) {
-      console.log('users playing:');
-      console.log(users);
     });
   });
 
