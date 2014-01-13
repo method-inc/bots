@@ -375,8 +375,10 @@ function startGame(processes, gameStore, cb) {
                 console.log('Client 2 wins');
                 gameStore.winner = gameStore.p2;
               }
-              else
+              else {
                 console.log('Tie');
+                gameStore.winner = gameStore.p1; // TEMPORARY, until we decide on how to resolve ties in tournaments
+              }
             }
             processes.forEach(function(process) {
               process.kill();
