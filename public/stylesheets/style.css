@@ -114,6 +114,7 @@ pre {
   margin: auto;
   display: none;
   color: #008000;
+  text-align: center;
 }
 .error {
   width: 600px;

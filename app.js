@@ -186,6 +186,8 @@ io.sockets.on('connection', function (socket) {
                 else {
                   socket.emit('crash', stderr);
                   crashed = true;
+                  user.bot = undefined;
+                  user.save();
                 }
               }
             });
@@ -195,6 +197,8 @@ io.sockets.on('connection', function (socket) {
               child.kill();
               if(!crashed) {
                 socket.emit('timeout');
+                user.bot = undefined
+                user.save();
               }
             }, 2000);
             child.stdout.on('data', function(data) {
@@ -254,27 +258,6 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
-  function startBot(lang, path, processes, gameStore, bot) {
-    console.log('starting ' + lang + ' bot: ' + path);
-    var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
-      if (error) {
-        if(error.code === 143 || error.signal === 'SIGTERM') {
-          console.log('bot did not crash');
-        }
-        else {
-          console.log('bot crashed');
-          gameStore.end = bot + ' crashed.';
-          if(gameStore.p1 === bot) gameStore.winner = gameStore.p2;
-          else gameStore.winner = gameStore.p1;
-          gameStore.save();
-          processes.forEach(function(p) {p.kill()});
-          processes = [];
-        }
-      }
-    });
-    processes.push(child);
-  }
-
   function sendBots() {
     User.find({bot: { $exists: true } }, function(err, users) {
       var toSend = [];
@@ -307,7 +290,27 @@ function parseSessionCookie(cookie, sid, secret) {
   return parsed[sid] || null;
 }
 
-function startGame(processes, gameStore) {
+function startBot(lang, path, processes, gameStore, bot) {
+  console.log('starting ' + lang + ' bot: ' + path);
+  var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
+    if (error) {
+      if(error.code === 143 || error.signal === 'SIGTERM') {
+        console.log('bot did not crash');
+      }
+      else {
+        console.log('bot crashed');
+        gameStore.end = bot + ' crashed.';
+        if(gameStore.p1 === bot) gameStore.winner = gameStore.p2;
+        else gameStore.winner = gameStore.p1;
+        gameStore.save();
+        processes.forEach(function(p) {p.kill()});
+        processes = [];
+      }
+    }
+  });
+  processes.push(child);
+}
+function startGame(processes, gameStore, cb) {
   var gameState = game.create(20, 20, 100);
   var p1Moves = null;
   var p2Moves = null;
@@ -334,6 +337,7 @@ function startGame(processes, gameStore) {
       ready = 0;
       gameStore.save();
     });
+    cb();
   }, 2000);
 
   processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
@@ -380,6 +384,7 @@ function startGame(processes, gameStore) {
               ready = 0;
               gameStore.save();
             });
+            cb();
           }
           else {
             p1Moves = null;
@@ -408,6 +413,7 @@ function startGame(processes, gameStore) {
                 ready = 0;
                 gameStore.save();
               });
+              cb();
             }, 2000);
           }
         });
@@ -417,12 +423,19 @@ function startGame(processes, gameStore) {
 }
 
 function organizeTournament() {
-  var players = ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7', 'p8', 'p9'];
-  var round = 1;
-  console.log('starting tournament with ' + players.length + ' players');
-  var tournament = new Tournament();
-  console.log(tournament.id);
-  tournamentRound(tournament, round, players, []);
+  User.find({bot: { $exists: true } }, function(err, users) {
+    var players = [];
+    users.forEach(function(user) {
+      players.push(user.email);
+    });
+    var round = 1;
+    console.log('starting tournament with ' + players.length + ' players');
+    if(players.length > 1) {
+      var tournament = new Tournament();
+      console.log(tournament.id);
+      tournamentRound(tournament, round, players, []);
+    }
+  });
 }
 function tournamentRound(tournament, round, players, assigned) {
   if(players.length > 1) {
@@ -477,46 +490,57 @@ function nextGame(tournament, round, gameNum) {
     GameStore.findById(gameDetails.id, function(err, game) {
       if(game) {
         if(game.p1 && game.p2) {
-          // temporary
-          var winner;
-          var i = ~~(Math.random()*2);
-          if(i) winner = game.p1;
-          else winner = game.p2;
+          var fileNumber = 1;
+          var processes = [];
+          [game.p1, game.p2].forEach(function(email) {
+            User.findOne({email:email}, function(err, user) {
+              if(user && user.bot) {
+                var dir = botsDir + 'user'+fileNumber;
+                fileNumber++;
+                fs.writeFile(dir, user.bot.body, function(err) {
+                  console.log('bot saved to ' + dir);
+                  startBot(user.bot.lang, dir, processes, game, email);
+                  if(processes.length >= 2) startGame(processes, game, function() {
+                    var winner = game.winner;
 
-          var winnerGame;
-          if(round+1 < tournament.games.length) {
-            var nextRound = round+1;
-            var nextGameNum = ~~(gameNum/2);
-            var nextRoundGame = tournament.games[nextRound][nextGameNum];
-            var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
-            GameStore.findById(nextRoundGame.id, function(err, game) {
-              if(nextRoundPlayer) {
-                game.p1 = winner;
-                tournament.games[nextRound][nextGameNum].p1 = winner;
+                    if(round+1 < tournament.games.length) {
+                      var nextRound = round+1;
+                      var nextGameNum = ~~(gameNum/2);
+                      var nextRoundGame = tournament.games[nextRound][nextGameNum];
+                      var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
+                      GameStore.findById(nextRoundGame.id, function(err, game) {
+                        if(nextRoundPlayer) {
+                          game.p1 = winner;
+                          tournament.games[nextRound][nextGameNum].p1 = winner;
+                        }
+                        else {
+                          game.p2 = winner;
+                          tournament.games[nextRound][nextGameNum].p2 = winner;
+                        }
+                        game.save();
+                        tournament.markModified('games');
+                        tournament.save();
+                      });
+                    }
+
+                    gameNum++;
+                    if(tournament.games[round].length === gameNum) {
+                      gameNum = 0;
+                      round++;
+                    }
+                    if(tournament.games.length === round) {
+                      console.log('tournament done');
+                      tournament.winner = winner;
+                      tournament.save();
+                    }
+                    else {
+                      nextGame(tournament, round, gameNum);
+                    }
+                  });
+                });
               }
-              else {
-                game.p2 = winner;
-                tournament.games[nextRound][nextGameNum].p2 = winner;
-              }
-              game.save();
-              tournament.markModified('games');
-              tournament.save();
             });
-          }
-
-          gameNum++;
-          if(tournament.games[round].length === gameNum) {
-            gameNum = 0;
-            round++;
-          }
-          if(tournament.games.length === round) {
-            console.log('tournament done');
-            tournament.winner = winner;
-            tournament.save();
-          }
-          else {
-            nextGame(tournament, round, gameNum);
-          }
+          });
         }
         else {
           console.log('p1 or p2 is missing');
