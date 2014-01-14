@@ -45,26 +45,26 @@ $(document).on('click', '#animate-game', function(e) {
     animateNextTurn();
   }
 });
-$(document).on('click', '#forward', function(e) {
+$(document).on('click', '.forward', function(e) {
   currentDisplayed++;
   if(currentDisplayed < 0) currentDisplayed = 0;
   else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
   showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
-$(document).on('click', '#back', function(e) {
+$(document).on('click', '.back', function(e) {
   currentDisplayed--;
   if(currentDisplayed < 0) currentDisplayed = 0;
   else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
   showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
-$(document).on('click', '#beginning', function(e) {
+$(document).on('click', '.beginning', function(e) {
   currentDisplayed = 0;
   showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
-$(document).on('click', '#end', function(e) {
+$(document).on('click', '.end', function(e) {
   currentDisplayed = gameTurns.length-1;
   showTurn(gameTurns[currentDisplayed]);
   updateRound();
