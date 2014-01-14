@@ -11,7 +11,6 @@ window.onload = function() {
   ctx=c.getContext('2d');
   turnSpeed = 1000-$('#turn-speed').val();
   var gameId = $('#game-id').html();
-  console.log('showing ' + gameId);
   socket.emit('show', {id:gameId});
 }
 
@@ -22,45 +21,12 @@ socket.on('message', function(data) {
 });
 socket.on('game', function(data) {
   gameTurns.push(data);
-  $('#turns').append('<li turn='+turn+'>'+turn+'</li>');
   showTurn(data);
-  $('li.selected').removeClass('selected');
-  $('li[turn='+turn+']').addClass('selected');
   currentDisplayed = turn;
   turn++;
-});
-socket.on('game-data', function(data) {
-  console.log(data);
-  $('#game-title').html(data.p1 + ' (red) vs. ' + data.p2 + ' (blue)');
-
-  var winnerText = '';
-  if(data.end === 'elegant') {
-    if(data.winner) {
-      winnerText = 'winner: ' + data.winner;
-    }
-    else {
-      winnerText = 'tie'
-    }
-  }
-  else {
-    if(data.winner) {
-      winnerText = 'winner: ' + data.winner + ' (' + data.end + ')';
-    }
-    else {
-      winnerText = 'tie (' + data.end + ')';
-    }
-  }
-  $('#game-winner').html(winnerText);
+  updateRound();
 });
 
-$(document).on('click', 'li', function(e) {
-  console.log('li clicked');
-  var i = ~~$(this).attr('turn');
-  showTurn(gameTurns[i]);
-  currentDisplayed = i;
-  $('li.selected').removeClass('selected');
-  $('li[turn='+i+']').addClass('selected');
-});
 $(document).keydown(function(e) {
   if (e.keyCode === 37) {
     currentDisplayed--;
@@ -71,8 +37,7 @@ $(document).keydown(function(e) {
   if(currentDisplayed < 0) currentDisplayed = 0;
   else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
   showTurn(gameTurns[currentDisplayed]);
-  $('li.selected').removeClass('selected');
-  $('li[turn='+currentDisplayed+']').addClass('selected');
+  updateRound();
 });
 $(document).on('click', '#animate-game', function(e) {
   if(gameTurns.length) {
@@ -80,15 +45,35 @@ $(document).on('click', '#animate-game', function(e) {
     animateNextTurn();
   }
 });
-$(document).on('change', '#turn-speed', function(e) {
-  turnSpeed = 1000-$('#turn-speed').val();
+$(document).on('click', '#forward', function(e) {
+  currentDisplayed++;
+  if(currentDisplayed < 0) currentDisplayed = 0;
+  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
+  showTurn(gameTurns[currentDisplayed]);
+  updateRound();
+});
+$(document).on('click', '#back', function(e) {
+  currentDisplayed--;
+  if(currentDisplayed < 0) currentDisplayed = 0;
+  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
+  showTurn(gameTurns[currentDisplayed]);
+  updateRound();
+});
+$(document).on('click', '#beginning', function(e) {
+  currentDisplayed = 0;
+  showTurn(gameTurns[currentDisplayed]);
+  updateRound();
+});
+$(document).on('click', '#end', function(e) {
+  currentDisplayed = gameTurns.length-1;
+  showTurn(gameTurns[currentDisplayed]);
+  updateRound();
 });
 
 function animateNextTurn() {
   setTimeout(function() {
     showTurn(gameTurns[currentDisplayed]);
-    $('li.selected').removeClass('selected');
-    $('li[turn='+currentDisplayed+']').addClass('selected');
+    updateRound();
     currentDisplayed++;
     if(currentDisplayed >= gameTurns.length) {
       currentDisplayed = gameTurns.length-1;
@@ -99,12 +84,17 @@ function animateNextTurn() {
   }, turnSpeed);
 }
 
+function updateRound() {
+  $('#turn .current').html(currentDisplayed+1);
+  $('#turn .total').html(gameTurns.length);
+}
+
 function resetGame() {
   gameTurns = [];
   currentDisplayed = 0;
   turn = 0;
-  $('#turns li').remove();
   ctx.clearRect (0, 0, c.width, c.height);
+  updateRound();
 }
 
 function showTurn(state) {
@@ -142,6 +132,8 @@ function showTurn(state) {
     ctx.fill();
   }
 
+  var p1Headcount = 0;
+  var p2Headcount = 0;
   for(var i=0; i<state.grid.length; i++) {
     var gridId = state.grid[i];
     if(gridId !== '.') {
@@ -151,12 +143,14 @@ function showTurn(state) {
 
       switch(gridId) {
         case 'a':
+          p1Headcount++;
           ctx.fillStyle = 'red';
           ctx.beginPath();
           ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
           ctx.fill();
           break;
         case 'b':
+          p2Headcount++;
           ctx.fillStyle = 'blue';
           ctx.beginPath();
           ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
@@ -188,6 +182,10 @@ function showTurn(state) {
       }
     }
   }
+  $('#p1 .headcount').html(p1Headcount);
+  $('#p2 .headcount').html(p2Headcount);
+  $('#p1 .energyconsumed').html(state.p1.food);
+  $('#p2 .energyconsumed').html(state.p2.food);
 }
 
 function indexToCoord(state, index) {

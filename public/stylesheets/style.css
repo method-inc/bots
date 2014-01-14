@@ -3,21 +3,6 @@ body {
   text-align: center;
   margin: 50px 0;
 }
-ul {
-  text-align: center;
-  padding: 0;
-}
-li.selected {
-  background-color: #f00;
-}
-canvas#game {
-  border: 1px solid #000;
-  margin: auto;
-  display: block;
-}
-#animate-game {
-  margin-right: 10px;
-}
 a {
   text-decoration: none;
   color: #87ceeb;
@@ -121,6 +106,96 @@ pre {
   margin: auto;
   display: none;
   color: #f00;
+}
+#game-wrapper {
+  width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+#game-wrapper br {
+  clear: both;
+}
+canvas#game {
+  border: 1px solid #000;
+  margin: 20px 75px;
+  float: left;
+}
+#p1,
+#p2 {
+  float: left;
+  width: 170px;
+}
+#p1 h2,
+#p2 h2 {
+  color: #000;
+}
+#p1 h3,
+#p2 h3 {
+  color: #d3d3d3;
+  font-size: 16px;
+}
+#p1 img,
+#p2 img {
+  width: 150px;
+  border-radius: 50%;
+  border: 5px solid;
+}
+#p1 .headcount {
+  color: #f00;
+}
+#p1 img {
+  border-color: #f00;
+}
+#p2 .headcount {
+  color: #00f;
+}
+#p2 img {
+  border-color: #00f;
+}
+#playback {
+  width: 1000px;
+  margin: auto;
+  padding: 10px;
+  text-align: center;
+}
+#animate-game {
+  float: left;
+}
+#animate-game .icon {
+  margin: auto;
+  background: url("/images/iconSprite.png") no-repeat -23px -26px;
+  background-size: 426px;
+  width: 42px;
+  height: 47px;
+}
+#controls div,
+#controls h3 {
+  display: inline-block;
+  margin: 0 20px;
+}
+#beginning {
+  background: url("/images/iconSprite.png") no-repeat -146px -14px;
+  background-size: 426px;
+  width: 40px;
+  height: 23px;
+}
+#end {
+  background: url("/images/iconSprite.png") no-repeat -291px -14px;
+  background-size: 426px;
+  width: 40px;
+  height: 23px;
+}
+#forward {
+  background: url("/images/iconSprite.png") no-repeat -250px -14px;
+  background-size: 426px;
+  width: 20px;
+  height: 23px;
+}
+#back {
+  background: url("/images/iconSprite.png") no-repeat -207px -14px;
+  background-size: 426px;
+  width: 20px;
+  height: 23px;
 }
 .g_gracket {
   width: 9999px;

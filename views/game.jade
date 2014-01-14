@@ -3,12 +3,43 @@ block head
   script(src='/scripts/game.js')
 block content
   div#game-id.hidden #{id}
-  button#animate-game animate game
-  span slow
-  input#turn-speed(type='range', min='0', max='950')
-  span fast
 
-  h1#game-title
+  h1 SDW Bot-Wars
+  h2#logout
+    a(href='/logout') Log Out
+  h2#back
+    a(href='/') &#x25C0; Back
+  h2#game-title
   h2#game-winner
-  canvas#game(width=500, height=500)
-  ul#turns
+
+  div#game-wrapper
+    div#p1
+      img(src='#{p1.picture}')
+      h2 #{p1.name}
+      h2.headcount 0
+      h3 Headcount
+      h2.energyconsumed 0
+      h3 Energy Consumed
+    canvas#game(width=500, height=500)
+    div#p2
+      img(src='#{p2.picture}')
+      h2 #{p2.name}
+      h2.headcount 0
+      h3 Headcount
+      h2.energyconsumed 0
+      h3 Energy Consumed
+    br
+
+  div#playback
+    div#animate-game
+      div.icon
+      h3 Animate
+    div#controls
+      div#beginning
+      div#back
+      h3#turn Turn 
+        span.current 0
+        |/
+        span.total 0
+      div#forward
+      div#end

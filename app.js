@@ -95,7 +95,13 @@ app.get('/', function(req, res) {
 app.get('/game/:id', function(req, res) {
   GameStore.findById(req.params.id, function(err, game) {
     if(game) {
-      res.render('game', {id:req.params.id});
+      User.find({
+        'email': { $in: [game.p1, game.p2]}
+      }, function(err, users) {
+        var p1 = { name:users[0].name, picture:users[0].picture };
+        var p2 = { name:users[1].name, picture:users[1].picture };
+        res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner});
+      });
     }
     else {
       res.redirect('/history');
