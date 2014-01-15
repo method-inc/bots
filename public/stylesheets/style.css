@@ -197,6 +197,31 @@ canvas#game {
   width: 20px;
   height: 23px;
 }
+.gamelist {
+  width: 600px;
+  margin: auto;
+}
+.gamelist a {
+  display: block;
+  color: #d3d3d3;
+  border-top: 1px solid #d3d3d3;
+  padding: 5px;
+}
+.gamelist a:first-child {
+  border-top: none;
+}
+.gamelist a:hover {
+  color: #000;
+}
+.gamelist .desc {
+  float: left;
+}
+.gamelist .time {
+  float: right;
+}
+.gamelist br {
+  clear: both;
+}
 .g_gracket {
   width: 9999px;
   background-color: #fff;

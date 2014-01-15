@@ -1,0 +1,20 @@
+extends layout
+block head
+  script(src='/scripts/game.js')
+block content
+  div#game-id.hidden #{id}
+
+  h1 SDW Bot-Wars
+  h2#logout
+    a(href='/logout') Log Out
+  h2#back
+    a(href='/') &#x25C0; Back
+  h2 Past Matches
+  div.gamelist
+    -for(var i=0; i<games.length; i++)
+      -var game = games[i];
+      a(href='/game/#{game.id}').game
+        div.desc #{game.description}
+        -var date = (game.time.getMonth()+1)+'/'+game.time.getDate()+'/'+game.time.getFullYear();
+        div.time #{date} &#x25B6;
+        br

@@ -92,6 +92,44 @@ app.get('/', function(req, res) {
     res.render('index', {email:req.user.email});
   }
 });
+app.get('/history', function(req, res) {
+  GameStore
+    .find({finished:true})
+    .sort('-finishedAt')
+    .exec(function(err, games) {
+      var gamesList = [];
+
+      games.forEach(function(game, i) {
+        User.find({
+          'email': { $in: [game.p1, game.p2]}
+        }, function(err, users) {
+          var p1 = users[0].name;
+          var p2 = users[1].name;
+          var description = '';
+          if(game.winner === game.p1) {
+            description = p1 + ' defeated ' + p2;
+          }
+          else if(game.winner === game.p2) {
+            description = p2 + ' defeated ' + p1;
+          }
+          else {
+            description = 'Tie between ' + p1 + ' and ' + p2
+          }
+          gamesList.push(
+            {
+              id:game.id,
+              description:description,
+              time:game.finishedAt
+            }
+          );
+
+          if(gamesList.length===games.length) {
+            res.render('gameslist', {games:gamesList});
+          }
+        });
+      });
+    });
+});
 app.get('/game/:id', function(req, res) {
   GameStore.findById(req.params.id, function(err, game) {
     if(game) {
@@ -385,6 +423,9 @@ function startGame(processes, gameStore, cb) {
                 console.log('Tie');
                 gameStore.winner = gameStore.p1; // TEMPORARY, until we decide on how to resolve ties in tournaments
               }
+
+              gameStore.finished = true;
+              gameStore.finishedAt = Date.now();
             }
             processes.forEach(function(process) {
               process.kill();
