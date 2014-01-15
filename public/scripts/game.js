@@ -4,14 +4,16 @@ var turn = 0;
 var socket = io.connect(window.location.hostname);
 var c;
 var ctx;
-var turnSpeed = 1000;
+var turnSpeed = 100;
+var energyImage;
 
 window.onload = function() {
   c=document.getElementById('game');
   ctx=c.getContext('2d');
-  turnSpeed = 1000-$('#turn-speed').val();
   var gameId = $('#game-id').html();
   socket.emit('show', {id:gameId});
+  energyImage = new Image();
+  energyImage.src = '/images/iconSprite.png';
 }
 
 socket.on('message', function(data) {
@@ -157,10 +159,7 @@ function showTurn(state) {
           ctx.fill();
           break;
         case '*':
-          ctx.fillStyle = 'brown';
-          ctx.beginPath();
-          ctx.arc(x, y, coordWidth/4, 0, 2*Math.PI);
-          ctx.fill();
+          ctx.drawImage(energyImage, 679, 51, 94, 94, x-coordWidth/2, y-coordHeight/2, coordWidth, coordHeight);
           break;
         case 'x':
           ctx.fillStyle = 'grey';
