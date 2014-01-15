@@ -109,14 +109,28 @@ canvas#game
     border 5px solid
 #p1
   .headcount
-    color red
+    color #F26140
+  .energyconsumed
+    color lightgrey
   img
-    border-color red
+    border-color #F26140
+  h3
+    margin 0
 #p2
   .headcount
-    color blue
+    color #6EA1D7
+  .energyconsumed
+    color lightgrey
   img
-    border-color blue
+    border-color #6EA1D7
+  h3
+    margin 0
+.energyconsumed
+  font-size 32px
+  margin 20px 0 0 0
+.headcount
+  font-size 72px
+  margin 0
 #playback
   width 1000px
   margin auto
@@ -124,6 +138,7 @@ canvas#game
   text-align center
 #animate-game
   float left
+  margin-left 50px
   .icon
     margin auto
     background url('/images/iconSprite.png') no-repeat -23px -26px
@@ -131,29 +146,44 @@ canvas#game
     width 42px
     height 47px
 #controls
+  width 650px
+  margin auto
   div, h3
     display inline-block
     margin 0 20px
   .beginning
-    background url('/images/iconSprite.png') no-repeat -146px -14px
+    background url('/images/iconSprite.png') no-repeat -146px -62px
     background-size 426px
     width 40px
     height 23px
+    &:hover
+      background-position -146px -14px
   .end
-    background url('/images/iconSprite.png') no-repeat -291px -14px
+    background url('/images/iconSprite.png') no-repeat -291px -62px
     background-size 426px
     width 40px
     height 23px
+    &:hover
+      background-position -291px -14px
   .forward
-    background url('/images/iconSprite.png') no-repeat -250px -14px
+    background url('/images/iconSprite.png') no-repeat -250px -62px
     background-size 426px
     width 20px
     height 23px
+    &:hover
+      background-position -250px -14px
   .back
-    background url('/images/iconSprite.png') no-repeat -207px -14px
+    background url('/images/iconSprite.png') no-repeat -207px -62px
     background-size 426px
     width 20px
     height 23px
+    &:hover
+      background-position -207px -14px
+  #turn
+    width 170px
+    .current
+      font-size 32px
+      margin-left 5px
 
 .gamelist
   width 600px

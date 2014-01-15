@@ -141,16 +141,36 @@ canvas#game {
   border: 5px solid;
 }
 #p1 .headcount {
-  color: #f00;
+  color: #f26140;
+}
+#p1 .energyconsumed {
+  color: #d3d3d3;
 }
 #p1 img {
-  border-color: #f00;
+  border-color: #f26140;
+}
+#p1 h3 {
+  margin: 0;
 }
 #p2 .headcount {
-  color: #00f;
+  color: #6ea1d7;
+}
+#p2 .energyconsumed {
+  color: #d3d3d3;
 }
 #p2 img {
-  border-color: #00f;
+  border-color: #6ea1d7;
+}
+#p2 h3 {
+  margin: 0;
+}
+.energyconsumed {
+  font-size: 32px;
+  margin: 20px 0 0 0;
+}
+.headcount {
+  font-size: 72px;
+  margin: 0;
 }
 #playback {
   width: 1000px;
@@ -160,6 +180,7 @@ canvas#game {
 }
 #animate-game {
   float: left;
+  margin-left: 50px;
 }
 #animate-game .icon {
   margin: auto;
@@ -168,34 +189,57 @@ canvas#game {
   width: 42px;
   height: 47px;
 }
+#controls {
+  width: 650px;
+  margin: auto;
+}
 #controls div,
 #controls h3 {
   display: inline-block;
   margin: 0 20px;
 }
 #controls .beginning {
-  background: url("/images/iconSprite.png") no-repeat -146px -14px;
+  background: url("/images/iconSprite.png") no-repeat -146px -62px;
   background-size: 426px;
   width: 40px;
   height: 23px;
+}
+#controls .beginning:hover {
+  background-position: -146px -14px;
 }
 #controls .end {
-  background: url("/images/iconSprite.png") no-repeat -291px -14px;
+  background: url("/images/iconSprite.png") no-repeat -291px -62px;
   background-size: 426px;
   width: 40px;
   height: 23px;
 }
+#controls .end:hover {
+  background-position: -291px -14px;
+}
 #controls .forward {
-  background: url("/images/iconSprite.png") no-repeat -250px -14px;
+  background: url("/images/iconSprite.png") no-repeat -250px -62px;
   background-size: 426px;
   width: 20px;
   height: 23px;
 }
+#controls .forward:hover {
+  background-position: -250px -14px;
+}
 #controls .back {
-  background: url("/images/iconSprite.png") no-repeat -207px -14px;
+  background: url("/images/iconSprite.png") no-repeat -207px -62px;
   background-size: 426px;
   width: 20px;
   height: 23px;
+}
+#controls .back:hover {
+  background-position: -207px -14px;
+}
+#controls #turn {
+  width: 170px;
+}
+#controls #turn .current {
+  font-size: 32px;
+  margin-left: 5px;
 }
 .gamelist {
   width: 600px;

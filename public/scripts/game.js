@@ -119,7 +119,7 @@ function showTurn(state) {
   }
   if(!state.p1.spawnDisabled) {
     var p1Spawn = indexToCoord(state, state.p1.spawn);
-    ctx.fillStyle = 'rgba(255, 0, 0, 0.25)';
+    ctx.fillStyle = 'rgba(242, 97, 64, 0.5)';
     ctx.beginPath();
     ctx.rect(p1Spawn.x*coordWidth, p1Spawn.y*coordHeight, coordWidth, coordHeight);
     ctx.fill();
@@ -127,7 +127,7 @@ function showTurn(state) {
   if(!state.p2.spawnDisabled) {
     var p2Spawn = indexToCoord(state, state.p2.spawn);
     ctx.beginPath();
-    ctx.fillStyle = 'rgba(0, 0, 255, 0.25)';
+    ctx.fillStyle = 'rgba(110, 161, 215, 0.5)';
     ctx.rect(p2Spawn.x*coordWidth, p2Spawn.y*coordHeight, coordWidth, coordHeight);
     ctx.fill();
   }
@@ -144,14 +144,14 @@ function showTurn(state) {
       switch(gridId) {
         case 'a':
           p1Headcount++;
-          ctx.fillStyle = 'red';
+          ctx.fillStyle = '#F26140';
           ctx.beginPath();
           ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
           ctx.fill();
           break;
         case 'b':
           p2Headcount++;
-          ctx.fillStyle = 'blue';
+          ctx.fillStyle = '#6EA1D7';
           ctx.beginPath();
           ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
           ctx.fill();
