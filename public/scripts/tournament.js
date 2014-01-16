@@ -46,4 +46,5 @@ $(document).ready(function() {
   $('.g_game:not(.g_winner)').each(function(i) {
     $(this).wrap('<a href="/game/' + games[i] + '""></a>');
   });
+  $('.bracket').draggable({axis:'x'});
 });

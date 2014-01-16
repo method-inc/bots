@@ -273,7 +273,15 @@ canvas#game {
 .gamelist br {
   clear: both;
 }
+.bracket-wrapper {
+  width: 1000px;
+  margin: auto;
+  border: 1px solid #000;
+  overflow: hidden;
+}
 .g_gracket {
+  cursor: move;
+  font-family: helvetica;
   width: 9999px;
   background-color: #fff;
   padding: 55px 15px 5px;
@@ -288,7 +296,6 @@ canvas#game {
 .g_game {
   position: relative;
   margin-bottom: 15px;
-  min-width: 150px;
 }
 .g_gracket h3 {
   margin: 0;
@@ -298,10 +305,10 @@ canvas#game {
   color: #fff;
 }
 .g_team {
-  background: #c00;
+  background: #f26140;
 }
 .g_team:last-child {
-  background: #03c;
+  background: #6ea1d7;
 }
 .g_round:last-child {
   margin-right: 20px;
@@ -314,7 +321,7 @@ canvas#game {
 }
 .g_current {
   cursor: pointer;
-  background: #800080 !important;
+  background: #a9a9a9 !important;
 }
 .g_round_label {
   top: -5px;

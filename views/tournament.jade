@@ -3,9 +3,17 @@ block head
   script.
     var tournament = !{JSON.stringify(tournament)};
   script(src='/libs/jquery.gracket.min.js')
+  script(src='/libs/jqueryuicustom.js')
   script(src='/scripts/tournament.js')
 block content
-  - var nextGame = tournament.games[tournament.nextGame.round][tournament.nextGame.game];
-  - var time = (tournament.nextGame.time.getHours()+11)%12+1 + ':' + tournament.nextGame.time.getMinutes() + ':' + tournament.nextGame.time.getSeconds();
-  h2 Next game: #{nextGame.p1} vs. #{nextGame.p2}, scheduled for #{time}
-  div.bracket
+  h1 SDW Bot-Wars
+  h2#logout
+    a(href='/logout') Log Out
+  h2#back
+    a(href='/') &#x25C0; Back
+  -if(!tournament.winner)
+    - var nextGame = tournament.games[tournament.nextGame.round][tournament.nextGame.game];
+    - var time = (tournament.nextGame.time.getHours()+11)%12+1 + ':' + tournament.nextGame.time.getMinutes() + ':' + tournament.nextGame.time.getSeconds();
+    h2 Next game: #{nextGame.p1} vs. #{nextGame.p2}, scheduled for #{time}
+  div.bracket-wrapper
+    div.bracket

@@ -209,7 +209,14 @@ canvas#game
   & br
     clear both
 
+.bracket-wrapper
+  width 1000px
+  margin auto
+  border 1px solid black
+  overflow hidden
 .g_gracket
+  cursor move
+  font-family helvetica
   width 9999px
   background-color #fff
   padding 55px 15px 5px
@@ -222,7 +229,6 @@ canvas#game
 .g_game
   position relative
   margin-bottom 15px
-  min-width 150px
 .g_gracket h3
   margin 0
   padding 10px 8px 8px
@@ -230,9 +236,9 @@ canvas#game
   font-weight normal
   color #fff
 .g_team
-  background #CC0000
+  background #F26140
 .g_team:last-child
-   background #0033CC
+   background #6EA1D7
 .g_round:last-child
   margin-right 20px
 .g_winner
@@ -241,7 +247,7 @@ canvas#game
   background none
 .g_current
   cursor pointer
-  background purple!important
+  background darkgrey!important
 .g_round_label
   top -5px
   font-weight normal
