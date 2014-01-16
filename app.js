@@ -208,6 +208,22 @@ app.get('/starttournament', function(req, res) {
   }
   res.redirect('/');
 });
+app.get('/nodebot', function(req, res) {
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    res.render('code', {url:'https://gist.github.com/mobyvb/2deb33878983c95745cd.js', title:'Node Bot'});
+  }
+});
+app.get('/rubybot', function(req, res) {
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    res.render('code', {url:'https://gist.github.com/mobyvb/b617ac2d5725b9cd9ea7.js', title:'Ruby Bot'});
+  }
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
