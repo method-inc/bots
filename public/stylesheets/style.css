@@ -51,6 +51,7 @@ li,
 ol {
   text-align: left;
   list-style-type: decimal;
+  line-height: 1.5em;
 }
 .examples {
   margin: auto;
