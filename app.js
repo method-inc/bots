@@ -20,7 +20,7 @@ var fs = require('fs')
 var usersById = {};
 var nextUserId = 0;
 var usersByGoogleId = {};
-var admins = ['mbriesen@skookum.com'];
+var admins = ['mbriesen@skookum.com', 'eric@skookum.com'];
 
 everyauth.everymodule
   .findUserById( function (req, id, callback) {
