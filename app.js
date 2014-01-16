@@ -450,7 +450,10 @@ function startGame(processes, gameStore, cb) {
               }
               else {
                 console.log('Tie');
-                gameStore.winner = gameStore.p1; // TEMPORARY, until we decide on how to resolve ties in tournaments
+                // TEMPORARY, until we decide on how to resolve ties in tournaments
+                var i = ~~(Math.random()*2);
+                if(i) gameStore.winner = gameStore.p1;
+                else gameStore.winner = gameStore.p2;
               }
 
               gameStore.finished = true;
