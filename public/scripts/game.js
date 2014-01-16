@@ -27,6 +27,7 @@ socket.on('game', function(data) {
   currentDisplayed = turn;
   turn++;
   updateRound();
+  $('.data-received').hide();
 });
 
 $(document).keydown(function(e) {

@@ -17,19 +17,23 @@ window.onload = function() {
 socket.on('crash', function(data) {
   $('.error').html('your bot crashed: ' + data);
   $('.error').show();
+  $('.waiting').hide();
 });
 socket.on('timeout', function() {
   $('.error').html('your bot did not respond within two seconds of receiving a game state');
   $('.error').show();
+  $('.waiting').hide();
 })
 socket.on('success', function() {
   $('.success').show();
+  $('.waiting').hide();
 });
 
 function upload() {
   console.log('uploading bot');
   $('.success').hide();
   $('.error').hide();
+  $('.waiting').show();
   if (file) {
     var reader = new FileReader();
     reader.onload = function(e) {

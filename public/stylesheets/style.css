@@ -108,6 +108,12 @@ pre {
   color: #008000;
   text-align: center;
 }
+.waiting {
+  width: 600px;
+  margin: auto;
+  display: none;
+  text-align: center;
+}
 .error {
   width: 600px;
   margin: auto;
