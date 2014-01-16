@@ -13,9 +13,11 @@ block content
     a(href='/') &#x25C0; Back
   -if(!tournament.winner)
     - var nextGame = tournament.games[tournament.nextGame.round][tournament.nextGame.game];
-    - var hours = ('00'+((tournament.nextGame.time.getHours()+11)%12+1)).slice(-2);
-    - var minutes = ('00'+tournament.nextGame.time.getMinutes()).slice(-2);
-    - var seconds = ('00'+tournament.nextGame.time.getSeconds()).slice(-2);
+    - var estOffset = tournament.nextGame.time.getTimezoneOffset()-300;
+    - var estTime = new Date(tournament.nextGame.time.getTime() + 60000*estOffset);
+    - var hours = ('00'+((estTime.getHours()+11)%12+1)).slice(-2);
+    - var minutes = ('00'+estTime.getMinutes()).slice(-2);
+    - var seconds = ('00'+estTime.getSeconds()).slice(-2);
     - var time = hours + ':' + minutes + ':' + seconds;
     h2 Next game: #{nextGame.p1} vs. #{nextGame.p2}, scheduled for #{time}
   div.bracket-wrapper
