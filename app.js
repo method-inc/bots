@@ -93,7 +93,11 @@ app.get('/', function(req, res) {
   }
 });
 app.get('/history', function(req, res) {
-  GameStore
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    GameStore
     .find({finished:true})
     .sort('-finishedAt')
     .exec(function(err, games) {
@@ -133,25 +137,35 @@ app.get('/history', function(req, res) {
         res.render('gameslist', {games:[]});
       }
     });
+  }
 });
 app.get('/game/:id', function(req, res) {
-  GameStore.findById(req.params.id, function(err, game) {
-    if(game) {
-      User.find({
-        'email': { $in: [game.p1, game.p2]}
-      }, function(err, users) {
-        var p1 = { name:users[0].name, picture:users[0].picture };
-        var p2 = { name:users[1].name, picture:users[1].picture };
-        res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner});
-      });
-    }
-    else {
-      res.redirect('/history');
-    }
-  });
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    GameStore.findById(req.params.id, function(err, game) {
+      if(game) {
+        User.find({
+          'email': { $in: [game.p1, game.p2]}
+        }, function(err, users) {
+          var p1 = { name:users[0].name, picture:users[0].picture };
+          var p2 = { name:users[1].name, picture:users[1].picture };
+          res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner});
+        });
+      }
+      else {
+        res.redirect('/history');
+      }
+    });
+  }
 });
 app.get('/tournament', function(req, res) {
-  Tournament
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    Tournament
     .findOne({})
     .sort('-createdAt')
     .exec(function(err, tournament) {
@@ -162,23 +176,34 @@ app.get('/tournament', function(req, res) {
         res.redirect('/');
       }
     });
+  }
 });
 app.get('/tournament/:id', function(req, res) {
-  Tournament.findById(req.params.id, function(err, tournament) {
-    if(tournament) {
-      res.render('tournament', {tournament:tournament});
-    }
-    else {
-      console.log('no tournament');
-      res.redirect('/');
-    }
-  });
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    Tournament.findById(req.params.id, function(err, tournament) {
+      if(tournament) {
+        res.render('tournament', {tournament:tournament});
+      }
+      else {
+        console.log('no tournament');
+        res.redirect('/');
+      }
+    });
+  }
 });
 app.get('/bot', function(req, res) {
-  res.render('bot')
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    res.render('bot')
+  }
 });
 app.get('/starttournament', function(req, res) {
-  if(admins.indexOf(req.user.email) !== -1) {
+  if(req.user && admins.indexOf(req.user.email) !== -1) {
     organizeTournament();
   }
   res.redirect('/');
