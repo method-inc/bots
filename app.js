@@ -467,9 +467,23 @@ function startGame(processes, gameStore, cb) {
               else {
                 console.log('Tie');
                 // TEMPORARY, until we decide on how to resolve ties in tournaments
-                var i = ~~(Math.random()*2);
-                if(i) gameStore.winner = gameStore.p1;
-                else gameStore.winner = gameStore.p2;
+                var p1Headcount = 0;
+                var p2Headcount = 0;
+                for(var i=0; i<gameState.grid.length; i++) {
+                  if(gameState.grid[i] === 'a') p1Headcount++;
+                  else if(gameState.grid[i] === 'b') p2Headcount++;
+                }
+                if(p1Headcount > p2Headcount) {
+                  gameStore.winner = gameStore.p1;
+                }
+                else if(p2Headcount > p1Headcount) {
+                  gameStore.winner = gameStore.p2;
+                }
+                else {
+                  var i = ~~(Math.random()*2);
+                  if(i) gameStore.winner = gameStore.p1;
+                  else gameStore.winner = gameStore.p2;
+                }
               }
 
               gameStore.finished = true;
