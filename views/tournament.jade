@@ -13,7 +13,10 @@ block content
     a(href='/') &#x25C0; Back
   -if(!tournament.winner)
     - var nextGame = tournament.games[tournament.nextGame.round][tournament.nextGame.game];
-    - var time = (tournament.nextGame.time.getHours()+11)%12+1 + ':' + tournament.nextGame.time.getMinutes() + ':' + tournament.nextGame.time.getSeconds();
+    - var hours = ('00'+((tournament.nextGame.time.getHours()+11)%12+1)).slice(-2);
+    - var minutes = ('00'+tournament.nextGame.time.getMinutes()).slice(-2);
+    - var seconds = ('00'+tournament.nextGame.time.getSeconds()).slice(-2);
+    - var time = hours + ':' + minutes + ':' + seconds;
     h2 Next game: #{nextGame.p1} vs. #{nextGame.p2}, scheduled for #{time}
   div.bracket-wrapper
     div.bracket
