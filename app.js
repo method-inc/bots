@@ -86,7 +86,7 @@ mongoose.connect(uristring);
 
 app.get('/', function(req, res) {
   if(!req.user) {
-    res.redirect('/auth/google');
+    res.render('loggedout');
   }
   else {
     res.render('index', {email:req.user.email});
