@@ -578,7 +578,7 @@ function startTournament(tournament) {
 }
 function nextGame(tournament, round, gameNum) {
   var now = new Date().valueOf();
-  var scheduleDate = new Date(now+30000);
+  var scheduleDate = new Date(now+300000);
   tournament.nextGame = {time:scheduleDate, round:round, game:gameNum};
   tournament.save();
 
