@@ -13,9 +13,17 @@ var fs = require('fs')
   , botsDir = __dirname + '/bots/'
   , User = require('./models/User.js')
   , GameStore = require('./models/Game.js')
+  , md = require("node-markdown").Markdown
+  , instructions = __dirname + '/README.md'
   , Tournament = require('./models/Tournament.js')
   , app = express()
   , uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/aliens';
+
+var instructionData = "";
+fs.readFile(instructions, function (err, data) {
+  if (err) throw err;
+  instructionData = data;
+});
 
 var usersById = {};
 var nextUserId = 0;
@@ -89,7 +97,7 @@ app.get('/', function(req, res) {
     res.render('loggedout');
   }
   else {
-    res.render('index', {email:req.user.email});
+    res.render('index', {email:req.user.email, md: md, instructions: instructionData.toString()});
   }
 });
 app.get('/history', function(req, res) {
@@ -212,7 +220,7 @@ app.get('/starttournament', function(req, res) {
   }
   res.redirect('/');
 });
-app.get('/nodebot', function(req, res) {
+app.get('/bots/nodebot.js', function(req, res) {
   if(!req.user) {
     res.redirect('/');
   }
@@ -220,7 +228,7 @@ app.get('/nodebot', function(req, res) {
     res.render('code', {url:'https://gist.github.com/mobyvb/2deb33878983c95745cd.js', title:'Node Bot'});
   }
 });
-app.get('/rubybot', function(req, res) {
+app.get('/bots/rubybot.rb', function(req, res) {
   if(!req.user) {
     res.redirect('/');
   }

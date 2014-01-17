@@ -22,7 +22,8 @@
     "stylus" : "*",
     "jade" : "*",
     "everyauth" : "*",
-    "node-schedule" : "*"
+    "node-schedule" : "*",
+    "node-markdown" : "*"
   },
   "license": "MIT",
   "engines": {

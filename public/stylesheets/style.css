@@ -63,8 +63,10 @@ ol {
 }
 pre {
   border: 1px solid #d3d3d3;
-  margin: 5px;
   padding: 5px;
+  margin: auto;
+  width: 300px;
+  text-align: left;
 }
 #path-select {
   width: 1000px;
