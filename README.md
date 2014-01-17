@@ -1,5 +1,5 @@
 # History
-The year is 3015. Earth is no longer the paradise it once was. The rain forests are just a myth. The ocreans are foul and slick with oil. Potable water has become the main form of currency - and war. Humans no longer live in cities, but in small urban tribal commbotleties. They battle one another, but their biggest fear is the Bots. Humans no longer ponder the meaning of life or when it all began. They know the Singularity is the beginning - and the end.
+The year is 3015. Earth is no longer the paradise it once was. The rain forests are just a myth. The ocreans are foul and slick with oil. Potable water has become the main form of currency - and war. Humans no longer live in cities, but in small urban tribal communities. They battle one another, but their biggest fear is the Bots. Humans no longer ponder the meaning of life or when it all began. They know the Singularity is the beginning - and the end.
 
 Something has changed though. The Bots evolved into something wholly unexpected - they developed emotions. In juxaposition to the humans who turned from primal emotions into sentient beings, the Bots have tured from sentient beings into entities driven by emotion.
 
