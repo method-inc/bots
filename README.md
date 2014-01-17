@@ -1,5 +1,5 @@
 # History
-The year is 3015. Earth is no longer the paradise it once was. The rain forests are just a myth. The ocreans are foul and slick with oil. Potable water has become the main form of currency - and war. Humans no longer live in cities, but in small urban tribal communities. They battle one another, but their biggest fear is the Bots. Humans no longer ponder the meaning of life or when it all began. They know the Singularity is the beginning - and the end.
+The year is 3015. Earth is no longer the paradise it once was. The rain forests are just a myth. The oceans are foul and slick with oil. Potable water has become the main form of currency - and war. Humans no longer live in cities, but in small urban tribal communities. They battle one another, but their biggest fear is the Bots. Humans no longer ponder the meaning of life or when it all began. They know the Singularity is the beginning - and the end.
 
 Something has changed though. The Bots evolved into something wholly unexpected - they developed emotions. In juxaposition to the humans who turned from primal emotions into sentient beings, the Bots have tured from sentient beings into entities driven by emotion.
 
@@ -16,7 +16,7 @@ Go to `http://localhost:3000` in your browser.
 
 Log in with a Google account and upload your bot as you would normally, by using the `/bot` route.
 
-Go to the `/test` route to run test matches. In the dropdown menus, you can choose the bots to compete. Click the "new game" button to start and view the match.
+Go to the `/test` route to run test matches. In the dropdown menus, you can choose the bots to compete. Click the "new game" button to start and view the match. **Note the ```/test``` route can only be used on localhost - not on the production site**
 
 # Game Rules
 
