@@ -97,6 +97,7 @@ app.get('/history', function(req, res) {
     res.redirect('/');
   }
   else {
+    req.session.prevpage = '/history';
     GameStore
     .find({finished:true})
     .sort('-finishedAt')
@@ -146,12 +147,14 @@ app.get('/game/:id', function(req, res) {
   else {
     GameStore.findById(req.params.id, function(err, game) {
       if(game) {
+        var prevpage = req.session.prevpage;
+        req.session.prevpage = '';
         User.find({
           'email': { $in: [game.p1, game.p2]}
         }, function(err, users) {
           var p1 = { name:users[0].name, picture:users[0].picture };
           var p2 = { name:users[1].name, picture:users[1].picture };
-          res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner});
+          res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner, prevpage:prevpage});
         });
       }
       else {
@@ -183,6 +186,7 @@ app.get('/tournament/:id', function(req, res) {
     res.redirect('/');
   }
   else {
+    req.session.prevpage = '/tournament/' + req.params.id;
     Tournament.findById(req.params.id, function(err, tournament) {
       if(tournament) {
         res.render('tournament', {tournament:tournament});
