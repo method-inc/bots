@@ -1,0 +1,32 @@
+extends layout
+block head
+  script(src='/scripts/test.js')
+block content
+  h1 SDW Bot-Wars
+  h2#logout
+    a(href='/logout') Log Out
+  h2#back
+    a(href='/') &#x25C0; Back
+
+  form
+    select#botlist1
+    label vs
+    select#botlist2
+    button#newgame new game
+
+  div#game-wrapper
+    canvas#game.test(width=500, height=500)
+
+  div#playback
+    div#animate-game
+      div.icon
+      h3 Animate
+    div#controls
+      div.beginning
+      div.back
+      h3#turn Turn 
+        span.current 0
+        |/
+        span.total 0
+      div.forward
+      div.end

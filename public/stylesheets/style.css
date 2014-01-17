@@ -135,6 +135,9 @@ canvas#game {
   margin: 20px 75px;
   float: left;
 }
+canvas#game.test {
+  float: none;
+}
 #p1,
 #p2 {
   float: left;

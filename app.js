@@ -236,6 +236,14 @@ app.get('/bots/rubybot.rb', function(req, res) {
     res.render('code', {url:'https://gist.github.com/mobyvb/b617ac2d5725b9cd9ea7.js', title:'Ruby Bot'});
   }
 });
+app.get('/test', function(req, res) {
+  if(!process.env.HEROKU) {
+    res.render('test');
+  }
+  else {
+    res.redirect('/');
+  }
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
@@ -332,19 +340,28 @@ io.sockets.on('connection', function (socket) {
           fs.writeFile(dir, user.bot.body, function(err) {
             console.log('bot saved to ' + dir);
             startBot(user.bot.lang, dir, processes, gameStore, botName);
-            if(processes.length >= 2) startGame(processes, gameStore);
+            if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
           });
         }
         else if(botName === 'nodebot') {
           startBot('node', nodeBot, processes, gameStore, botName);
-          if(processes.length >= 2) startGame(processes, gameStore);
+          if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
         }
         else if(botName === 'rubybot') {
           startBot('ruby', rubyBot, processes, gameStore, botName);
-          if(processes.length >= 2) startGame(processes, gameStore);
+          if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
         }
       });
     });
+
+    function sendTurns() {
+      GameStore.findById(gameStore.id, function(err, game) {
+        socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
+        game.turns.forEach(function(turn) {
+          socket.emit('game', turn);
+        });
+      });
+    }
   });
 
   socket.on('show', function(data) {
@@ -359,6 +376,10 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  socket.on('getbots', function() {
+    sendBots();
+  });
+
   function sendBots() {
     User.find({bot: { $exists: true } }, function(err, users) {
       var toSend = [];
@@ -367,6 +388,7 @@ io.sockets.on('connection', function (socket) {
       users.forEach(function(user) {
         toSend.push({name:user.email});
       });
+      console.log('sending bots '+ toSend);
       socket.emit('bots', toSend);
     });
   }
@@ -507,7 +529,7 @@ function startGame(processes, gameStore, cb) {
               ready = 0;
               gameStore.save();
             });
-            cb();
+            if(cb) cb();
           }
           else {
             p1Moves = null;
