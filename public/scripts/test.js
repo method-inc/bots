@@ -103,7 +103,10 @@ function animateNextTurn() {
 
 function updateRound() {
   $('#turn .current').html(currentDisplayed);
-  $('#turn .total').html(gameTurns.length-1);
+  if(gameTurns.length)
+    $('#turn .total').html(gameTurns.length-1);
+  else
+    $('#turn .total').html(0);
 }
 
 function resetGame() {

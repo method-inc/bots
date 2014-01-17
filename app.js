@@ -332,6 +332,8 @@ io.sockets.on('connection', function (socket) {
     gameStore.p1 = data.bot1;
     gameStore.p2 = data.bot2;
 
+    socket.emit('message', 'new');
+
     [data.bot1, data.bot2].forEach(function(botName) {
       User.findOne({email:botName}, function(err, user) {
         if(user && user.bot) {
@@ -365,7 +367,6 @@ io.sockets.on('connection', function (socket) {
   });
 
   socket.on('show', function(data) {
-    socket.emit('message', 'new');
     GameStore.findById(data.id, function(err, game) {
       if(game) {
         socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});

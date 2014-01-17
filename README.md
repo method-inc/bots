@@ -8,9 +8,15 @@ These emotion driven Bots no longer work towards the same goals and war has brok
 # Testing your bot
 After cloning the repo run `npm install`
 
-In order to set up the server, run `node app.js` in your terminal.
+In order to set up the database server, run `mongod` in your terminal.
+
+In order to set up the web server, run `node app.js` in another tab of your terminal.
 
 Go to `http://localhost:3000` in your browser.
+
+Log in with a Google account and upload your bot as you would normally, by using the `/bot` route.
+
+Go to the `/test` route to run test matches. In the dropdown menus, you can choose the bots to compete. Click the "new game" button to start and view the match.
 
 # Game Rules
 
