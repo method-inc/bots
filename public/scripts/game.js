@@ -195,8 +195,8 @@ function showTurn(state) {
   }
   $('#p1 .headcount').html(p1Headcount);
   $('#p2 .headcount').html(p2Headcount);
-  $('#p1 .energyconsumed').html(state.p1.food);
-  $('#p2 .energyconsumed').html(state.p2.food);
+  $('#p1 .energyconsumed').html(state.p1.energy);
+  $('#p2 .energyconsumed').html(state.p2.energy);
 }
 
 function indexToCoord(state, index) {

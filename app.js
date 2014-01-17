@@ -300,7 +300,7 @@ io.sockets.on('connection', function (socket) {
                 }
               }
             });
-            child.stdin.write(JSON.stringify({player:'r', state:{rows:5,cols:10,p1:{food:0, spawn:11},p2:{food:0, spawn:38},grid:'...........r..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
+            child.stdin.write(JSON.stringify({player:'r', state:{rows:5,cols:10,p1:{energy:0, spawn:11},p2:{energy:0, spawn:38},grid:'...........r..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
             
             var timeout = setTimeout(function() {
               child.kill();

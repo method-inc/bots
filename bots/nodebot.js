@@ -5,26 +5,26 @@ process.stdin.on('data', function(data) {
 });
 
 function getMoves(state, player) {
-  var food;
+  var energy;
   var spawn;
-  var enemyFood;
+  var enemyenergy;
   var enemySpawn;
   var playerIndices;
   var enemyIndices;
   var moves = [];
 
   if(player === 'r') {
-    food = state.p1.food;
+    energy = state.p1.energy;
     spawn = state.p1.spawn;
-    enemyFood = state.p2.food;
+    enemyenergy = state.p2.energy;
     enemySpawn = state.p2.spawn;
     playerIndices = getAllIndices(state.grid, 'r');
     enemyIndices = getAllIndices(state.grid, 'b');
   }
   else {
-    food = state.p2.food;
+    energy = state.p2.energy;
     spawn = state.p2.spawn;
-    enemyFood = state.p1.food;
+    enemyenergy = state.p1.energy;
     enemySpawn = state.p1.spawn;
     playerIndices = getAllIndices(state.grid, 'b');
     enemyIndices = getAllIndices(state.grid, 'r');

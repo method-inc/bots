@@ -85,11 +85,11 @@ This is an example of the game state that will be passed to each bot:
       "rows": 4,
       "cols": 4,
       "p1": {
-        "food": 0,
+        "energy": 0,
         "spawn": 5
       },
       "p2": {
-        "food": 0,
+        "energy": 0,
         "spawn": 10
       },
       "grid": ".....r....b.....",
@@ -98,7 +98,7 @@ This is an example of the game state that will be passed to each bot:
       },
       "player": "a"
 
-Where "player" represents which side the bot is playing as, and is either "a" or "b". p1.spawn and p2.spawn represent the indices of their respective bots' spawn points on the grid string. p1.food and p2.food represent the amount of energy each bot currently has. 
+Where "player" represents which side the bot is playing as, and is either "a" or "b". p1.spawn and p2.spawn represent the indices of their respective bots' spawn points on the grid string. p1.energy and p2.energy represent the amount of energy each bot currently has. 
 
 ## The Grid
 

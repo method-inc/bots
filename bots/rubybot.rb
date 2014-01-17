@@ -5,16 +5,16 @@ def get_moves(state, player)
   moves = Array.new
 
   if player == 'r'
-    food = state["p1"]["food"]
+    energy = state["p1"]["energy"]
     spawn = state["p1"]["spawn"]
-    enemy_food = state["p2"]["food"]
+    enemy_energy = state["p2"]["energy"]
     enemy_spawn = state["p2"]["spawn"]
     player_indices = get_all_indices(state["grid"], 'r')
     enemy_indices = get_all_indices(state["grid"], 'b')
   else
-    food = state["p2"]["food"]
+    energy = state["p2"]["energy"]
     spawn = state["p2"]["spawn"]
-    enemy_food = state["p1"]["food"]
+    enemy_energy = state["p1"]["energy"]
     enemy_spawn = state["p1"]["spawn"]
     player_indices = get_all_indices(state["grid"], 'b')
     enemy_indices = get_all_indices(state["grid"], 'r')

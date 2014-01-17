@@ -4,14 +4,14 @@ var gridIds = {
   player1:'r',
   player2:'b',
   dead:'x',
-  food:'*',
+  energy:'*',
   empty:'.'
 };
 var distance = {
   move:1,
   raze:1,
   attack:1,
-  food:0,
+  energy:0,
   spawn:1
 };
 var spawnFrequency = 3;
@@ -25,11 +25,11 @@ exports.create = function(rows, cols, maxTurns) {
   };
 
   gameState.p1 = {
-    food:1,
+    energy:1,
     spawn:coordToIndex(gameState, {x:1,y:1})
   };
   gameState.p2 = {
-    food:1,
+    energy:1,
     spawn:coordToIndex(gameState, {x:cols-2,y:rows-2})
   };
   gameState.grid = makeEmptyGrid(gameState.rows, gameState.cols);
@@ -157,21 +157,21 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   }
 
   // spawn
-  if(!state.p1.spawnDisabled && state.p1.food > 0 && state.grid[state.p1.spawn] === gridIds.empty) {
-    state.p1.food -= 1;
+  if(!state.p1.spawnDisabled && state.p1.energy > 0 && state.grid[state.p1.spawn] === gridIds.empty) {
+    state.p1.energy -= 1;
     setIndex(state, state.p1.spawn, gridIds.player1);
   }
-  if(!state.p2.spawnDisabled && state.p2.food > 0 && state.grid[state.p2.spawn] === gridIds.empty) {
-    state.p2.food -= 1;
+  if(!state.p2.spawnDisabled && state.p2.energy > 0 && state.grid[state.p2.spawn] === gridIds.empty) {
+    state.p2.energy -= 1;
     setIndex(state, state.p2.spawn, gridIds.player2);
   }
 
   // gather
-  var food = getAllIndices(state.grid, '\\'+gridIds.food);
-  food.forEach(function(foodIndex) {
+  var energy = getAllIndices(state.grid, '\\'+gridIds.energy);
+  energy.forEach(function(energyIndex) {
     var surroundingP1 = 0;
     var surroundingP2 = 0;
-    getAdjacentIndices(state, foodIndex).forEach(function(adjIndex) {
+    getAdjacentIndices(state, energyIndex).forEach(function(adjIndex) {
       if(state.grid[adjIndex]===gridIds.player1) {
         surroundingP1++;
       }
@@ -180,19 +180,19 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
       }
     });
     if(surroundingP1 && surroundingP2) {
-      setIndex(state, foodIndex, gridIds.empty);
+      setIndex(state, energyIndex, gridIds.empty);
     }
     else if(surroundingP1) {
-      setIndex(state, foodIndex, gridIds.empty);
-      state.p1.food++;
+      setIndex(state, energyIndex, gridIds.empty);
+      state.p1.energy++;
     }
     else if(surroundingP2) {
-      setIndex(state, foodIndex, gridIds.empty);
-      state.p2.food++;
+      setIndex(state, energyIndex, gridIds.empty);
+      state.p2.energy++;
     }
   });
 
-  // spawn food
+  // spawn energy
   if(!testing && state.turnsElapsed%spawnFrequency===0) {
     var generateNum = state.rows*state.cols/50;
     var allEmptyIndices = getAllIndices(state.grid, gridIds.empty);
@@ -208,8 +208,8 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
     if(available.length) {
       var randomIndex = available[Math.floor(Math.random()*available.length)];
       var mirroredIndex = getMirroredIndex(state, randomIndex);
-      setIndex(state, randomIndex, gridIds.food);
-      setIndex(state, mirroredIndex, gridIds.food);
+      setIndex(state, randomIndex, gridIds.energy);
+      setIndex(state, mirroredIndex, gridIds.energy);
     }
   }
 
