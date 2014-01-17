@@ -42,6 +42,8 @@ The order actions are carried out in each turn is as follows:
 5. If any units are adjacent to energy, that energy is consumed and the respective player's energy is incremented by one. If opposing units are adjacent to the same energy, the energy is removed and neither player gets it
 6. If a sufficient number of turns have passed since the last energy was spawned (3), two more are randomly but symmetrically spawned on the field
 
+The game ends when either one bot's units are completely eliminated or when the turn limit (100 turns) has been reached. If the turn limit is reached, the player with more units on the field is declared the winner.
+
 Communication between the game and the bots is established using standard input and output. For every turn, the two bots are given the current game state as JSON. Each bot is expected to respond with moves within two seconds. If a bot doesn't respond within two seconds, it is disqualified.
 
 This is an example of the game state that will be passed to each bot:
