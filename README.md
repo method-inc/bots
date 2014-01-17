@@ -32,6 +32,7 @@ The goal is to eliminate all botlets of the opponent bot's color. If botlets of 
 + In the event of a battle, the botlet with the most opposing botlets adjacent will die. 
 + If both botlets involved in a battle have the same number of opposing botlets adjacent, both will die.
 + If two botlets (regardless of color) move to the same position, both will die. 
++ The 'x' represents a dead bot but it is essentially an empty space. You can move to it.
 
 Here are some examples, where 'r' represents a red botlet, 'b' represents a blue botlet, '.' represents an empty space, and 'x' represents a dead botlet:
 
@@ -96,9 +97,9 @@ This is an example of the game state that will be passed to each bot:
         "maxTurns": 20,
         "turnsElapsed": 0
       },
-      "player": "a"
+      "player": "r"
 
-Where "player" represents which side the bot is playing as, and is either "a" or "b". p1.spawn and p2.spawn represent the indices of their respective bots' spawn points on the grid string. p1.energy and p2.energy represent the amount of energy each bot currently has. 
+Where "player" represents which side the bot is playing as, and is either "r" or "b". p1.spawn and p2.spawn represent the indices of their respective bots' spawn points on the grid string. p1.energy and p2.energy represent the amount of energy each bot currently has. 
 
 ## The Grid
 
