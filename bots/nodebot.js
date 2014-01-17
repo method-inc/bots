@@ -13,12 +13,12 @@ function getMoves(state, player) {
   var enemyIndices;
   var moves = [];
 
-  if(player === 'a') {
+  if(player === 'r') {
     food = state.p1.food;
     spawn = state.p1.spawn;
     enemyFood = state.p2.food;
     enemySpawn = state.p2.spawn;
-    playerIndices = getAllIndices(state.grid, 'a');
+    playerIndices = getAllIndices(state.grid, 'r');
     enemyIndices = getAllIndices(state.grid, 'b');
   }
   else {
@@ -27,7 +27,7 @@ function getMoves(state, player) {
     enemyFood = state.p1.food;
     enemySpawn = state.p1.spawn;
     playerIndices = getAllIndices(state.grid, 'b');
-    enemyIndices = getAllIndices(state.grid, 'a');
+    enemyIndices = getAllIndices(state.grid, 'r');
   }
 
   playerIndices.forEach(function(playerIndex) {

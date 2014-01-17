@@ -300,7 +300,7 @@ io.sockets.on('connection', function (socket) {
                 }
               }
             });
-            child.stdin.write(JSON.stringify({player:'a', state:{rows:5,cols:10,p1:{food:0, spawn:11},p2:{food:0, spawn:38},grid:'...........a..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
+            child.stdin.write(JSON.stringify({player:'r', state:{rows:5,cols:10,p1:{food:0, spawn:11},p2:{food:0, spawn:38},grid:'...........r..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
             
             var timeout = setTimeout(function() {
               child.kill();
@@ -464,7 +464,7 @@ function startGame(processes, gameStore, cb) {
     cb();
   }, 2000);
 
-  processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+  processes[0].stdin.write(JSON.stringify({player:'r', state:gameState})+'\n');
   processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
   gameStore.turns.push(gameState);
@@ -535,7 +535,7 @@ function startGame(processes, gameStore, cb) {
           else {
             p1Moves = null;
             p2Moves = null;
-            processes[0].stdin.write(JSON.stringify({player:'a', state:gameState})+'\n');
+            processes[0].stdin.write(JSON.stringify({player:'r', state:gameState})+'\n');
             processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
 
             timeout = setTimeout(function() {

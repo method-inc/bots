@@ -33,33 +33,33 @@ The goal is to eliminate all botlets of the opponent bot's color. If botlets of 
 + If both botlets involved in a battle have the same number of opposing botlets adjacent, both will die.
 + If two botlets (regardless of color) move to the same position, both will die. 
 
-Here are some examples, where 'a' represents a red botlet, 'b' represents a blue botlet, '.' represents an empty space, and 'x' represents a dead botlet:
+Here are some examples, where 'r' represents a red botlet, 'b' represents a blue botlet, '.' represents an empty space, and 'x' represents a dead botlet:
 
 Same number of botlets
 
     .....     .....
-    .ab..  >  .xx..
+    .rb..  >  .xx..
     .....     .....
 
 Two vs. 1
 
     .....     .....
-    .aba.  >  .axa.
+    .rbr.  >  .rxr.
     .....     .....
 
 Multiple battles
 
-    ...ab     ...xx
-    .aba.  >  .axx.
+    ...rb     ...xx
+    .rbr.  >  .rxx.
     ...b.     ...b.
 
 
 More battles
 
-    ...ab.     ...xb.
-    .bab..  >  .bxx..
-    .bab..     .bxx..
-    ...ab.     ...xb.
+    ...rb.     ...xb.
+    .brb..  >  .bxx..
+    .brb..     .bxx..
+    ...rb.     ...xb.
     
 ## Spawn Razing
 If a botlet moves onto an opposing bot's spawn, that spawn is razed and no more botlets can be produced for the opposing bot.
@@ -92,7 +92,7 @@ This is an example of the game state that will be passed to each bot:
         "food": 0,
         "spawn": 10
       },
-      "grid": ".....a....b.....",
+      "grid": ".....r....b.....",
         "maxTurns": 20,
         "turnsElapsed": 0
       },
@@ -105,7 +105,7 @@ Where "player" represents which side the bot is playing as, and is either "a" or
 The grid is a string where each character represents a space on the grid. 
 
 + The grid's dimensions are provided as "rows" and "cols". 
-+ On the grid, p1 botlets are identified by "a", p2 botlets are identified by "b"
++ On the grid, p1 botlets are identified by "r", p2 botlets are identified by "b"
 + Energy is identified by "\*"
 + Empty space is identified by "."
 + Botlets killed in the previous turn are identified by "x".

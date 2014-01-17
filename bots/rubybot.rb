@@ -4,12 +4,12 @@ STDOUT.sync = true
 def get_moves(state, player)
   moves = Array.new
 
-  if player == 'a'
+  if player == 'r'
     food = state["p1"]["food"]
     spawn = state["p1"]["spawn"]
     enemy_food = state["p2"]["food"]
     enemy_spawn = state["p2"]["spawn"]
-    player_indices = get_all_indices(state["grid"], 'a')
+    player_indices = get_all_indices(state["grid"], 'r')
     enemy_indices = get_all_indices(state["grid"], 'b')
   else
     food = state["p2"]["food"]
@@ -17,7 +17,7 @@ def get_moves(state, player)
     enemy_food = state["p1"]["food"]
     enemy_spawn = state["p1"]["spawn"]
     player_indices = get_all_indices(state["grid"], 'b')
-    enemy_indices = get_all_indices(state["grid"], 'a')
+    enemy_indices = get_all_indices(state["grid"], 'r')
   end
 
   player_indices.each do |i|

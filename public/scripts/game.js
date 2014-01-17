@@ -145,7 +145,7 @@ function showTurn(state) {
       var y = coord.y*coordHeight + coordHeight/2;
 
       switch(gridId) {
-        case 'a':
+        case 'r':
           p1Headcount++;
           ctx.fillStyle = '#F26140';
           ctx.beginPath();

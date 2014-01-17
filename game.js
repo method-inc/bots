@@ -1,7 +1,7 @@
 var gridIds = {
   p1Spawn:'0',
   p2Spawn:'1',
-  player1:'a',
+  player1:'r',
   player2:'b',
   dead:'x',
   food:'*',
