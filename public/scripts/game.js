@@ -6,6 +6,7 @@ var c;
 var ctx;
 var turnSpeed = 100;
 var energyImage;
+var animating = false;
 
 window.onload = function() {
   c=document.getElementById('game');
@@ -31,6 +32,7 @@ socket.on('game', function(data) {
 });
 
 $(document).keydown(function(e) {
+  animating = false;
   if (e.keyCode === 37) {
     currentDisplayed--;
   }
@@ -44,11 +46,15 @@ $(document).keydown(function(e) {
 });
 $(document).on('click', '#animate-game', function(e) {
   if(gameTurns.length) {
-    currentDisplayed = 0;
-    animateNextTurn();
+    animating = !animating;
+    if(animating) {
+      currentDisplayed = 0;
+      animateNextTurn();
+    }
   }
 });
 $(document).on('click', '.forward', function(e) {
+  animating = false;
   currentDisplayed++;
   if(currentDisplayed < 0) currentDisplayed = 0;
   else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
@@ -56,6 +62,7 @@ $(document).on('click', '.forward', function(e) {
   updateRound();
 });
 $(document).on('click', '.back', function(e) {
+  animating = false;
   currentDisplayed--;
   if(currentDisplayed < 0) currentDisplayed = 0;
   else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
@@ -63,28 +70,32 @@ $(document).on('click', '.back', function(e) {
   updateRound();
 });
 $(document).on('click', '.beginning', function(e) {
+  animating = false;
   currentDisplayed = 0;
   showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
 $(document).on('click', '.end', function(e) {
+  animating = false;
   currentDisplayed = gameTurns.length-1;
   showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
 
 function animateNextTurn() {
-  setTimeout(function() {
-    showTurn(gameTurns[currentDisplayed]);
-    updateRound();
-    currentDisplayed++;
-    if(currentDisplayed >= gameTurns.length) {
-      currentDisplayed = gameTurns.length-1;
-    }
-    else {
-      animateNextTurn();
-    }
-  }, turnSpeed);
+  if(animating) {
+    setTimeout(function() {
+      showTurn(gameTurns[currentDisplayed]);
+      updateRound();
+      currentDisplayed++;
+      if(currentDisplayed >= gameTurns.length) {
+        currentDisplayed = gameTurns.length-1;
+      }
+      else {
+        animateNextTurn();
+      }
+    }, turnSpeed);
+  }
 }
 
 function updateRound() {
