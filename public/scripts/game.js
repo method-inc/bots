@@ -88,8 +88,8 @@ function animateNextTurn() {
 }
 
 function updateRound() {
-  $('#turn .current').html(currentDisplayed+1);
-  $('#turn .total').html(gameTurns.length);
+  $('#turn .current').html(currentDisplayed);
+  $('#turn .total').html(gameTurns.length-1);
 }
 
 function resetGame() {
