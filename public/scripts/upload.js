@@ -12,6 +12,26 @@ window.onload = function() {
       $(filesUpload).val('');
     }
   }, false);
+
+  fileDropzone = $('#bot-file-dropzone');
+  fileDropzone.on('dragover', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  fileDropzone.on('dragenter', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  fileDropzone.on('drop', function(e){
+    if(e.originalEvent.dataTransfer){
+      if(e.originalEvent.dataTransfer.files.length) {
+        e.preventDefault();
+        e.stopPropagation();
+        file = e.originalEvent.dataTransfer.files[0];
+        upload();
+      }   
+    }
+  });
 }
 
 socket.on('crash', function(data) {

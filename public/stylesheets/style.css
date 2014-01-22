@@ -122,6 +122,11 @@ pre {
   display: none;
   color: #f00;
 }
+#bot-file-dropzone {
+  border: 5px dashed #d3d3d3;
+  padding: 25px;
+  margin: 25px;
+}
 #game-wrapper {
   width: 1000px;
   margin: auto;
