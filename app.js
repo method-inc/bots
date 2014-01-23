@@ -6,7 +6,6 @@ var fs = require('fs')
   , express = require('express')
   , mongoose = require('mongoose')
   , path = require('path')
-  , childProcess = require('child_process')
   , schedule = require('node-schedule')
   , nodeBot = __dirname + '/bots/nodebot.js'
   , rubyBot = __dirname + '/bots/rubybot.rb'
@@ -283,10 +282,9 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('start', function(data) {
     var bots = [];
-    var processes = [];
+    var botUrls = [];
     var failed = false;
     var gameStore = new GameStore();
-    var fileNumber = 1;
     gameStore.p1 = data.bot1;
     gameStore.p2 = data.bot2;
 
@@ -295,21 +293,8 @@ io.sockets.on('connection', function (socket) {
     [data.bot1, data.bot2].forEach(function(botName) {
       User.findOne({email:botName}, function(err, user) {
         if(user && user.bot) {
-          var dir = botsDir + 'user'+fileNumber;
-          fileNumber++;
-          fs.writeFile(dir, user.bot.body, function(err) {
-            console.log('bot saved to ' + dir);
-            startBot(user.bot.lang, dir, processes, gameStore, botName);
-            if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
-          });
-        }
-        else if(botName === 'nodebot') {
-          startBot('node', nodeBot, processes, gameStore, botName);
-          if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
-        }
-        else if(botName === 'rubybot') {
-          startBot('ruby', rubyBot, processes, gameStore, botName);
-          if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
+            botUrls.push(user.bot.url);
+            if(botUrls.length >= 2) startGame(botUrls, gameStore, sendTurns);
         }
       });
     });
@@ -372,27 +357,7 @@ function parseSessionCookie(cookie, sid, secret) {
   return parsed[sid] || null;
 }
 
-function startBot(lang, path, processes, gameStore, bot) {
-  console.log('starting ' + lang + ' bot: ' + path);
-  var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
-    if (error) {
-      if(error.code === 143 || error.signal === 'SIGTERM') {
-        console.log('bot did not crash');
-      }
-      else {
-        console.log('bot crashed');
-        gameStore.end = bot + ' crashed.';
-        if(gameStore.p1 === bot) gameStore.winner = gameStore.p2;
-        else gameStore.winner = gameStore.p1;
-        gameStore.save();
-        processes.forEach(function(p) {p.kill()});
-        processes = [];
-      }
-    }
-  });
-  processes.push(child);
-}
-function startGame(processes, gameStore, cb) {
+function startGame(botUrls, gameStore, cb) {
   var gameState = game.create(20, 20, 100);
   var p1Moves = null;
   var p2Moves = null;
@@ -413,115 +378,168 @@ function startGame(processes, gameStore, cb) {
       }
     }
 
-    processes.forEach(function(process) {
-      process.kill();
-      gameStarted = false;
-      ready = 0;
-      gameStore.save();
-    });
+    gameStarted = false;
+    ready = 0;
+    gameStore.save();
     cb();
   }, 2000);
 
-  processes[0].stdin.write(JSON.stringify({player:'r', state:gameState})+'\n');
-  processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+  botUrls.forEach(function(url, index) {
+    var data = ""
+    if(index === 0)
+      data = JSON.stringify({player:'r', state:gameState})+'\n';
+    else
+      data = JSON.stringify({player:'b', state:gameState})+'\n';
+
+    var options = {
+      host: url,
+      port: 80,
+      path: '/write',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data)
+      }
+    };
+
+    var req = http.request(options, function(res) {
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        console.log("body: " + chunk); // Should at least check for 200
+      });
+    });
+
+    req.write(data);
+    req.end();
+  });
 
   gameStore.turns.push(gameState);
   gameStore.save();
 
-  processes.forEach(function(process, index) {
-    process.stdout.on('data', function(data) {
-      data = (''+data).trim();
-      console.log('data received: ' + data);
-      if(index === 0) {
-        p1Moves = JSON.parse(data);
-      }
-      else if(index === 1) {
-        p2Moves = JSON.parse(data);
-      }
+  botUrls.forEach(function(url, index) {
+    http.get(url, function(res) {
+      var body = '';
+      res.on('data', function(chunk) {
+        body += chunk;
+      });
 
-      if(p1Moves && p2Moves && gameStarted) {
-        clearTimeout(timeout);
+      res.on('end', function() {
+        data = (''+data).trim();
+        console.log('data received: ' + data);
+        if(index === 0) {
+          p1Moves = JSON.parse(data);
+        }
+        else if(index === 1) {
+          p2Moves = JSON.parse(data);
+        }
 
-        gameState = game.doTurn(gameState, p1Moves, p2Moves);
+        if(p1Moves && p2Moves && gameStarted) {
+          clearTimeout(timeout);
 
-        gameStore.turns.push(gameState);
-        gameStore.save(function() {
-          if(gameState.winner) {
-            console.log('GAME ENDED');
+          gameState = game.doTurn(gameState, p1Moves, p2Moves);
+
+          gameStore.turns.push(gameState);
+          gameStore.save(function() {
             if(gameState.winner) {
-              if(gameState.winner == 'a') {
-                console.log('Client 1 wins');
-                gameStore.winner = gameStore.p1;
-              }
-              else if(gameState.winner == 'b') {
-                console.log('Client 2 wins');
-                gameStore.winner = gameStore.p2;
-              }
-              else {
-                console.log('Tie');
-                // TEMPORARY, until we decide on how to resolve ties in tournaments
-                var p1Headcount = 0;
-                var p2Headcount = 0;
-                for(var i=0; i<gameState.grid.length; i++) {
-                  if(gameState.grid[i] === 'a') p1Headcount++;
-                  else if(gameState.grid[i] === 'b') p2Headcount++;
-                }
-                if(p1Headcount > p2Headcount) {
+              console.log('GAME ENDED');
+              if(gameState.winner) {
+                if(gameState.winner == 'a') {
+                  console.log('Client 1 wins');
                   gameStore.winner = gameStore.p1;
                 }
-                else if(p2Headcount > p1Headcount) {
+                else if(gameState.winner == 'b') {
+                  console.log('Client 2 wins');
                   gameStore.winner = gameStore.p2;
                 }
                 else {
-                  var i = ~~(Math.random()*2);
-                  if(i) gameStore.winner = gameStore.p1;
-                  else gameStore.winner = gameStore.p2;
+                  console.log('Tie');
+                  // TEMPORARY, until we decide on how to resolve ties in tournaments
+                  var p1Headcount = 0;
+                  var p2Headcount = 0;
+                  for(var i=0; i<gameState.grid.length; i++) {
+                    if(gameState.grid[i] === 'a') p1Headcount++;
+                    else if(gameState.grid[i] === 'b') p2Headcount++;
+                  }
+                  if(p1Headcount > p2Headcount) {
+                    gameStore.winner = gameStore.p1;
+                  }
+                  else if(p2Headcount > p1Headcount) {
+                    gameStore.winner = gameStore.p2;
+                  }
+                  else {
+                    var i = ~~(Math.random()*2);
+                    if(i) gameStore.winner = gameStore.p1;
+                    else gameStore.winner = gameStore.p2;
+                  }
                 }
+
+                gameStore.finished = true;
+                gameStore.finishedAt = Date.now();
               }
 
-              gameStore.finished = true;
-              gameStore.finishedAt = Date.now();
-            }
-            processes.forEach(function(process) {
-              process.kill();
               gameStarted = false;
               ready = 0;
               gameStore.save();
-            });
-            if(cb) cb();
-          }
-          else {
-            p1Moves = null;
-            p2Moves = null;
-            processes[0].stdin.write(JSON.stringify({player:'r', state:gameState})+'\n');
-            processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+              if(cb) cb();
+            }
+            else {
+              p1Moves = null;
+              p2Moves = null;
+              botUrls.forEach(function(url, index) {
+                var data = ""
+                if(index === 0)
+                  data = JSON.stringify({player:'r', state:gameState})+'\n';
+                else
+                  data = JSON.stringify({player:'b', state:gameState})+'\n';
 
-            timeout = setTimeout(function() {
-              if(gameStore.end === 'elegant') {
-                if(!p1Moves && !p2Moves) {
-                  gameStore.end = 'p1 and p2 timeout';
-                }
-                else if(!p1Moves) {
-                  gameStore.end = 'p1 timeout';
-                  gameStore.winner = gameStore.p2;
-                }
-                else if(!p2Moves) {
-                  gameStore.end = 'p2 timeout';
-                  gameStore.winner = gameStore.p1;
-                }
-              }
+                var options = {
+                  host: url,
+                  port: 80,
+                  path: '/write',
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(data)
+                  }
+                };
 
-              processes.forEach(function(process) {
-                process.kill();
+                var req = http.request(options, function(res) {
+                  res.setEncoding('utf8');
+                  res.on('data', function (chunk) {
+                    console.log("body: " + chunk); // Should at least check for 200
+                  });
+                });
+
+                req.write(data);
+                req.end();
+              });
+
+              timeout = setTimeout(function() {
+                if(gameStore.end === 'elegant') {
+                  if(!p1Moves && !p2Moves) {
+                    gameStore.end = 'p1 and p2 timeout';
+                  }
+                  else if(!p1Moves) {
+                    gameStore.end = 'p1 timeout';
+                    gameStore.winner = gameStore.p2;
+                  }
+                  else if(!p2Moves) {
+                    gameStore.end = 'p2 timeout';
+                    gameStore.winner = gameStore.p1;
+                  }
+                }
+
                 gameStarted = false;
                 ready = 0;
                 gameStore.save();
-              });
-              cb();
-            }, 2000);
-          }
-        });
-      }
+                cb();
+              }, 2000);
+            }
+          });
+        }
+      });
+    }).on('error', function(e) {
+          console.log("Got error: ", e);
     });
   });
 }
@@ -594,52 +612,47 @@ function nextGame(tournament, round, gameNum) {
     GameStore.findById(gameDetails.id, function(err, game) {
       if(game) {
         if(game.p1 && game.p2) {
-          var fileNumber = 1;
-          var processes = [];
+          var botUrls = [];
           [game.p1, game.p2].forEach(function(email) {
             User.findOne({email:email}, function(err, user) {
               if(user && user.bot) {
-                var dir = botsDir + 'user'+fileNumber;
-                fileNumber++;
-                fs.writeFile(dir, user.bot.body, function(err) {
-                  console.log('bot saved to ' + dir);
-                  startBot(user.bot.lang, dir, processes, game, email);
-                  if(processes.length >= 2) startGame(processes, game, function() {
-                    var winner = game.winner;
+                botUrls.push(user.bot.url);
+                if(botUrls.length >= 2) startGame(botUrls, game, function() {
+                  var winner = game.winner;
 
-                    if(round+1 < tournament.games.length) {
-                      var nextRound = round+1;
-                      var nextGameNum = ~~(gameNum/2);
-                      var nextRoundGame = tournament.games[nextRound][nextGameNum];
-                      var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
-                      GameStore.findById(nextRoundGame.id, function(err, game) {
-                        if(nextRoundPlayer) {
-                          game.p1 = winner;
-                          tournament.games[nextRound][nextGameNum].p1 = winner;
-                        }
-                        else {
-                          game.p2 = winner;
-                          tournament.games[nextRound][nextGameNum].p2 = winner;
-                        }
-                        game.save();
-                        tournament.markModified('games');
-                        tournament.save();
-                      });
-                    }
-
-                    gameNum++;
-                    if(tournament.games[round].length === gameNum) {
-                      gameNum = 0;
-                      round++;
-                    }
-                    if(tournament.games.length === round) {
-                      console.log('tournament done');
-                      tournament.winner = winner;
+                  if(round+1 < tournament.games.length) {
+                    var nextRound = round+1;
+                    var nextGameNum = ~~(gameNum/2);
+                    var nextRoundGame = tournament.games[nextRound][nextGameNum];
+                    var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
+                    GameStore.findById(nextRoundGame.id, function(err, game) {
+                      if(nextRoundPlayer) {
+                        game.p1 = winner;
+                        tournament.games[nextRound][nextGameNum].p1 = winner;
+                      }
+                      else {
+                        game.p2 = winner;
+                        tournament.games[nextRound][nextGameNum].p2 = winner;
+                      }
+                      game.save();
+                      tournament.markModified('games');
                       tournament.save();
-                    }
-                    else {
-                      nextGame(tournament, round, gameNum);
-                    }
+                    });
+                  }
+
+                  gameNum++;
+                  if(tournament.games[round].length === gameNum) {
+                    gameNum = 0;
+                    round++;
+                  }
+                  if(tournament.games.length === round) {
+                    console.log('tournament done');
+                    tournament.winner = winner;
+                    tournament.save();
+                  }
+                  else {
+                    nextGame(tournament, round, gameNum);
+                  }
                   });
                 });
               }
