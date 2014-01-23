@@ -18,9 +18,9 @@ app.get('/', function(req, res) {
   res.send(moves);
 });
 app.post('/write', function(req, res) {
-  var state = JSON.parse(req.body.state);
-  var moves = getMoves(state, req.body.player);
+  var moves = getMoves(req.body.state, req.body.player);
   res.send(moves);
+  res.end();
 });
 
 var server = http.createServer(app).listen(app.get('port'), function(){
