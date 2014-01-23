@@ -443,7 +443,7 @@ function startGame(botUrls, gameStore, cb) {
             if(gameState.winner) {
               console.log('GAME ENDED');
               if(gameState.winner) {
-                if(gameState.winner == 'a') {
+                if(gameState.winner == 'r') {
                   console.log('Client 1 wins');
                   gameStore.winner = gameStore.p1;
                 }
@@ -457,7 +457,7 @@ function startGame(botUrls, gameStore, cb) {
                   var p1Headcount = 0;
                   var p2Headcount = 0;
                   for(var i=0; i<gameState.grid.length; i++) {
-                    if(gameState.grid[i] === 'a') p1Headcount++;
+                    if(gameState.grid[i] === 'r') p1Headcount++;
                     else if(gameState.grid[i] === 'b') p2Headcount++;
                   }
                   if(p1Headcount > p2Headcount) {
