@@ -653,7 +653,6 @@ function nextGame(tournament, round, gameNum) {
                   else {
                     nextGame(tournament, round, gameNum);
                   }
-                  });
                 });
               }
             });
