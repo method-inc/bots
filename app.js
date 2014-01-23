@@ -267,55 +267,13 @@ io.set('authorization', function (data, accept) {
   }
 });
 io.sockets.on('connection', function (socket) {
-  socket.on('send-file', function(name, bot) {
+  socket.on('send-url', function(url) {
     User.findById(socket.handshake.session.auth.userId, function(err, user) {
       if(user) {
         user.bot = {};
-        var ext = name.slice(-3);
-        if(ext === '.js') {
-          user.bot.lang = 'node';
-        }
-        else if(ext === '.rb') {
-          user.bot.lang = 'ruby';
-        }
-        else {
-          user.bot.lang = 'node';
-        }
-        user.bot.body = bot;
-        console.log('user bot: ' + bot);
+        user.bot.url = url;
         user.save(function() {
-          // confirm bot doesn't crash/timeout
-          fs.writeFile(botsDir + 'test', user.bot.body, function(err) {
-            var crashed = false;
-            var child = childProcess.exec(user.bot.lang + ' ' + botsDir+'test', function (error, stdout, stderr) {
-              if (error) {
-                if(error.code === 143 || error.signal === 'SIGTERM') {
-                  console.log('bot did not crash');
-                }
-                else {
-                  socket.emit('crash', stderr);
-                  crashed = true;
-                  user.bot = undefined;
-                  user.save();
-                }
-              }
-            });
-            child.stdin.write(JSON.stringify({player:'r', state:{rows:5,cols:10,p1:{energy:0, spawn:11},p2:{energy:0, spawn:38},grid:'...........r..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
-            
-            var timeout = setTimeout(function() {
-              child.kill();
-              if(!crashed) {
-                socket.emit('timeout');
-                user.bot = undefined
-                user.save();
-              }
-            }, 2000);
-            child.stdout.on('data', function(data) {
-              socket.emit('success');
-              clearTimeout(timeout);
-              child.kill();
-            });
-          });
+          console.log('user ' + user);
         });
       }
     });
