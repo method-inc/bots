@@ -1,6 +1,6 @@
 *.swp
 node_modules/*
 bots/*
-!bots/nodebot.js
-!bots/rubybot.rb
+!bots/nodebot
+!bots/rubybot
 !bots/bots.json

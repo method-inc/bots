@@ -1,3 +1,32 @@
+var fs = require('fs')
+  , util = require('util')
+  , http = require('http')
+  , express = require('express')
+  , app = express()
+
+app.set('port', 1337);
+app.use(express.logger('dev'));
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(app.router);
+
+app.get('/', function(req, res) {
+  var state = JSON.parse(req.body.state);
+  var moves = getMoves(state, req.body.player);
+  res.send(moves);
+});
+app.post('/write', function(req, res) {
+  var state = JSON.parse(req.body.state);
+  var moves = getMoves(state, req.body.player);
+  res.send(moves);
+});
+
+var server = http.createServer(app).listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
+});
+
 process.stdin.on('data', function(data) {
   var game = JSON.parse(data);
   moves = getMoves(game.state, game.player);
