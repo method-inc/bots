@@ -2,6 +2,7 @@ var fs = require('fs')
   , util = require('util')
   , game = require('./game.js')
   , http = require('http')
+  , request = require('request')
   , everyauth = require('everyauth')
   , express = require('express')
   , mongoose = require('mongoose')
@@ -362,186 +363,127 @@ function startGame(botUrls, gameStore, cb) {
   var p1Moves = null;
   var p2Moves = null;
   var gameStarted = true;
+  var p1Options = {
+    url: 'http://localhost:1337',
+    method: 'POST',
+    form: {}
+  };
+  var p2Options = {
+    url: 'http://localhost:1337',
+    method: 'POST',
+    form: {}
+  };
 
-  // var timeout = setTimeout(function() {
-  //   if(gameStore.end === 'elegant') {
-  //     if(!p1Moves && !p2Moves) {
-  //       gameStore.end = gameStore.p1 + ' and ' + gameStore.p2 + ' timeout';
-  //     }
-  //     else if(!p1Moves) {
-  //       gameStore.end = gameStore.p1 + ' timeout';
-  //       gameStore.winner = gameStore.p2;
-  //     }
-  //     else if(!p2Moves) {
-  //       gameStore.end = gameStore.p2 + ' timeout';
-  //       gameStore.winner = gameStore.p1;
-  //     }
-  //   }
+  gameStore.turns.push(gameState);
+  gameStore.save();
+  nextTurn();
 
-  //   gameStarted = false;
-  //   ready = 0;
-  //   gameStore.save();
-  //   cb();
-  // }, 2000);
-
-  botUrls.forEach(function(url, index) {
-    var data = ""
-    if(index === 0)
-      data = JSON.stringify({player:'r', state:gameState})+'\n';
-    else
-      data = JSON.stringify({player:'b', state:gameState})+'\n';
-
-    var options = {
-      host: 'localhost',
-      port: 1337,
-      path: '/write',
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data)
+  function nextTurn() {
+    var timeout = setTimeout(function() {
+      if(gameStore.end === 'elegant') {
+        if(!p1Moves && !p2Moves) {
+          gameStore.end = gameStore.p1 + ' and ' + gameStore.p2 + ' timeout';
+        }
+        else if(!p1Moves) {
+          gameStore.end = gameStore.p1 + ' timeout';
+          gameStore.winner = gameStore.p2;
+        }
+        else if(!p2Moves) {
+          gameStore.end = gameStore.p2 + ' timeout';
+          gameStore.winner = gameStore.p1;
+        }
       }
-    };
 
-    var req = http.request(options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        console.log("body: " + chunk); // Should at least check for 200
-      });
+      gameStarted = false;
+      ready = 0;
+      gameStore.save();
+      cb();
+    }, 2000);
+
+    p1Options.form.data = JSON.stringify({player:'r', state:gameState})+'\n';
+    p2Options.form.data = JSON.stringify({player:'b', state:gameState})+'\n';
+
+    request(p1Options, function(err, res, body) {
+      if(!err) {
+        console.log('received data: ' + body);
+        p1Moves = JSON.parse(body);
+        if(p1Moves && p2Moves) {
+          clearTimeout(timeout);
+          evalMoves();
+        }
+      }
+      else {
+        console.log('error: ' + err);
+      }
+    });
+    request(p2Options, function(err, res, body) {
+      if(!err) {
+        console.log('received data: ' + body);
+        p2Moves = JSON.parse(body);
+        if(p1Moves && p2Moves) {
+          clearTimeout(timeout);
+          evalMoves();
+        }
+      }
+      else {
+        console.log('error: ' + err);
+      }
     });
 
-    req.write(data);
-    req.end();
-  });
+  }
 
-  // gameStore.turns.push(gameState);
-  // gameStore.save();
+  function evalMoves() {
+    gameState = game.doTurn(gameState, p1Moves, p2Moves);
+    gameStore.turns.push(gameState);
+    gameStore.save(function() {
+      if(gameState.winner) {
+        console.log('GAME ENDED');
+        if(gameState.winner) {
+          if(gameState.winner == 'r') {
+            console.log('Client 1 wins');
+            gameStore.winner = gameStore.p1;
+          }
+          else if(gameState.winner == 'b') {
+            console.log('Client 2 wins');
+            gameStore.winner = gameStore.p2;
+          }
+          else {
+            console.log('Tie');
+            // TEMPORARY, until we decide on how to resolve ties in tournaments
+            var p1Headcount = 0;
+            var p2Headcount = 0;
+            for(var i=0; i<gameState.grid.length; i++) {
+              if(gameState.grid[i] === 'r') p1Headcount++;
+              else if(gameState.grid[i] === 'b') p2Headcount++;
+            }
+            if(p1Headcount > p2Headcount) {
+              gameStore.winner = gameStore.p1;
+            }
+            else if(p2Headcount > p1Headcount) {
+              gameStore.winner = gameStore.p2;
+            }
+            else {
+              var i = ~~(Math.random()*2);
+              if(i) gameStore.winner = gameStore.p1;
+              else gameStore.winner = gameStore.p2;
+            }
+          }
 
-  // botUrls.forEach(function(url, index) {
-  //   http.get(url, function(res) {
-  //     var body = '';
-  //     res.on('data', function(chunk) {
-  //       body += chunk;
-  //     });
-
-  //     res.on('end', function() {
-  //       data = (''+data).trim();
-  //       console.log('data received: ' + data);
-  //       if(index === 0) {
-  //         p1Moves = JSON.parse(data);
-  //       }
-  //       else if(index === 1) {
-  //         p2Moves = JSON.parse(data);
-  //       }
-
-  //       if(p1Moves && p2Moves && gameStarted) {
-  //         clearTimeout(timeout);
-
-  //         gameState = game.doTurn(gameState, p1Moves, p2Moves);
-
-  //         gameStore.turns.push(gameState);
-  //         gameStore.save(function() {
-  //           if(gameState.winner) {
-  //             console.log('GAME ENDED');
-  //             if(gameState.winner) {
-  //               if(gameState.winner == 'r') {
-  //                 console.log('Client 1 wins');
-  //                 gameStore.winner = gameStore.p1;
-  //               }
-  //               else if(gameState.winner == 'b') {
-  //                 console.log('Client 2 wins');
-  //                 gameStore.winner = gameStore.p2;
-  //               }
-  //               else {
-  //                 console.log('Tie');
-  //                 // TEMPORARY, until we decide on how to resolve ties in tournaments
-  //                 var p1Headcount = 0;
-  //                 var p2Headcount = 0;
-  //                 for(var i=0; i<gameState.grid.length; i++) {
-  //                   if(gameState.grid[i] === 'r') p1Headcount++;
-  //                   else if(gameState.grid[i] === 'b') p2Headcount++;
-  //                 }
-  //                 if(p1Headcount > p2Headcount) {
-  //                   gameStore.winner = gameStore.p1;
-  //                 }
-  //                 else if(p2Headcount > p1Headcount) {
-  //                   gameStore.winner = gameStore.p2;
-  //                 }
-  //                 else {
-  //                   var i = ~~(Math.random()*2);
-  //                   if(i) gameStore.winner = gameStore.p1;
-  //                   else gameStore.winner = gameStore.p2;
-  //                 }
-  //               }
-
-  //               gameStore.finished = true;
-  //               gameStore.finishedAt = Date.now();
-  //             }
-
-  //             gameStarted = false;
-  //             ready = 0;
-  //             gameStore.save();
-  //             if(cb) cb();
-  //           }
-  //           else {
-  //             p1Moves = null;
-  //             p2Moves = null;
-  //             botUrls.forEach(function(url, index) {
-  //               var data = ""
-  //               if(index === 0)
-  //                 data = JSON.stringify({player:'r', state:gameState})+'\n';
-  //               else
-  //                 data = JSON.stringify({player:'b', state:gameState})+'\n';
-
-  //               var options = {
-  //                 host: url,
-  //                 port: 80,
-  //                 path: '/write',
-  //                 method: 'POST',
-  //                 headers: {
-  //                   'Content-Type': 'application/json',
-  //                   'Content-Length': Buffer.byteLength(data)
-  //                 }
-  //               };
-
-  //               var req = http.request(options, function(res) {
-  //                 res.setEncoding('utf8');
-  //                 res.on('data', function (chunk) {
-  //                   console.log("body: " + chunk); // Should at least check for 200
-  //                 });
-  //               });
-
-  //               req.write(data);
-  //               req.end();
-  //             });
-
-  //             timeout = setTimeout(function() {
-  //               if(gameStore.end === 'elegant') {
-  //                 if(!p1Moves && !p2Moves) {
-  //                   gameStore.end = 'p1 and p2 timeout';
-  //                 }
-  //                 else if(!p1Moves) {
-  //                   gameStore.end = 'p1 timeout';
-  //                   gameStore.winner = gameStore.p2;
-  //                 }
-  //                 else if(!p2Moves) {
-  //                   gameStore.end = 'p2 timeout';
-  //                   gameStore.winner = gameStore.p1;
-  //                 }
-  //               }
-
-  //               gameStarted = false;
-  //               ready = 0;
-  //               gameStore.save();
-  //               cb();
-  //             }, 2000);
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }).on('error', function(e) {
-  //         console.log("Got error: ", e);
-  //   });
-  // });
+          gameStore.finished = true;
+          gameStore.finishedAt = Date.now();
+        }
+        gameStarted = false;
+        ready = 0;
+        gameStore.save();
+        if(cb) cb();
+      }
+      else {
+        p1Moves = null;
+        p2Moves = null;
+        nextTurn();
+      }
+    });
+  }
 }
 
 function organizeTournament() {

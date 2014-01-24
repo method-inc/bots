@@ -12,13 +12,9 @@ app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
 
-app.get('/', function(req, res) {
-  var state = JSON.parse(req.body.state);
-  var moves = getMoves(state, req.body.player);
-  res.send(moves);
-});
-app.post('/write', function(req, res) {
-  var moves = getMoves(req.body.state, req.body.player);
+app.post('/', function(req, res) {
+  var game = JSON.parse(req.body.data);
+  var moves = getMoves(game.state, game.player);
   res.send(moves);
   res.end();
 });

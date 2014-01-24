@@ -23,7 +23,8 @@
     "jade" : "*",
     "everyauth" : "*",
     "node-schedule" : "*",
-    "node-markdown" : "*"
+    "node-markdown" : "*",
+    "request" : "*"
   },
   "license": "MIT",
   "engines": {
