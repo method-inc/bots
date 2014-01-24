@@ -18,6 +18,10 @@ app.post('/', function(req, res) {
   res.send(moves);
   res.end();
 });
+app.get('/', function(req, res) {
+  res.send('hello');
+  res.end();
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));

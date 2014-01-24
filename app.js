@@ -293,10 +293,11 @@ io.sockets.on('connection', function (socket) {
 
     [data.bot1, data.bot2].forEach(function(botName) {
       User.findOne({email:botName}, function(err, user) {
-        if(user && user.bot) {
-            botUrls.push(user.bot.url);
-            if(botUrls.length >= 2) startGame(botUrls, gameStore, sendTurns);
-        }
+        if(user && user.bot)
+          botUrls.push(user.bot.url);
+        else
+          botUrls.push('http://localhost:1337');
+        if(botUrls.length >= 2) startGame(botUrls, gameStore, sendTurns);
       });
     });
 
@@ -364,12 +365,12 @@ function startGame(botUrls, gameStore, cb) {
   var p2Moves = null;
   var gameStarted = true;
   var p1Options = {
-    url: 'http://localhost:1337',
+    url: botUrls[0],
     method: 'POST',
     form: {}
   };
   var p2Options = {
-    url: 'http://localhost:1337',
+    url: botUrls[1],
     method: 'POST',
     form: {}
   };
