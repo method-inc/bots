@@ -10,6 +10,7 @@ window.onload = function() {
     $('.error').hide();
     $('.waiting').show();
     socket.emit('send-url', url);
+    document.location.href = '/'
   });
 }
 
