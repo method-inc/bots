@@ -4,7 +4,7 @@ var fs = require('fs')
   , express = require('express')
   , app = express()
 
-app.set('port', 1337);
+app.set('port', process.argv[2]);
 app.use(express.logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded());
