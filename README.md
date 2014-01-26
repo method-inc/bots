@@ -14,7 +14,9 @@ In order to set up the web server, run `node app.js` in another tab of your term
 
 Go to `http://localhost:3000` in your browser.
 
-Log in with a Google account and upload your bot as you would normally, by using the `/bot` route.
+Log in with a Google account and specify your bot URL as you would normally, by using the `/bot` route.
+
+Your bot will run through HTTP communication now instead of stdin/stdout. In order to test locally you will need one bot (you can use the nodebot.js in the bots folder) running at localhost:1337 and a secondbot can be run on any URL you want. We recommend using [ngrok](https://ngrok.com/) for your local testing as this is probably what you will use for the real tournament. At the `/bot` route you will be asked to input your ngrok URL for your bot. Then at `/test/` you can select your user account (which points to your ngrok URL) and nodebot (which is expected to be running at localhost:1337) and watch them fight to the death.
 
 Go to the `/test` route to run test matches. In the dropdown menus, you can choose the bots to compete. Click the "new game" button to start and view the match. **Note the ```/test``` route can only be used on localhost - not on the production site**
 
@@ -78,9 +80,9 @@ The order actions are carried out in each turn is as follows:
 The game ends when either one bot's botlets are completely eliminated or when the turn limit (100 turns) has been reached. If the turn limit is reached, the bot with more botlets on the field is declared the winner.
 
 # Implementation Details
-Communication between the game and the bots is established using standard input and output. For every turn, the two bots are given the current game state as JSON. Each bot is expected to respond with moves within two seconds. If a bot doesn't respond within two seconds, it is disqualified.
+Communication between the game and the bots is established using JSON data exchanges over HTTP. For every turn, the two bots are given the current game state as JSON. Your bot must accept a POST method at `/`. The game state will be POSTed to your bot. Your bot is expected to return your set of moves in the appropriate JSON format in the POST response. Each bot is expected to respond with moves within five seconds. If a bot doesn't respond within five seconds, it is disqualified.
 
-This is an example of the game state that will be passed to each bot:
+This is an example of the game state that will be POSTed to each bot:
 
     "state": {
       "rows": 4,
@@ -111,7 +113,7 @@ The grid is a string where each character represents a space on the grid.
 + Empty space is identified by "."
 + Botlets killed in the previous turn are identified by "x".
 
-Bots are expected to respond in the following format:
+Bots are expected to respond in from the POST with the following format:
 
     [
       {
@@ -126,8 +128,6 @@ Bots are expected to respond in the following format:
 
 Where each item in the array represents a move. "from" must be the index of one of the bot's botlets, and "to" must be the index of a coordinate adjacent to that botlet. Otherwise, the move is ignored.
 
-Bots should be written in JavaScript or Ruby.
-
-[Example Ruby bot](/bots/rubybot.rb)
+Bots can be written in any language you wish as long as you meet the HTTP JSON specification defined here and they are publically accessible at the time of the tournament. You can either deploy your bot or use ngrok locally.
 
 [Example JavaScript bot](/bots/nodebot.js)

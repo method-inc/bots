@@ -399,7 +399,7 @@ function startGame(botUrls, gameStore, cb) {
       ready = 0;
       gameStore.save();
       cb();
-    }, 2000);
+    }, 5000);
 
     p1Options.form.data = JSON.stringify({player:'r', state:gameState})+'\n';
     p2Options.form.data = JSON.stringify({player:'b', state:gameState})+'\n';
