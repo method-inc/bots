@@ -2,11 +2,11 @@ var fs = require('fs')
   , util = require('util')
   , game = require('./game.js')
   , http = require('http')
+  , request = require('request')
   , everyauth = require('everyauth')
   , express = require('express')
   , mongoose = require('mongoose')
   , path = require('path')
-  , childProcess = require('child_process')
   , schedule = require('node-schedule')
   , nodeBot = __dirname + '/bots/nodebot.js'
   , rubyBot = __dirname + '/bots/rubybot.rb'
@@ -267,55 +267,13 @@ io.set('authorization', function (data, accept) {
   }
 });
 io.sockets.on('connection', function (socket) {
-  socket.on('send-file', function(name, bot) {
+  socket.on('send-url', function(url) {
     User.findById(socket.handshake.session.auth.userId, function(err, user) {
       if(user) {
         user.bot = {};
-        var ext = name.slice(-3);
-        if(ext === '.js') {
-          user.bot.lang = 'node';
-        }
-        else if(ext === '.rb') {
-          user.bot.lang = 'ruby';
-        }
-        else {
-          user.bot.lang = 'node';
-        }
-        user.bot.body = bot;
-        console.log('user bot: ' + bot);
+        user.bot.url = url;
         user.save(function() {
-          // confirm bot doesn't crash/timeout
-          fs.writeFile(botsDir + 'test', user.bot.body, function(err) {
-            var crashed = false;
-            var child = childProcess.exec(user.bot.lang + ' ' + botsDir+'test', function (error, stdout, stderr) {
-              if (error) {
-                if(error.code === 143 || error.signal === 'SIGTERM') {
-                  console.log('bot did not crash');
-                }
-                else {
-                  socket.emit('crash', stderr);
-                  crashed = true;
-                  user.bot = undefined;
-                  user.save();
-                }
-              }
-            });
-            child.stdin.write(JSON.stringify({player:'r', state:{rows:5,cols:10,p1:{energy:0, spawn:11},p2:{energy:0, spawn:38},grid:'...........r..........................b...........',maxTurns:20,turnsElapsed:0}})+'\n');
-            
-            var timeout = setTimeout(function() {
-              child.kill();
-              if(!crashed) {
-                socket.emit('timeout');
-                user.bot = undefined
-                user.save();
-              }
-            }, 2000);
-            child.stdout.on('data', function(data) {
-              socket.emit('success');
-              clearTimeout(timeout);
-              child.kill();
-            });
-          });
+          console.log('user ' + user);
         });
       }
     });
@@ -325,10 +283,9 @@ io.sockets.on('connection', function (socket) {
 
   socket.on('start', function(data) {
     var bots = [];
-    var processes = [];
+    var botUrls = [];
     var failed = false;
     var gameStore = new GameStore();
-    var fileNumber = 1;
     gameStore.p1 = data.bot1;
     gameStore.p2 = data.bot2;
 
@@ -336,23 +293,11 @@ io.sockets.on('connection', function (socket) {
 
     [data.bot1, data.bot2].forEach(function(botName) {
       User.findOne({email:botName}, function(err, user) {
-        if(user && user.bot) {
-          var dir = botsDir + 'user'+fileNumber;
-          fileNumber++;
-          fs.writeFile(dir, user.bot.body, function(err) {
-            console.log('bot saved to ' + dir);
-            startBot(user.bot.lang, dir, processes, gameStore, botName);
-            if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
-          });
-        }
-        else if(botName === 'nodebot') {
-          startBot('node', nodeBot, processes, gameStore, botName);
-          if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
-        }
-        else if(botName === 'rubybot') {
-          startBot('ruby', rubyBot, processes, gameStore, botName);
-          if(processes.length >= 2) startGame(processes, gameStore, sendTurns);
-        }
+        if(user && user.bot)
+          botUrls.push(user.bot.url);
+        else
+          botUrls.push('http://localhost:1337');
+        if(botUrls.length >= 2) startGame(botUrls, gameStore, sendTurns);
       });
     });
 
@@ -414,158 +359,132 @@ function parseSessionCookie(cookie, sid, secret) {
   return parsed[sid] || null;
 }
 
-function startBot(lang, path, processes, gameStore, bot) {
-  console.log('starting ' + lang + ' bot: ' + path);
-  var child = childProcess.exec(lang + ' ' + path, function (error, stdout, stderr) {
-    if (error) {
-      if(error.code === 143 || error.signal === 'SIGTERM') {
-        console.log('bot did not crash');
-      }
-      else {
-        console.log('bot crashed');
-        gameStore.end = bot + ' crashed.';
-        if(gameStore.p1 === bot) gameStore.winner = gameStore.p2;
-        else gameStore.winner = gameStore.p1;
-        gameStore.save();
-        processes.forEach(function(p) {p.kill()});
-        processes = [];
-      }
-    }
-  });
-  processes.push(child);
-}
-function startGame(processes, gameStore, cb) {
+function startGame(botUrls, gameStore, cb) {
   var gameState = game.create(20, 20, 100);
   var p1Moves = null;
   var p2Moves = null;
   var gameStarted = true;
-
-  var timeout = setTimeout(function() {
-    if(gameStore.end === 'elegant') {
-      if(!p1Moves && !p2Moves) {
-        gameStore.end = gameStore.p1 + ' and ' + gameStore.p2 + ' timeout';
-      }
-      else if(!p1Moves) {
-        gameStore.end = gameStore.p1 + ' timeout';
-        gameStore.winner = gameStore.p2;
-      }
-      else if(!p2Moves) {
-        gameStore.end = gameStore.p2 + ' timeout';
-        gameStore.winner = gameStore.p1;
-      }
-    }
-
-    processes.forEach(function(process) {
-      process.kill();
-      gameStarted = false;
-      ready = 0;
-      gameStore.save();
-    });
-    cb();
-  }, 2000);
-
-  processes[0].stdin.write(JSON.stringify({player:'r', state:gameState})+'\n');
-  processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
+  var p1Options = {
+    url: botUrls[0],
+    method: 'POST',
+    form: {}
+  };
+  var p2Options = {
+    url: botUrls[1],
+    method: 'POST',
+    form: {}
+  };
 
   gameStore.turns.push(gameState);
   gameStore.save();
+  nextTurn();
 
-  processes.forEach(function(process, index) {
-    process.stdout.on('data', function(data) {
-      data = (''+data).trim();
-      console.log('data received: ' + data);
-      if(index === 0) {
-        p1Moves = JSON.parse(data);
+  function nextTurn() {
+    var timeout = setTimeout(function() {
+      if(gameStore.end === 'elegant') {
+        if(!p1Moves && !p2Moves) {
+          gameStore.end = gameStore.p1 + ' and ' + gameStore.p2 + ' timeout';
+        }
+        else if(!p1Moves) {
+          gameStore.end = gameStore.p1 + ' timeout';
+          gameStore.winner = gameStore.p2;
+        }
+        else if(!p2Moves) {
+          gameStore.end = gameStore.p2 + ' timeout';
+          gameStore.winner = gameStore.p1;
+        }
       }
-      else if(index === 1) {
-        p2Moves = JSON.parse(data);
+
+      gameStarted = false;
+      ready = 0;
+      gameStore.save();
+      cb();
+    }, 5000);
+
+    p1Options.form.data = JSON.stringify({player:'r', state:gameState})+'\n';
+    p2Options.form.data = JSON.stringify({player:'b', state:gameState})+'\n';
+
+    request(p1Options, function(err, res, body) {
+      if(!err) {
+        console.log('received data: ' + body);
+        p1Moves = JSON.parse(body);
+        if(p1Moves && p2Moves) {
+          clearTimeout(timeout);
+          evalMoves();
+        }
       }
-
-      if(p1Moves && p2Moves && gameStarted) {
-        clearTimeout(timeout);
-
-        gameState = game.doTurn(gameState, p1Moves, p2Moves);
-
-        gameStore.turns.push(gameState);
-        gameStore.save(function() {
-          if(gameState.winner) {
-            console.log('GAME ENDED');
-            if(gameState.winner) {
-              if(gameState.winner == 'r') {
-                console.log('Client 1 wins');
-                gameStore.winner = gameStore.p1;
-              }
-              else if(gameState.winner == 'b') {
-                console.log('Client 2 wins');
-                gameStore.winner = gameStore.p2;
-              }
-              else {
-                console.log('Tie');
-                // TEMPORARY, until we decide on how to resolve ties in tournaments
-                var p1Headcount = 0;
-                var p2Headcount = 0;
-                for(var i=0; i<gameState.grid.length; i++) {
-                  if(gameState.grid[i] === 'r') p1Headcount++;
-                  else if(gameState.grid[i] === 'b') p2Headcount++;
-                }
-                if(p1Headcount > p2Headcount) {
-                  gameStore.winner = gameStore.p1;
-                }
-                else if(p2Headcount > p1Headcount) {
-                  gameStore.winner = gameStore.p2;
-                }
-                else {
-                  var i = ~~(Math.random()*2);
-                  if(i) gameStore.winner = gameStore.p1;
-                  else gameStore.winner = gameStore.p2;
-                }
-              }
-
-              gameStore.finished = true;
-              gameStore.finishedAt = Date.now();
-            }
-            processes.forEach(function(process) {
-              process.kill();
-              gameStarted = false;
-              ready = 0;
-              gameStore.save();
-            });
-            if(cb) cb();
-          }
-          else {
-            p1Moves = null;
-            p2Moves = null;
-            processes[0].stdin.write(JSON.stringify({player:'r', state:gameState})+'\n');
-            processes[1].stdin.write(JSON.stringify({player:'b', state:gameState})+'\n');
-
-            timeout = setTimeout(function() {
-              if(gameStore.end === 'elegant') {
-                if(!p1Moves && !p2Moves) {
-                  gameStore.end = 'p1 and p2 timeout';
-                }
-                else if(!p1Moves) {
-                  gameStore.end = 'p1 timeout';
-                  gameStore.winner = gameStore.p2;
-                }
-                else if(!p2Moves) {
-                  gameStore.end = 'p2 timeout';
-                  gameStore.winner = gameStore.p1;
-                }
-              }
-
-              processes.forEach(function(process) {
-                process.kill();
-                gameStarted = false;
-                ready = 0;
-                gameStore.save();
-              });
-              cb();
-            }, 2000);
-          }
-        });
+      else {
+        console.log('error: ' + err);
       }
     });
-  });
+    request(p2Options, function(err, res, body) {
+      if(!err) {
+        console.log('received data: ' + body);
+        p2Moves = JSON.parse(body);
+        if(p1Moves && p2Moves) {
+          clearTimeout(timeout);
+          evalMoves();
+        }
+      }
+      else {
+        console.log('error: ' + err);
+      }
+    });
+
+  }
+
+  function evalMoves() {
+    gameState = game.doTurn(gameState, p1Moves, p2Moves);
+    gameStore.turns.push(gameState);
+    gameStore.save(function() {
+      if(gameState.winner) {
+        console.log('GAME ENDED');
+        if(gameState.winner) {
+          if(gameState.winner == 'r') {
+            console.log('Client 1 wins');
+            gameStore.winner = gameStore.p1;
+          }
+          else if(gameState.winner == 'b') {
+            console.log('Client 2 wins');
+            gameStore.winner = gameStore.p2;
+          }
+          else {
+            console.log('Tie');
+            // TEMPORARY, until we decide on how to resolve ties in tournaments
+            var p1Headcount = 0;
+            var p2Headcount = 0;
+            for(var i=0; i<gameState.grid.length; i++) {
+              if(gameState.grid[i] === 'r') p1Headcount++;
+              else if(gameState.grid[i] === 'b') p2Headcount++;
+            }
+            if(p1Headcount > p2Headcount) {
+              gameStore.winner = gameStore.p1;
+            }
+            else if(p2Headcount > p1Headcount) {
+              gameStore.winner = gameStore.p2;
+            }
+            else {
+              var i = ~~(Math.random()*2);
+              if(i) gameStore.winner = gameStore.p1;
+              else gameStore.winner = gameStore.p2;
+            }
+          }
+
+          gameStore.finished = true;
+          gameStore.finishedAt = Date.now();
+        }
+        gameStarted = false;
+        ready = 0;
+        gameStore.save();
+        if(cb) cb();
+      }
+      else {
+        p1Moves = null;
+        p2Moves = null;
+        nextTurn();
+      }
+    });
+  }
 }
 
 function organizeTournament() {
@@ -636,53 +555,47 @@ function nextGame(tournament, round, gameNum) {
     GameStore.findById(gameDetails.id, function(err, game) {
       if(game) {
         if(game.p1 && game.p2) {
-          var fileNumber = 1;
-          var processes = [];
+          var botUrls = [];
           [game.p1, game.p2].forEach(function(email) {
             User.findOne({email:email}, function(err, user) {
               if(user && user.bot) {
-                var dir = botsDir + 'user'+fileNumber;
-                fileNumber++;
-                fs.writeFile(dir, user.bot.body, function(err) {
-                  console.log('bot saved to ' + dir);
-                  startBot(user.bot.lang, dir, processes, game, email);
-                  if(processes.length >= 2) startGame(processes, game, function() {
-                    var winner = game.winner;
+                botUrls.push(user.bot.url);
+                if(botUrls.length >= 2) startGame(botUrls, game, function() {
+                  var winner = game.winner;
 
-                    if(round+1 < tournament.games.length) {
-                      var nextRound = round+1;
-                      var nextGameNum = ~~(gameNum/2);
-                      var nextRoundGame = tournament.games[nextRound][nextGameNum];
-                      var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
-                      GameStore.findById(nextRoundGame.id, function(err, game) {
-                        if(nextRoundPlayer) {
-                          game.p1 = winner;
-                          tournament.games[nextRound][nextGameNum].p1 = winner;
-                        }
-                        else {
-                          game.p2 = winner;
-                          tournament.games[nextRound][nextGameNum].p2 = winner;
-                        }
-                        game.save();
-                        tournament.markModified('games');
-                        tournament.save();
-                      });
-                    }
-
-                    gameNum++;
-                    if(tournament.games[round].length === gameNum) {
-                      gameNum = 0;
-                      round++;
-                    }
-                    if(tournament.games.length === round) {
-                      console.log('tournament done');
-                      tournament.winner = winner;
+                  if(round+1 < tournament.games.length) {
+                    var nextRound = round+1;
+                    var nextGameNum = ~~(gameNum/2);
+                    var nextRoundGame = tournament.games[nextRound][nextGameNum];
+                    var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
+                    GameStore.findById(nextRoundGame.id, function(err, game) {
+                      if(nextRoundPlayer) {
+                        game.p1 = winner;
+                        tournament.games[nextRound][nextGameNum].p1 = winner;
+                      }
+                      else {
+                        game.p2 = winner;
+                        tournament.games[nextRound][nextGameNum].p2 = winner;
+                      }
+                      game.save();
+                      tournament.markModified('games');
                       tournament.save();
-                    }
-                    else {
-                      nextGame(tournament, round, gameNum);
-                    }
-                  });
+                    });
+                  }
+
+                  gameNum++;
+                  if(tournament.games[round].length === gameNum) {
+                    gameNum = 0;
+                    round++;
+                  }
+                  if(tournament.games.length === round) {
+                    console.log('tournament done');
+                    tournament.winner = winner;
+                    tournament.save();
+                  }
+                  else {
+                    nextGame(tournament, round, gameNum);
+                  }
                 });
               }
             });

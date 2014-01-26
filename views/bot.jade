@@ -8,11 +8,7 @@ block content
     a(href='/logout') Log Out
   h2#back
     a(href='/') &#x25C0; Back
-  div#bot-file-dropzone
-    h2 Drag and drop your bot file here
-  h2 or
-  input#bot-file(name='safsddf', type='file')
-
-  p.success Successfully Uploaded
-  p.waiting Uploading...
-  p.error
+  div
+    label(for='url') URL
+    input(id='url',type='text',value='',placeholder='@',name='url')
+    input(type='submit',value='Enhance!',data-transition='fade', data-theme='c', id='submit')
