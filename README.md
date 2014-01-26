@@ -130,4 +130,4 @@ Where each item in the array represents a move. "from" must be the index of one 
 
 Bots can be written in any language you wish as long as you meet the HTTP JSON specification defined here and they are publically accessible at the time of the tournament. You can either deploy your bot or use ngrok locally.
 
-[Example JavaScript bot](/bots/nodebot.js)
+[Example JavaScript bot](/bots/nodebot/app.js)
