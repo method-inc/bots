@@ -220,20 +220,12 @@ app.get('/starttournament', function(req, res) {
   }
   res.redirect('/');
 });
-app.get('/bots/nodebot.js', function(req, res) {
+app.get('/bots/nodebot/app.js', function(req, res) {
   if(!req.user) {
     res.redirect('/');
   }
   else {
-    res.render('code', {url:'https://gist.github.com/mobyvb/2deb33878983c95745cd.js', title:'Node Bot'});
-  }
-});
-app.get('/bots/rubybot.rb', function(req, res) {
-  if(!req.user) {
-    res.redirect('/');
-  }
-  else {
-    res.render('code', {url:'https://gist.github.com/mobyvb/b617ac2d5725b9cd9ea7.js', title:'Ruby Bot'});
+    res.render('code', {url:'https://gist.github.com/elaforc/f40afaa98feddfa2efc8.js', title:'Node Bot'});
   }
 });
 app.get('/test', function(req, res) {
