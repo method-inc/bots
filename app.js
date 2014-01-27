@@ -407,6 +407,11 @@ function startGame(botUrls, gameStore, cb) {
       }
       else {
         console.log('error: ' + err);
+        gameStore.end = gameStore.p1 + ' error';
+        gameStore.winner = gameStore.p2;
+        gameStore.finished = true;
+        gameStore.finishedAt = Date.now();
+        gameStore.save();
       }
     });
     request(p2Options, function(err, res, body) {
@@ -420,6 +425,11 @@ function startGame(botUrls, gameStore, cb) {
       }
       else {
         console.log('error: ' + err);
+        gameStore.end = gameStore.p2 + ' error';
+        gameStore.winner = gameStore.p1;
+        gameStore.finished = true;
+        gameStore.finishedAt = Date.now();
+        gameStore.save();
       }
     });
 
