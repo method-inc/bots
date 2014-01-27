@@ -116,8 +116,14 @@ app.get('/history', function(req, res) {
           User.find({
             'email': { $in: [game.p1, game.p2]}
           }, function(err, users) {
-            var p1 = users[0].name;
-            var p2 = users[1].name;
+            if(users[0])
+              var p1 = users[0].name;
+            else
+              var p1 = '';
+            if(users[1])
+              var p2 = users[1].name;
+            else
+              var p2 = '';
             var description = '';
             if(game.winner === game.p1) {
               description = p1 + ' defeated ' + p2;
@@ -390,7 +396,7 @@ function startGame(botUrls, gameStore, cb) {
       gameStarted = false;
       ready = 0;
       gameStore.save();
-      cb();
+      if(cb) cb();
     }, 5000);
 
     p1Options.form.data = JSON.stringify({player:'r', state:gameState})+'\n';
@@ -411,7 +417,10 @@ function startGame(botUrls, gameStore, cb) {
         gameStore.winner = gameStore.p2;
         gameStore.finished = true;
         gameStore.finishedAt = Date.now();
+        gameStarted = false;
+        ready = 0;
         gameStore.save();
+        if(cb) cb();
       }
     });
     request(p2Options, function(err, res, body) {
@@ -429,7 +438,10 @@ function startGame(botUrls, gameStore, cb) {
         gameStore.winner = gameStore.p1;
         gameStore.finished = true;
         gameStore.finishedAt = Date.now();
+        gameStarted = false;
+        ready = 0;
         gameStore.save();
+        if(cb) cb();
       }
     });
 

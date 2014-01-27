@@ -30,11 +30,16 @@ socket.on('game', function(data) {
   updateRound();
 });
 socket.on('game-data', function(data) {
-  if(data.end === 'elegant') {
-    $('.data-received').html(data.winner + ' wins');
+  if(data.winner) {
+    if(data.end === 'elegant') {
+      $('.data-received').html(data.winner + ' wins');
+    }
+    else {
+      $('.data-received').html(data.winner + ' wins ('+data.end+')');
+    }
   }
   else {
-    $('.data-received').html(data.winner + ' wins ('+data.end+')');
+    $('.data-received').hide();
   }
 });
 
