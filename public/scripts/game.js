@@ -28,7 +28,14 @@ socket.on('game', function(data) {
   currentDisplayed = turn;
   turn++;
   updateRound();
-  $('.data-received').hide();
+});
+socket.on('game-data', function(data) {
+  if(data.end === 'elegant') {
+    $('.data-received').html(data.winner + ' wins');
+  }
+  else {
+    $('.data-received').html(data.winner + ' wins ('+data.end+')');
+  }
 });
 
 $(document).keydown(function(e) {

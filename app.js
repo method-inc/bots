@@ -407,7 +407,7 @@ function startGame(botUrls, gameStore, cb) {
       }
       else {
         console.log('error: ' + err);
-        gameStore.end = gameStore.p1 + ' error';
+        gameStore.end = gameStore.p1 + ' bot error';
         gameStore.winner = gameStore.p2;
         gameStore.finished = true;
         gameStore.finishedAt = Date.now();
@@ -425,7 +425,7 @@ function startGame(botUrls, gameStore, cb) {
       }
       else {
         console.log('error: ' + err);
-        gameStore.end = gameStore.p2 + ' error';
+        gameStore.end = gameStore.p2 + ' bot error';
         gameStore.winner = gameStore.p1;
         gameStore.finished = true;
         gameStore.finishedAt = Date.now();
