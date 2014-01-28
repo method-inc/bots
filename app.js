@@ -112,6 +112,7 @@ app.get('/history', function(req, res) {
     .exec(function(err, games) {
       if(games.length) {
         var gamesList = [];
+        var completed = 0;
         games.forEach(function(game, i) {
           User.find({
             'email': { $in: [game.p1, game.p2]}
@@ -134,15 +135,10 @@ app.get('/history', function(req, res) {
             else {
               description = 'Tie between ' + p1 + ' and ' + p2
             }
-            gamesList.push(
-              {
-                id:game.id,
-                description:description,
-                time:game.finishedAt
-              }
-            );
+            gamesList[i] = {id:game.id, description:description, time:game.finishedAt};
+            completed++;
 
-            if(gamesList.length===games.length) {
+            if(completed===games.length) {
               res.render('gameslist', {games:gamesList});
             }
           });
