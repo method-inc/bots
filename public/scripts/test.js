@@ -30,6 +30,9 @@ socket.on('game', function(data) {
   updateRound();
   $('.data-received').hide();
 });
+socket.on('game-data', function(data) {
+  resetGame();
+});
 socket.on('bots', function(data) {
   $('#botlist1').html('');
   $('#botlist2').html('');
