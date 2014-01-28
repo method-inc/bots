@@ -12,9 +12,9 @@ describe('Game', function(){
     beginState = {
       rows:5,
       cols:10,
-      p1:{food:0, spawn:11},
-      p2:{food:0, spawn:38},
-      grid:'...........a..........................b...........',
+      p1:{energy:0, spawn:11},
+      p2:{energy:0, spawn:38},
+      grid:'...........r..........................b...........',
       maxTurns:20,
       turnsElapsed:0
     };
@@ -24,9 +24,9 @@ describe('Game', function(){
     testState = {
       rows:5,
       cols:10,
-      p1:{food:0, spawn:11},
-      p2:{food:0, spawn:38},
-      grid:'...........a..........................b...........',
+      p1:{energy:0, spawn:11},
+      p2:{energy:0, spawn:38},
+      grid:'...........r..........................b...........',
       maxTurns:20,
       turnsElapsed:1
     };
@@ -35,8 +35,8 @@ describe('Game', function(){
   describe('#create()', function(){
     it('should properly initialize a game state for a 5x10 grid', function(){
       createdState = game.create(5,10);
-      testState.p1.food = 1;
-      testState.p2.food = 1;
+      testState.p1.energy = 1;
+      testState.p2.energy = 1;
       testState.grid = '..................................................';
       testState.turnsElapsed = 0;
       assert.deepEqual(createdState, testState);
@@ -46,8 +46,8 @@ describe('Game', function(){
       createdState = game.create(6,4, 30);
       testState.rows = 6;
       testState.cols = 4;
-      testState.p1 = {food:1, spawn:5};
-      testState.p2 = {food:1, spawn:18};
+      testState.p1 = {energy:1, spawn:5};
+      testState.p2 = {energy:1, spawn:18};
       testState.grid = '........................';
       testState.maxTurns = 30;
       testState.turnsElapsed = 0;
@@ -57,8 +57,8 @@ describe('Game', function(){
 
   describe('#doTurn()', function(){
     it('should spawn first aliens correctly', function() {
-      beginState.p1.food = 1;
-      beginState.p2.food = 1;
+      beginState.p1.energy = 1;
+      beginState.p2.energy = 1;
       beginState.grid = '..................................................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       assert.deepEqual(createdState, testState);
@@ -68,16 +68,16 @@ describe('Game', function(){
       p1Moves = [{from:11,to:10}];
       p2Moves = [{from:38,to:28}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '..........a.................b.....................';
+      testState.grid = '..........r.................b.....................';
       assert.deepEqual(createdState, testState);
     });
 
     it('should allow aliens to "swap" places', function() {
       p1Moves = [{from:11,to:12}, {from:12,to:11}];
       p2Moves = [{from:18,to:28}, {from:28,to:18}];
-      beginState.grid = '...........aa.....b.........b.....................';
+      beginState.grid = '...........rr.....b.........b.....................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '...........aa.....b.........b.....................';
+      testState.grid = '...........rr.....b.........b.....................';
       assert.deepEqual(createdState, testState);
     });
 
@@ -107,7 +107,7 @@ describe('Game', function(){
     });
 
     it('should kill aliens of different teams that move to the same position', function() {
-      beginState.grid = '........................a..........b..............';
+      beginState.grid = '........................r..........b..............';
       p1Moves = [{from:24,to:25}];
       p2Moves = [{from:35,to:25}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
@@ -117,7 +117,7 @@ describe('Game', function(){
     });
 
     it('should kill aliens of the same team that move to the same position', function() {
-      beginState.grid = '.......................a..b......a..b.............'
+      beginState.grid = '.......................r..b......r..b.............'
       p1Moves = [{from:33,to:23}];
       p2Moves = [{from:26,to:27}, {from:36,to:26}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
@@ -127,24 +127,24 @@ describe('Game', function(){
     })
 
     it('should conduct simple combat correctly', function() {
-      beginState.grid = '.......................a............a.......b.....';
+      beginState.grid = '.......................r............r.......b.....';
       p1Moves = [{from:23,to:33}, {from:36,to:35}];
       p2Moves = [{from:44,to:34}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.................................axa..............';
-      testState.winner = 'a';
+      testState.grid = '.................................rxr..............';
+      testState.winner = 'r';
       assert.deepEqual(createdState, testState);
     });
 
     it('should conduct more complex combat correctly (1)', function() {
-      beginState.grid = '................ab......aba.........b.............';
+      beginState.grid = '................rb......rbr.........b.............';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '................xx......axx.........b.............';
+      testState.grid = '................xx......rxx.........b.............';
       assert.deepEqual(createdState, testState);
     });
 
     it('should conduct more complex combat correctly (2)', function() {
-      beginState.grid = '................ab......bab.......bab.........ab..';
+      beginState.grid = '................rb......brb.......brb.........rb..';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '................xb......bxx.......bxx.........xb..';
       testState.winner = 'b';
@@ -152,7 +152,7 @@ describe('Game', function(){
     });
 
     it('should disable spawns when razed', function() {
-      beginState.grid = '..........a.b........b............................';
+      beginState.grid = '..........r.b........b............................';
       p2Moves = [{from:12,to:11}, {from:21,to:20}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = '..........xb........b.............................';
@@ -161,21 +161,21 @@ describe('Game', function(){
       assert.deepEqual(createdState, testState);
     });
 
-    it('should deal with food-gathering correctly (1)', function() {
-      beginState.grid = '......................b*.b*a......................';
+    it('should deal with energy-gathering correctly (1)', function() {
+      beginState.grid = '......................b*.b*r......................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '......................b..b.a......................';
-      testState.p2.food = 1;
+      testState.grid = '......................b..b.r......................';
+      testState.p2.energy = 1;
       assert.deepEqual(createdState, testState);
     });
 
-    it('should deal with food-gathering correctly (2)', function() {
-      beginState.grid = '.............a.........*...b...................*..';
+    it('should deal with energy-gathering correctly (2)', function() {
+      beginState.grid = '.............r.........*...b...................*..';
       p1Moves = [{from:13,to:23}];
       p2Moves = [{from:27,to:37}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.p2.food = 1;
-      testState.grid = '.......................a.............b............';
+      testState.p2.energy = 1;
+      testState.grid = '.......................r.............b............';
       assert.deepEqual(createdState, testState);
     });
 
@@ -188,10 +188,10 @@ describe('Game', function(){
     });
 
     it('should declare winners correctly', function() {
-      beginState.grid = 'a.................................................';
+      beginState.grid = 'r.................................................';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = 'a.................................................';
-      testState.winner = 'a';
+      testState.grid = 'r.................................................';
+      testState.winner = 'r';
       assert.deepEqual(createdState, testState);
 
       beginState.grid = 'b.................................................';
