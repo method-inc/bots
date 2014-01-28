@@ -608,7 +608,7 @@ function nextGame(tournament, round, gameNum) {
                   }
 
                   gameNum++;
-                  if(tournament.games[round].length === gameNum) {
+                  if(tournament.games[round] && tournament.games[round].length === gameNum) {
                     gameNum = 0;
                     round++;
                   }
