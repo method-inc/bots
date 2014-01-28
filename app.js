@@ -310,10 +310,12 @@ io.sockets.on('connection', function (socket) {
 
     function sendTurns() {
       GameStore.findById(gameStore.id, function(err, game) {
-        socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-        game.turns.forEach(function(turn) {
-          socket.emit('game', turn);
-        });
+        if(game) {
+          socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
+          game.turns.forEach(function(turn) {
+            socket.emit('game', turn);
+          });
+        }
       });
     }
   });
