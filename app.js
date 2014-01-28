@@ -223,7 +223,10 @@ app.get('/bot', function(req, res) {
     res.redirect('/');
   }
   else {
-    res.render('bot')
+    var currentUrl = '';
+    if(req.user.bot)
+      currentUrl = req.user.bot.url;
+    res.render('bot', {currentBotPath:currentUrl});
   }
 });
 app.get('/starttournament', function(req, res) {
