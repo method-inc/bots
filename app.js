@@ -119,11 +119,11 @@ app.get('/history', function(req, res) {
             if(users[0])
               var p1 = users[0].name;
             else
-              var p1 = '';
+              var p1 = 'nodebot';
             if(users[1])
               var p2 = users[1].name;
             else
-              var p2 = '';
+              var p2 = 'nodebot';
             var description = '';
             if(game.winner === game.p1) {
               description = p1 + ' defeated ' + p2;
@@ -166,8 +166,14 @@ app.get('/game/:id', function(req, res) {
         User.find({
           'email': { $in: [game.p1, game.p2]}
         }, function(err, users) {
-          var p1 = { name:users[0].name, picture:users[0].picture };
-          var p2 = { name:users[1].name, picture:users[1].picture };
+          if(users[0])
+            var p1 = { name:users[0].name, picture:users[0].picture };
+          else
+            var p1 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
+          if(users[1])
+            var p2 = { name:users[1].name, picture:users[1].picture };
+          else
+            var p2 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
           res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner, prevpage:prevpage});
         });
       }
@@ -328,7 +334,6 @@ io.sockets.on('connection', function (socket) {
     User.find({bot: { $exists: true } }, function(err, users) {
       var toSend = [];
       toSend.push({name:'nodebot'});
-      toSend.push({name:'rubybot'})
       users.forEach(function(user) {
         toSend.push({name:user.email});
       });
