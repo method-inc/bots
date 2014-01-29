@@ -411,7 +411,7 @@ function startGame(botUrls, gameStore, cb) {
     request(p1Options, function(err, res, body) {
       if(!err) {
         console.log('received data: ' + body);
-        p1Moves = JSON.parse(body);
+        p1Moves = tryParse(body);
         if(p1Moves && p2Moves) {
           clearTimeout(timeout);
           evalMoves();
@@ -432,7 +432,7 @@ function startGame(botUrls, gameStore, cb) {
     request(p2Options, function(err, res, body) {
       if(!err) {
         console.log('received data: ' + body);
-        p2Moves = JSON.parse(body);
+        p2Moves = tryParse(body);
         if(p1Moves && p2Moves) {
           clearTimeout(timeout);
           evalMoves();
@@ -627,4 +627,14 @@ function nextGame(tournament, round, gameNum) {
       }
     });
   });
+}
+
+function tryParse(str) {
+  var moves = [];
+  try {
+    moves = JSON.parse(str);
+  }
+  finally {
+    return moves;
+  }
 }
