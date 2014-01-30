@@ -186,7 +186,22 @@ function showTurn(state) {
           ctx.drawImage(energyImage, 679, 51, 94, 94, x-coordWidth/2, y-coordHeight/2, coordWidth, coordHeight);
           break;
         case 'x':
-          ctx.fillStyle = 'grey';
+          ctx.fillStyle = '#F26140';
+          ctx.beginPath();
+          ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
+          ctx.fill();
+          ctx.strokeStyle = 'black';
+          ctx.beginPath();
+          ctx.moveTo(x-coordWidth/4, y-coordWidth/4);
+          ctx.lineTo(x+coordWidth/4, y+coordWidth/4);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x-coordWidth/4, y+coordWidth/4);
+          ctx.lineTo(x+coordWidth/4, y-coordWidth/4);
+          ctx.stroke();
+          break;
+        case 'X':
+          ctx.fillStyle = '#6EA1D7';
           ctx.beginPath();
           ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
           ctx.fill();
