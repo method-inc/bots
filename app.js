@@ -247,6 +247,20 @@ app.get('/test', function(req, res) {
     res.redirect('/');
   }
 });
+app.get('/eligible-users', function(req, res) {
+  if(!req.user) {
+    res.redirect('/');
+  }
+  else {
+    User.find({bot: { $exists: true } }, function(err, users) {
+      var emails = [];
+      users.forEach(function(user) {
+        emails.push(user.email);
+      });
+      res.send(emails);
+    });
+  }
+});
 
 var server = http.createServer(app).listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
