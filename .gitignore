@@ -4,3 +4,5 @@ bots/*
 !bots/nodebot
 !bots/rubybot
 !bots/bots.json
+
+.DS_Store
