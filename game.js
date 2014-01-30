@@ -3,7 +3,8 @@ var gridIds = {
   p2Spawn:'1',
   player1:'r',
   player2:'b',
-  dead:'x',
+  dead1:'x',
+  dead2:'X',
   energy:'*',
   empty:'.'
 };
@@ -54,7 +55,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   }
 
   // move
-  var re = new RegExp(gridIds.dead, 'g');
+  var re = new RegExp(gridIds.dead1, 'gi');
   state.grid = state.grid.replace(re, gridIds.empty);
   re = new RegExp(gridIds.player1+'|'+gridIds.player2, 'g');
   var newState = copyObj(state);
@@ -63,7 +64,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
     if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player1) {
       setIndex(state, move.from, gridIds.empty);
       if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
-        setIndex(newState, move.to, gridIds.dead);
+        setIndex(newState, move.to, gridIds.dead1);
       }
       else {
         setIndex(newState, move.to, gridIds.player1);
@@ -74,7 +75,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
     if(adjacent(state, move.to, move.from) && state.grid[move.from]===gridIds.player2) {
       setIndex(state, move.from, gridIds.empty);
       if(newState.grid[move.to]===gridIds.player1 || newState.grid[move.to]===gridIds.player2) {
-        setIndex(newState, move.to, gridIds.dead);
+        setIndex(newState, move.to, gridIds.dead2);
       }
       else {
         setIndex(newState, move.to, gridIds.player2);
@@ -85,7 +86,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   var unmovedP2s = getAllIndices(state.grid, gridIds.player2);
   unmovedP1s.forEach(function(index) {
     if(newState.grid[index]===gridIds.player1 || newState.grid[index]===gridIds.player2) {
-      setIndex(newState, index, gridIds.dead);
+      setIndex(newState, index, gridIds.dead1);
     }
     else {
       setIndex(newState, index, gridIds.player1);
@@ -93,7 +94,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   });
   unmovedP2s.forEach(function(index) {
     if(newState.grid[index]===gridIds.player1 || newState.grid[index]===gridIds.player2) {
-      setIndex(newState, index, gridIds.dead);
+      setIndex(newState, index, gridIds.dead2);
     }
     else {
       setIndex(newState, index, gridIds.player2);
@@ -120,33 +121,38 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
     });
   });
 
-  var dead = [];
+  var dead1 = [];
+  var dead2 = [];
   p1Indices.forEach(function(p1Index) {
     var surroundingP1 = battleData.p1[p1Index];
     getAdjacentIndices(state, p1Index).forEach(function(adjIndex) {
       if(battleData.p2[adjIndex]) {
         var surroundingP2 = battleData.p2[adjIndex];
         if(surroundingP1 > surroundingP2) {
-          if(dead.indexOf(p1Index) === -1)
-            dead.push(p1Index);
+          if(dead1.indexOf(p1Index) === -1)
+            dead1.push(p1Index);
         }
         else if(surroundingP1 === surroundingP2) {
-          if(dead.indexOf(p1Index) === -1)
-            dead.push(p1Index);
-          if(dead.indexOf(adjIndex) === -1)
-            dead.push(adjIndex);
+          if(dead1.indexOf(p1Index) === -1)
+            dead1.push(p1Index);
+          if(dead2.indexOf(adjIndex) === -1)
+            dead2.push(adjIndex);
         }
         else {
-          if(dead.indexOf(adjIndex) === -1)
-            dead.push(adjIndex);
+          if(dead2.indexOf(adjIndex) === -1)
+            dead2.push(adjIndex);
         }
       }
     });
   });
 
-  dead.forEach(function(index) {
-    setIndex(state, index, gridIds.dead);
-  })
+  dead1.forEach(function(index) {
+    setIndex(state, index, gridIds.dead1);
+  });
+
+  dead2.forEach(function(index) {
+    setIndex(state, index, gridIds.dead2);
+  });
 
   // raze
   if(state.grid[state.p1.spawn] === gridIds.player2) {
