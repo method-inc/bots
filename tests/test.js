@@ -111,7 +111,7 @@ describe('Game', function(){
       p1Moves = [{from:24,to:25}];
       p2Moves = [{from:35,to:25}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.........................x........................';
+      testState.grid = '.........................X........................';
       testState.winner = '.';
       assert.deepEqual(createdState, testState);
     });
@@ -131,7 +131,7 @@ describe('Game', function(){
       p1Moves = [{from:23,to:33}, {from:36,to:35}];
       p2Moves = [{from:44,to:34}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.................................rxr..............';
+      testState.grid = '.................................rXr..............';
       testState.winner = 'r';
       assert.deepEqual(createdState, testState);
     });
@@ -139,15 +139,22 @@ describe('Game', function(){
     it('should conduct more complex combat correctly (1)', function() {
       beginState.grid = '................rb......rbr.........b.............';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '................xx......rxx.........b.............';
+      testState.grid = '................xX......rXx.........b.............';
       assert.deepEqual(createdState, testState);
     });
 
     it('should conduct more complex combat correctly (2)', function() {
       beginState.grid = '................rb......brb.......brb.........rb..';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '................xb......bxx.......bxx.........xb..';
+      testState.grid = '................xb......bxX.......bxX.........xb..';
       testState.winner = 'b';
+      assert.deepEqual(createdState, testState);
+    });
+
+    it('should conduct more complex combat correctly (3)', function() {
+      beginState.grid = '................r........rb........bb.............';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '................r........xX........bb.............';
       assert.deepEqual(createdState, testState);
     });
 
