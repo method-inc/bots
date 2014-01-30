@@ -371,12 +371,14 @@ function startGame(botUrls, gameStore, cb) {
   var p1Options = {
     url: botUrls[0],
     method: 'POST',
-    form: {}
+    form: {},
+    timeout: 5000
   };
   var p2Options = {
     url: botUrls[1],
     method: 'POST',
-    form: {}
+    form: {},
+    timeout: 5000
   };
 
   gameStore.turns.push(gameState);
@@ -384,27 +386,6 @@ function startGame(botUrls, gameStore, cb) {
   nextTurn();
 
   function nextTurn() {
-    var timeout = setTimeout(function() {
-      if(gameStore.end === 'elegant') {
-        if(!p1Moves && !p2Moves) {
-          gameStore.end = gameStore.p1 + ' and ' + gameStore.p2 + ' timeout';
-        }
-        else if(!p1Moves) {
-          gameStore.end = gameStore.p1 + ' timeout';
-          gameStore.winner = gameStore.p2;
-        }
-        else if(!p2Moves) {
-          gameStore.end = gameStore.p2 + ' timeout';
-          gameStore.winner = gameStore.p1;
-        }
-      }
-
-      gameStarted = false;
-      ready = 0;
-      gameStore.save();
-      if(cb) cb();
-    }, 5000);
-
     p1Options.form.data = JSON.stringify({player:'r', state:gameState})+'\n';
     p2Options.form.data = JSON.stringify({player:'b', state:gameState})+'\n';
 
@@ -413,7 +394,6 @@ function startGame(botUrls, gameStore, cb) {
         console.log('received data: ' + body);
         p1Moves = tryParse(body);
         if(p1Moves && p2Moves) {
-          clearTimeout(timeout);
           evalMoves();
         }
       }
@@ -434,7 +414,6 @@ function startGame(botUrls, gameStore, cb) {
         console.log('received data: ' + body);
         p2Moves = tryParse(body);
         if(p1Moves && p2Moves) {
-          clearTimeout(timeout);
           evalMoves();
         }
       }
