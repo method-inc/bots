@@ -127,6 +127,10 @@ pre {
   padding: 25px;
   margin: 25px;
 }
+form h4 {
+  color: #d3d3d3;
+  margin-bottom: 5px;
+}
 #game-wrapper {
   width: 1000px;
   margin: auto;
