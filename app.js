@@ -520,6 +520,7 @@ function organizeTournament() {
     users.forEach(function(user) {
       players.push(user.email);
     });
+    players = shuffleArray(players);
     var round = 1;
     console.log('starting tournament with ' + players.length + ' players');
     if(players.length > 1) {
@@ -573,6 +574,15 @@ function tournamentRound(tournament, round, players, assigned) {
 }
 function log2(num) {
   return Math.log(num)/Math.log(2);
+}
+function shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
 }
 
 function startTournament(tournament) {
