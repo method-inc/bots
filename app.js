@@ -225,6 +225,16 @@ app.get('/bot', function(req, res) {
     res.render('bot', {currentBotPath:currentUrl});
   }
 });
+app.post('/bot', function(req, res) {
+  if(req.user) {
+    req.user.bot = {};
+    req.user.bot.url = req.body.url;
+    req.user.save(function() {
+      console.log('user ' + req.user);
+    });
+  }
+  res.redirect('/');
+});
 app.get('/starttournament', function(req, res) {
   if(req.user && admins.indexOf(req.user.email) !== -1) {
     organizeTournament();
@@ -284,18 +294,6 @@ io.set('authorization', function (data, accept) {
   }
 });
 io.sockets.on('connection', function (socket) {
-  socket.on('send-url', function(url) {
-    User.findById(socket.handshake.session.auth.userId, function(err, user) {
-      if(user) {
-        user.bot = {};
-        user.bot.url = url;
-        user.save(function() {
-          console.log('user ' + user);
-        });
-      }
-    });
-  });
-
   viewers.push(socket);
 
   socket.on('start', function(data) {

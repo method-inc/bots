@@ -1,6 +1,4 @@
 extends layout
-block head
-  script(src='/scripts/upload.js')
 block content
   h1 SDW Bot-Wars
   h2 Update Your Bot
@@ -10,7 +8,7 @@ block content
     a(href='/logout') Log Out
   h2#back
     a(href='/') &#x25C0; Back
-  form
+  form(action='/bot', method='post')
     label(for='url') URL
     input(id='url',type='text',value='',placeholder='@',name='url')
     input(type='submit',value='Enhance!',data-transition='fade', data-theme='c', id='submit')
