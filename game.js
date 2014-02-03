@@ -15,7 +15,7 @@ var distance = {
   energy:0,
   spawn:1
 };
-var spawnFrequency = 3;
+var spawnFrequency = 5;
 
 exports.create = function(rows, cols, maxTurns) {
   var gameState = {

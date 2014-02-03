@@ -378,7 +378,7 @@ function parseSessionCookie(cookie, sid, secret) {
 }
 
 function startGame(botUrls, gameStore, cb) {
-  var gameState = game.create(20, 20, 100);
+  var gameState = game.create(20, 20, 200);
   var p1Moves = null;
   var p2Moves = null;
   var gameStarted = true;
