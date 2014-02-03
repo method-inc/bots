@@ -12,3 +12,13 @@ block content
     label(for='url') URL
     input(id='url',type='text',value='',placeholder='@',name='url')
     input(type='submit',value='Enhance!',data-transition='fade', data-theme='c', id='submit')
+
+  form(action='/bot/participate', method='post')
+    -if(participating)
+      h4 You are participating in the next tournament
+      input(type='hidden', value='false', name='participating')
+      input(type='submit', value='I don\'t want to participate.')
+    -else
+      h4 You are not participating in the next tournament
+      input(type='hidden', value='true', name='participating')
+      input(type='submit', value='I want to participate!')

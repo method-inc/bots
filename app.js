@@ -222,7 +222,7 @@ app.get('/bot', function(req, res) {
     var currentUrl = '';
     if(req.user.bot)
       currentUrl = req.user.bot.url;
-    res.render('bot', {currentBotPath:currentUrl});
+    res.render('bot', {currentBotPath:currentUrl, participating:req.user.participating});
   }
 });
 app.post('/bot', function(req, res) {
@@ -232,8 +232,24 @@ app.post('/bot', function(req, res) {
     req.user.save(function() {
       console.log('user ' + req.user);
     });
+    res.redirect('/bot');
   }
-  res.redirect('/');
+  else {
+    res.redirect('/');
+  }
+});
+app.post('/bot/participate', function(req, res) {
+  if(req.user) {
+    req.user.participating = req.body.participating;
+    console.log(JSON.stringify(req.body));
+    req.user.save(function() {
+      console.log('user ' + req.user);
+    });
+    res.redirect('/bot');
+  }
+  else {
+    res.redirect('/');
+  }
 });
 app.get('/starttournament', function(req, res) {
   if(req.user && admins.indexOf(req.user.email) !== -1) {
@@ -262,7 +278,7 @@ app.get('/eligible-users', function(req, res) {
     res.redirect('/');
   }
   else {
-    User.find({bot: { $exists: true } }, function(err, users) {
+    User.find({bot: { $exists: true }, participating:true }, function(err, users) {
       var emails = [];
       users.forEach(function(user) {
         emails.push(user.email);
@@ -499,7 +515,7 @@ function startGame(botUrls, gameStore, cb) {
 }
 
 function organizeTournament() {
-  User.find({bot: { $exists: true } }, function(err, users) {
+  User.find({bot: { $exists: true }, participating:true }, function(err, users) {
     var players = [];
     users.forEach(function(user) {
       players.push(user.email);

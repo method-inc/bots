@@ -6,5 +6,6 @@ module.exports = mongoose.model('User', new Schema({
   email: { type: String, required: true },
   picture: { type: String },
   bot: { },
+  participating: { type: Boolean, default: false },
   googleId: { type: Number, required: true }
 }));
