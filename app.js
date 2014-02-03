@@ -519,7 +519,14 @@ function tournamentRound(tournament, round, players, assigned) {
   if(players.length > 1) {
     var numPlayers = players.length;
     var eliminated = [];
-    var numPlaying = Math.pow(2, ~~log2(numPlayers));
+    var highestPow2 = Math.pow(2, ~~log2(numPlayers));
+    if(numPlayers%2===0) {
+      numPlaying = highestPow2;
+    }
+    else {
+      numPlaying = 2;
+    }
+
     tournament.games[round-1] = [];
     for(var i=0; i<numPlaying-1; i+=2) {
       var newGame = new GameStore();
