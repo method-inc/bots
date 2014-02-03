@@ -170,7 +170,7 @@ app.get('/game/:id', function(req, res) {
             var p2 = { name:users[1].name, picture:users[1].picture };
           else
             var p2 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
-          res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner, prevpage:prevpage});
+          res.render('game', {id:req.params.id, p1:p1, p2:p2, winner:game.winner, prevpage:prevpage, turns:game.turns});
         });
       }
       else {

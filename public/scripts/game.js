@@ -1,4 +1,5 @@
 var gameTurns = [];
+if(typeof turns !== 'undefined') gameTurns = turns;
 var currentDisplayed = 0;
 var turn = 0;
 var socket = io.connect(window.location.hostname);
@@ -15,6 +16,11 @@ window.onload = function() {
   socket.emit('show', {id:gameId});
   energyImage = new Image();
   energyImage.src = '/images/iconSprite.png';
+  if(gameTurns.length) {
+    currentDisplayed = gameTurns.length-1;
+    showTurn(gameTurns[currentDisplayed]);
+    updateRound();
+  }
 }
 
 socket.on('message', function(data) {
@@ -22,13 +28,15 @@ socket.on('message', function(data) {
     resetGame();
   }
 });
-socket.on('game', function(data) {
-  gameTurns.push(data);
-  showTurn(data);
-  currentDisplayed = turn;
-  turn++;
-  updateRound();
-});
+if(!gameTurns.length) {
+  socket.on('game', function(data) {
+    gameTurns.push(data);
+    showTurn(data);
+    currentDisplayed = turn;
+    turn++;
+    updateRound();
+  });
+}
 socket.on('game-data', function(data) {
   if(data.winner) {
     if(data.end === 'elegant') {

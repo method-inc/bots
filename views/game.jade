@@ -1,5 +1,7 @@
 extends layout
 block head
+  script.
+    var turns=!{JSON.stringify(turns)};
   script(src='/scripts/game.js')
 block content
   div#game-id.hidden #{id}
