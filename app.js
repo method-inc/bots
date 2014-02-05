@@ -235,10 +235,11 @@ app.get('/tournament/:id', function(req, res) {
     res.redirect('/');
   }
   else {
+    var prevpage = req.session.prevpage;
     req.session.prevpage = '/tournament/' + req.params.id;
     Tournament.findById(req.params.id, function(err, tournament) {
       if(tournament) {
-        res.render('tournament', {tournament:tournament});
+        res.render('tournament', {tournament:tournament, prevpage:prevpage});
       }
       else {
         console.log('no tournament');

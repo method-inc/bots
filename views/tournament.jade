@@ -10,7 +10,10 @@ block content
   h2#logout
     a(href='/logout') Log Out
   h2#back
-    a(href='/') &#x25C0; Back
+    -if(prevpage)
+      a(href='#{prevpage}') &#x25C0; Back
+    -else
+      a(href='/') &#x25C0; Back
   -if(!tournament.winner)
     - var nextGame = tournament.games[tournament.nextGame.round][tournament.nextGame.game];
     - var estOffset = tournament.nextGame.time.getTimezoneOffset()-300;
