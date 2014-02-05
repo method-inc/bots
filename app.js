@@ -97,6 +97,7 @@ app.get('/', function(req, res) {
     res.render('loggedout');
   }
   else {
+    req.session.prevpage = '';
     res.render('index', {email:req.user.email, md: md, instructions: instructionData.toString()});
   }
 });
