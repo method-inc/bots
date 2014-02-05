@@ -106,6 +106,14 @@ app.get('/history', function(req, res) {
   }
   else {
     req.session.prevpage = '/history';
+    getGames(function(gamesList) {
+      getTournaments(function(tournamentsList) {
+        res.render('gameslist', {games:gamesList, tournaments:tournamentsList});
+      })
+    });
+  }
+
+  function getGames(cb) {
     GameStore
     .find({finished:true})
     .sort('-finishedAt')
@@ -139,13 +147,38 @@ app.get('/history', function(req, res) {
             completed++;
 
             if(completed===games.length) {
-              res.render('gameslist', {games:gamesList});
+              if(cb) cb(gamesList);
             }
           });
         });
       }
       else {
-        res.render('gameslist', {games:[]});
+        if(cb) cb([]);
+      }
+    });
+  }
+  function getTournaments(cb) {
+    Tournament
+    .find({winner: { $exists: true }})
+    .sort('-createdAt')
+    .exec(function(err, tournaments) {
+      if(tournaments.length) {
+        var tournamentsList = [];
+        var completed = 0;
+        tournaments.forEach(function(tournament, i) {
+          User.findOne({'email': tournament.winner}, function(err, user) {
+            var description = 'Winner: ' + user.name
+            tournamentsList[i] = {id:tournament.id, description:description, time:tournament.createdAt};
+            completed++;
+
+            if(completed===tournaments.length) {
+              if(cb) cb(tournamentsList);
+            }
+          });
+        });
+      }
+      else {
+        if(cb) cb([]);
       }
     });
   }

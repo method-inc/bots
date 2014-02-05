@@ -268,29 +268,36 @@ canvas#game.test {
   font-size: 32px;
   margin-left: 5px;
 }
-.gamelist {
+.gamelist,
+.tournamentlist {
   width: 600px;
   margin: auto;
 }
-.gamelist a {
+.gamelist a,
+.tournamentlist a {
   display: block;
   color: #d3d3d3;
   border-top: 1px solid #d3d3d3;
   padding: 5px;
 }
-.gamelist a:first-child {
+.gamelist a:first-child,
+.tournamentlist a:first-child {
   border-top: none;
 }
-.gamelist a:hover {
+.gamelist a:hover,
+.tournamentlist a:hover {
   color: #000;
 }
-.gamelist .desc {
+.gamelist .desc,
+.tournamentlist .desc {
   float: left;
 }
-.gamelist .time {
+.gamelist .time,
+.tournamentlist .time {
   float: right;
 }
-.gamelist br {
+.gamelist br,
+.tournamentlist br {
   clear: both;
 }
 .gist {
