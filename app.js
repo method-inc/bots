@@ -519,6 +519,8 @@ function organizeTournament() {
     var players = [];
     users.forEach(function(user) {
       players.push(user.email);
+      user.participating = false;
+      user.save();
     });
     players = shuffleArray(players);
     var round = 1;
