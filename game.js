@@ -224,10 +224,20 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   // determine whether to continue/end game
   var numP1 = getAllIndices(state.grid, gridIds.player1).length;
   var numP2 = getAllIndices(state.grid, gridIds.player2).length;
-  if(!numP1 && !numP2) state.winner = gridIds.empty;
-  else if(!numP1) state.winner = gridIds.player2;
-  else if(!numP2) state.winner = gridIds.player1;
-  else if(state.turnsElapsed >= state.maxTurns) state.winner = gridIds.empty;
+
+  if(state.turnsElapsed >= state.maxTurns || !numP1 || !numP2) {
+    if(numP1 > numP2) {
+      state.winner = gridIds.player1;
+    }
+    else if(numP2 > numP1) {
+      state.winner = gridIds.player2;
+    }
+    else {
+      var i = ~~(Math.random()*2);
+      if(i) state.winner = gridIds.player1;
+      else state.winner = gridIds.player2;
+    }
+  }
 
   return state;
 };
