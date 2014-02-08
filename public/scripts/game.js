@@ -13,7 +13,6 @@ window.onload = function() {
   c=document.getElementById('game');
   ctx=c.getContext('2d');
   var gameId = $('#game-id').html();
-  socket.emit('show', {id:gameId});
   energyImage = new Image();
   energyImage.src = '/images/iconSprite.png';
   if(gameTurns.length) {
@@ -37,19 +36,6 @@ if(!gameTurns.length) {
     updateRound();
   });
 }
-socket.on('game-data', function(data) {
-  if(data.winner) {
-    if(data.end === 'elegant') {
-      $('.data-received').html(data.winner + ' wins');
-    }
-    else {
-      $('.data-received').html(data.winner + ' wins ('+data.end+')');
-    }
-  }
-  else {
-    $('.data-received').hide();
-  }
-});
 
 $(document).keydown(function(e) {
   animating = false;
