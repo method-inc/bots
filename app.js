@@ -652,24 +652,22 @@ function nextGame(tournament, round, gameNum) {
                       game.p2 = winner;
                       tournament.games[nextRound][nextGameNum].p2 = winner;
                     }
-                    game.save();
+                    game.save(function() {
+                      gameNum++;
+                      if(tournament.games[round] && tournament.games[round].length === gameNum) {
+                        gameNum = 0;
+                        round++;
+                      }
+                      nextGame(tournament, round, gameNum);
+                    });
                     tournament.markModified('games');
                     tournament.save();
                   });
                 }
-
-                gameNum++;
-                if(tournament.games[round] && tournament.games[round].length === gameNum) {
-                  gameNum = 0;
-                  round++;
-                }
-                if(tournament.games.length === round) {
+                else {
                   console.log('tournament done');
                   tournament.winner = winner;
                   tournament.save();
-                }
-                else {
-                  nextGame(tournament, round, gameNum);
                 }
               });
             }
@@ -678,6 +676,7 @@ function nextGame(tournament, round, gameNum) {
       }
       else {
         console.log('p1 or p2 is missing');
+        console.log(JSON.stringify(game, null, 4));
       }
     }
     else {
