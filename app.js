@@ -630,12 +630,21 @@ function nextGame(tournament, round, gameNum) {
   GameStore.findById(gameDetails.id, function(err, game) {
     if(game) {
       if(game.p1 && game.p2) {
-        var botUrls = [];
+        var botUrls = ['', ''];
+        var botsFound = 0;
         [game.p1, game.p2].forEach(function(email) {
           User.findOne({email:email}, function(err, user) {
             if(user && user.bot) {
-              botUrls.push(user.bot.url);
-              if(botUrls.length >= 2) startGame(botUrls, game, function() {
+              if(email === game.p1) {
+                botUrls[0] = user.bot.url;
+                botsFound++;
+              }
+              else {
+                botUrls[1] = user.bot.url;
+                botsFound++;
+              }
+
+              if(botsFound === 2) startGame(botUrls, game, function() {
                 var winner = game.winner;
 
                 if(round+1 < tournament.games.length) {
