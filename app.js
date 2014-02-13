@@ -196,14 +196,20 @@ app.get('/game/:id', function(req, res) {
         User.find({
           'email': { $in: [game.p1, game.p2]}
         }, function(err, users) {
-          if(users[0])
-            var p1 = { name:users[0].name, picture:users[0].picture };
-          else
-            var p1 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
-          if(users[1])
-            var p2 = { name:users[1].name, picture:users[1].picture };
-          else
-            var p2 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
+          var p1 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
+          var p2 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
+          if(users[0]) {
+            if(users[0].email === game.p1)
+              var p1 = { name:users[0].name, picture:users[0].picture };
+            else
+              var p2 = { name:users[0].name, picture:users[0].picture };
+          }
+          if(users[1]) {
+            if(users[1].email === game.p1)
+              var p1 = { name:users[1].name, picture:users[1].picture };
+            else
+              var p2 = { name:users[1].name, picture:users[1].picture };
+          }
 
           var description = '';
           if(game.winner) {
