@@ -29,6 +29,7 @@ var usersById = {};
 var nextUserId = 0;
 var usersByGoogleId = {};
 var admins = ['mbriesen@skookum.com', 'eric@skookum.com'];
+var testBotUrl = 'http://mobyvb-sdw-bot.herokuapp.com';
 
 everyauth.everymodule
   .findUserById( function (req, id, callback) {
@@ -168,7 +169,9 @@ app.get('/history', function(req, res) {
         var completed = 0;
         tournaments.forEach(function(tournament, i) {
           User.findOne({'email': tournament.winner}, function(err, user) {
-            var description = 'Winner: ' + user.name
+            var winner = 'nodebot';
+            if(user && user.name) winner = user.name;
+            var description = 'Winner: ' + winner;
             tournamentsList[i] = {id:tournament.id, description:description, time:tournament.createdAt};
             completed++;
 
@@ -305,6 +308,12 @@ app.post('/bot/participate', function(req, res) {
 app.get('/starttournament', function(req, res) {
   if(req.user && admins.indexOf(req.user.email) !== -1) {
     organizeTournament();
+  }
+  res.redirect('/');
+});
+app.get('/startdummytournament/:players', function(req, res) {
+  if(req.user && admins.indexOf(req.user.email) !== -1) {
+    organizeDummyTournament(req.user, req.params.players);
   }
   res.redirect('/');
 });
@@ -591,7 +600,20 @@ function organizeTournament() {
     }
   });
 }
-function tournamentRound(tournament, round, players, assigned) {
+function organizeDummyTournament(user, numPlayers) {
+  var players = [];
+  for(var i=0; i<numPlayers; i++) {
+    players.push('player '+i);
+  }
+  var round = 1;
+  console.log('starting tournament with ' + players.length + ' players');
+  if(players.length > 1) {
+    var tournament = new Tournament();
+    console.log(tournament.id);
+    tournamentRound(tournament, round, players, [], true);
+  }
+}
+function tournamentRound(tournament, round, players, assigned, test) {
   if(players.length > 1) {
     var numPlayers = players.length;
     var eliminated = [];
@@ -627,11 +649,11 @@ function tournamentRound(tournament, round, players, assigned) {
     });
 
     round++;
-    tournamentRound(tournament, round, players, assigned);
+    tournamentRound(tournament, round, players, assigned, test);
   }
   else {
     setTimeout(function() {
-      startTournament(tournament);
+      startTournament(tournament, test);
     }, 5000);
   }
 }
@@ -648,11 +670,11 @@ function shuffleArray(array) {
     return array;
 }
 
-function startTournament(tournament) {
+function startTournament(tournament, test) {
   console.log('TOURNAMENT STARTED');
-  nextGame(tournament, 0, 0);
+  nextGame(tournament, 0, 0, test);
 }
-function nextGame(tournament, round, gameNum) {
+function nextGame(tournament, round, gameNum, test) {
   console.log('NEXT GAME');
   var now = new Date().valueOf();
   var scheduleDate = new Date(now+100);
@@ -665,58 +687,67 @@ function nextGame(tournament, round, gameNum) {
   GameStore.findById(gameDetails.id, function(err, game) {
     if(game) {
       if(game.p1 && game.p2) {
-        var botUrls = ['', ''];
-        var botsFound = 0;
-        [game.p1, game.p2].forEach(function(email) {
-          User.findOne({email:email}, function(err, user) {
-            if(user && user.bot) {
-              if(email === game.p1) {
-                botUrls[0] = user.bot.url;
-                botsFound++;
-              }
-              else {
-                botUrls[1] = user.bot.url;
-                botsFound++;
-              }
-
-              if(botsFound === 2) startGame(botUrls, game, function() {
-                var winner = game.winner;
-
-                if(round+1 < tournament.games.length) {
-                  var nextRound = round+1;
-                  var nextGameNum = ~~(gameNum/2);
-                  var nextRoundGame = tournament.games[nextRound][nextGameNum];
-                  var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
-                  GameStore.findById(nextRoundGame.id, function(err, game) {
-                    if(nextRoundPlayer) {
-                      game.p1 = winner;
-                      tournament.games[nextRound][nextGameNum].p1 = winner;
-                    }
-                    else {
-                      game.p2 = winner;
-                      tournament.games[nextRound][nextGameNum].p2 = winner;
-                    }
-                    game.save(function() {
-                      gameNum++;
-                      if(tournament.games[round] && tournament.games[round].length === gameNum) {
-                        gameNum = 0;
-                        round++;
-                      }
-                      nextGame(tournament, round, gameNum);
-                    });
-                    tournament.markModified('games');
-                    tournament.save();
-                  });
+        if(!test) {
+          var botUrls = ['', ''];
+          var botsFound = 0;
+          [game.p1, game.p2].forEach(function(email) {
+            User.findOne({email:email}, function(err, user) {
+              if(user && user.bot) {
+                if(email === game.p1) {
+                  botUrls[0] = user.bot.url;
+                  botsFound++;
                 }
                 else {
-                  console.log('tournament done');
-                  tournament.winner = winner;
-                  tournament.save();
+                  botUrls[1] = user.bot.url;
+                  botsFound++;
                 }
+
+                if(botsFound === 2) startGameWithUrls(botUrls, game);
+              }
+            });
+          });
+        }
+        else {
+          startGameWithUrls([testBotUrl, testBotUrl], game);
+        }
+
+        function startGameWithUrls(botUrls, game) {
+          startGame(botUrls, game, function() {
+            var winner = game.winner;
+
+            if(round+1 < tournament.games.length) {
+              var nextRound = round+1;
+              var nextGameNum = ~~(gameNum/2);
+              var nextRoundGame = tournament.games[nextRound][nextGameNum];
+              var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
+              GameStore.findById(nextRoundGame.id, function(err, game) {
+                if(nextRoundPlayer) {
+                  game.p1 = winner;
+                  tournament.games[nextRound][nextGameNum].p1 = winner;
+                }
+                else {
+                  game.p2 = winner;
+                  tournament.games[nextRound][nextGameNum].p2 = winner;
+                }
+                game.save(function() {
+                  gameNum++;
+                  if(tournament.games[round] && tournament.games[round].length === gameNum) {
+                    gameNum = 0;
+                    round++;
+                  }
+                  nextGame(tournament, round, gameNum, test);
+                });
+                tournament.markModified('games');
+                tournament.save();
               });
             }
+            else {
+              console.log('tournament done');
+              tournament.winner = winner;
+              tournament.save();
+            }
           });
-        });
+        }
       }
       else {
         console.log('p1 or p2 is missing');
