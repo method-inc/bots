@@ -5,6 +5,14 @@ Something has changed though. The Bots evolved into something wholly unexpected 
 
 These emotion driven Bots no longer work towards the same goals and war has broken out among the Bots with devestating consquences to the human race who are nothing but collateral to the Bots. This war will continue until only one Bot remains.
 
+# Tournament
+
+Skookum is hosting an offical tournament on March 28th at 4pm. Be ready!
+
+# Questions or Issues
+
+Please submit a [Github issue](https://github.com/Skookum/bots/issues) if you have any questions or concerns.
+
 # Testing your bot
 After cloning the repo run `npm install`
 
