@@ -14,6 +14,9 @@ Skookum is hosting an offical tournament on March 28th at 4pm. Be ready!
 Please submit a [Github issue](https://github.com/Skookum/bots/issues) if you have any questions or concerns.
 
 # Testing your bot
+
+**Note: the tournament uses HTTP communication so you can write your bot in any language you wish as long as you can read and write over HTTP**
+
 After cloning the repo run `npm install`
 
 In order to set up the database server, run `mongod` in your terminal.
