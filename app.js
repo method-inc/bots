@@ -308,6 +308,35 @@ app.get('/starttournament', function(req, res) {
   }
   res.redirect('/');
 });
+app.get('/kickstart/:tournamentId/:gameId', function(req, res) {
+  if(req.user && admins.indexOf(req.user.email) !== -1) {
+    Tournament.findById(req.params.tournamentId, function(err, tournament) {
+      if(!err && tournament) {
+        GameStore.findById(req.params.gameId, function(err, game) {
+          if(!err && game) {
+            tournament.games.forEach(function(round, roundI) {
+              round.forEach(function(match, matchI) {
+                if(match.id === game.id) {
+                  game.turns = [];
+                  game.save(function() {
+                    nextGame(tournament, roundI, matchI);
+                  });
+                }
+              });
+            });
+          }
+          else {
+            console.log(err);
+          }
+        });
+      }
+      else {
+        console.log(err);
+      }
+    });
+  }
+  res.redirect('/');
+});
 app.get('/bots/nodebot/app.js', function(req, res) {
   if(!req.user) {
     res.redirect('/');
