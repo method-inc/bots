@@ -256,6 +256,7 @@ app.get('/tournament/:id', function(req, res) {
   }
   else {
     var prevpage = req.session.prevpage;
+    if(prevpage === '/tournament/' + req.params.id) prevpage = '/';
     req.session.prevpage = '/tournament/' + req.params.id;
     Tournament.findById(req.params.id, function(err, tournament) {
       if(tournament) {
