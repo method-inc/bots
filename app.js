@@ -618,12 +618,8 @@ function tournamentRound(tournament, round, players, assigned, test) {
     var numPlayers = players.length;
     var eliminated = [];
     var highestPow2 = Math.pow(2, ~~log2(numPlayers));
-    if(numPlayers%2===0) {
-      numPlaying = highestPow2;
-    }
-    else {
-      numPlaying = 2;
-    }
+    numPlaying = (numPlayers-highestPow2)*2;
+    if(!numPlaying) numPlaying = numPlayers;
 
     tournament.games[round-1] = [];
     for(var i=0; i<numPlaying-1; i+=2) {
