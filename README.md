@@ -9,6 +9,8 @@ These emotion driven Bots no longer work towards the same goals and war has brok
 
 Skookum is hosting an offical tournament on March 28th at 4pm. Be ready!
 
+In order to participate in the tournament, make sure you submit your public bot URL at [http://bots.skookum.com/bot](http://bots.skookum.com/bot) and click the "I want to participate!" button before the tournament starts.
+
 # Questions or Issues
 
 Please submit a [Github issue](https://github.com/Skookum/bots/issues) if you have any questions or concerns.
@@ -27,7 +29,7 @@ Go to `http://localhost:3000` in your browser.
 
 Log in with a Google account and specify your bot URL as you would normally, by using the `/bot` route.
 
-Your bot will run through HTTP communication now instead of stdin/stdout. In order to test locally you will need one bot (you can use the nodebot.js in the bots folder) running at localhost:1337 and a secondbot can be run on any URL you want. We recommend using [ngrok](https://ngrok.com/) for your local testing as this is probably what you will use for the real tournament. At the `/bot` route you will be asked to input your ngrok URL for your bot. Then at `/test/` you can select your user account (which points to your ngrok URL) and nodebot (which is expected to be running at localhost:1337) and watch them fight to the death.
+Your bot will run through HTTP communication now instead of stdin/stdout. In order to test locally you will need one bot running at localhost:1337 (you can use the nodebot in the bots/nodebot folder by running `node app.js 1337`) and a second bot can be run on any URL you want. We recommend using [ngrok](https://ngrok.com/) for your local testing as this is probably what you will use for the real tournament. At the `/bot` route you will be asked to input the URL for your bot. Then at `/test/` you can select your user account (which points to your bot URL) and nodebot (which is expected to be running at localhost:1337) and watch them fight to the death.
 
 Go to the `/test` route to run test matches. In the dropdown menus, you can choose the bots to compete. Click the "new game" button to start and view the match. **Note the ```/test``` route can only be used on localhost - not on the production site**
 
