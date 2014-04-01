@@ -107,12 +107,12 @@ describe('Game', function(){
     });
 
     it('should kill aliens of different teams that move to the same position', function() {
-      beginState.grid = '........................r..........b..............';
+      beginState.grid = 'r.......................r..........b..............';
       p1Moves = [{from:24,to:25}];
       p2Moves = [{from:35,to:25}];
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.........................X........................';
-      testState.winner = '.';
+      testState.grid = 'r........................X........................';
+      testState.winner = 'r';
       assert.deepEqual(createdState, testState);
     });
 
@@ -189,9 +189,8 @@ describe('Game', function(){
     it('should end the game after a certain number of turns have passed', function() {
       beginState.turnsElapsed = 19;
       testState.turnsElapsed = 20;
-      testState.winner = '.';
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      assert.deepEqual(createdState, testState);
+      assert.ok(createdState.winner);
     });
 
     it('should declare winners correctly', function() {
@@ -205,12 +204,6 @@ describe('Game', function(){
       createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
       testState.grid = 'b.................................................';
       testState.winner = 'b';
-      assert.deepEqual(createdState, testState);
-
-      beginState.grid = '..................................................';
-      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '..................................................';
-      testState.winner = '.';
       assert.deepEqual(createdState, testState);
     });
   });
