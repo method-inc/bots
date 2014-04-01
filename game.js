@@ -291,12 +291,14 @@ function makeEmptyGrid(rows, cols) {
   return Array(rows*cols+1).join(gridIds.empty);
 }
 function adjacent(state, index1, index2) {
-  var coord1 = indexToCoord(state, index1);
-  var coord2 = indexToCoord(state, index2);
-  var horizontal = Math.abs(coord1.x-coord2.x);
-  var vertical = Math.abs(coord1.y-coord2.y);
-  if((horizontal<=distance.move && vertical===0) || (vertical<=distance.move && horizontal===0)) {
-    return true;
+  if(index1<state.grid.length && index2<state.grid.length && index1>=0 && index2>=0) {
+    var coord1 = indexToCoord(state, index1);
+    var coord2 = indexToCoord(state, index2);
+    var horizontal = Math.abs(coord1.x-coord2.x);
+    var vertical = Math.abs(coord1.y-coord2.y);
+    if((horizontal<=distance.move && vertical===0) || (vertical<=distance.move && horizontal===0)) {
+      return true;
+    }
   }
   return false;
 }

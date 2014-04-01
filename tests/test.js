@@ -88,6 +88,14 @@ describe('Game', function(){
       assert.deepEqual(createdState, testState);
     });
 
+    it('should ignore commands to move off the grid', function() {
+      p1Moves = [{from:49,to:59}];
+      beginState.grid = '.b...............................................r';
+      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+      testState.grid = '.b...............................................r';
+      assert.deepEqual(createdState, testState);
+    });
+
     it('should ignore commands without "to" and "from" properties', function() {
       p1Moves = [{begin:11,end:0}];
       p2Moves = [{from:38,to:28}];
