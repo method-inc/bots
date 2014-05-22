@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1= bot.url
+  h2= 'User: ' + bot.UserId
+
+  h2 Edit Bot
+  form(action='/users/#{bot.UserId}/bots/#{bot.id}' method='post')
+    label URL
+    input(type='text' name='url' value='#{bot.url}')
+    input(type='hidden', name='_method' value='put')
+    input(type='submit')
+
+  h2 Delete Bot
+  form(action='/users/#{bot.UserId}/bots/#{bot.id}' method='post')
+    input(type='hidden', name='_method' value='delete')
+    input(type='submit' value='delete')

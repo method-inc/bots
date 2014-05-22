@@ -26,9 +26,8 @@ module.exports = {
   },
 
   editUser: function(req, res) {
-    User.find({
-        where: {id:req.params.userId}
-      }).success(function(user) {
+    User.find(req.params.userId)
+      .success(function(user) {
         user.updateAttributes(req.body)
           .success(function(user) {
             res.render('profile', {user:user});
@@ -37,9 +36,8 @@ module.exports = {
   },
 
   deleteUser: function(req, res) {
-    User.find({
-        where: {id:req.params.userId}
-      }).success(function(user) {
+    User.find(req.params.userId)
+      .success(function(user) {
         user.destroy()
           .success(function() {
             res.redirect('/users');

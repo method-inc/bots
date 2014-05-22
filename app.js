@@ -5,6 +5,7 @@
 
 var express = require('express')
   , user = require('./handlers/user_handler')
+  , bot = require('./handlers/bot_handler')
   , http = require('http')
   , path = require('path')
   , models = require('./models');
@@ -30,12 +31,26 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/users', user.listUsers);
-app.post('/users', user.createUser);
-app.get('/users/:userId', user.getUser);
-app.put('/users/:userId', user.editUser);
+// User methods
+app.get(   '/users',         user.listUsers);
+app.post(  '/users',         user.createUser);
+app.get(   '/users/:userId', user.getUser);
+app.put(   '/users/:userId', user.editUser);
 app.delete('/users/:userId', user.deleteUser);
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
-});
+// Bot methods
+app.get(   '/users/:userId/bots',        bot.listUserBots);
+app.post(  '/users/:userId/bots',        bot.createBot);
+app.get(   '/users/:userId/bots/:botId', bot.getBot);
+app.put(   '/users/:userId/bots/:botId', bot.editBot);
+app.delete('/users/:userId/bots/:botId', bot.deleteBot);
+
+models
+  .sequelize
+  .sync()
+  .complete(function(err) {
+    if(err) throw err;
+    http.createServer(app).listen(app.get('port'), function(){
+      console.log('Express server listening on port ' + app.get('port'));
+    });
+  });

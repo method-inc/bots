@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1 Bots for #{userId}
+  pre= JSON.stringify(bots, null, 4)
+
+  h2 Create Bot
+  form(action='/users/#{userId}/bots' method='post')
+    label URL
+    input(type='text' name='url')
+    input(type='submit')

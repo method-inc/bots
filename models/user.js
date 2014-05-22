@@ -31,7 +31,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-
+        User.hasMany(models.Bot);
       },
       authorize: function(email, password, fn) {
         User.find({ where: {email: email} })
