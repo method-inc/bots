@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1 Users
+  pre= JSON.stringify(users, null, 4)
+
+  h2 Create User
+  form(action='/users' method='post')
+    label First Name
+    input(type='text' name='firstName')
+    label Last Name
+    input(type='text' name='lastName')
+    label Email
+    input(type='email' name='email')
+    label Password
+    input(type='password' name='password')
+    input(type='submit')

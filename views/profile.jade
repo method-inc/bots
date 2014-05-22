@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1= user.firstName + ' ' + user.lastName
+  h2= user.email
+
+  h2 Edit User
+  form(action='/users/#{user.id}' method='post')
+    label First Name
+    input(type='text' name='firstName' value='#{user.firstName}')
+    label Last Name
+    input(type='text' name='lastName' value='#{user.lastName}')
+    label Email
+    input(type='email' name='email' value='#{user.email}')
+    input(type='hidden', name='_method' value='put')
+    input(type='submit')
+
+  h2 Delete User
+  form(action='/users/#{user.id}' method='post')
+    input(type='hidden', name='_method' value='delete')
+    input(type='submit' value='delete')

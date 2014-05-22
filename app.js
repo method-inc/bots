@@ -4,8 +4,7 @@
  */
 
 var express = require('express')
-  , routes = require('./routes')
-  , user = require('./routes/user')
+  , user = require('./handlers/user_handler')
   , http = require('http')
   , path = require('path')
   , models = require('./models');
@@ -31,18 +30,12 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
-app.get('/', routes.index);
-app.get('/users', user.list);
+app.get('/users', user.listUsers);
+app.post('/users', user.createUser);
+app.get('/users/:userId', user.getUser);
+app.put('/users/:userId', user.editUser);
+app.delete('/users/:userId', user.deleteUser);
 
-models
-  .sequelize
-  .sync({ force: true })
-  .complete(function(err) {
-    if (err) {
-      throw err;
-    }
-
-    http.createServer(app).listen(app.get('port'), function(){
-      console.log('Express server listening on port ' + app.get('port'));
-    });
-  });
+http.createServer(app).listen(app.get('port'), function(){
+  console.log('Express server listening on port ' + app.get('port'));
+});
