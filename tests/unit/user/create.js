@@ -33,26 +33,18 @@ module.exports = function(User) {
       });
     });
 
-    it('should not store password', function(done) {
+    it('should store password', function(done) {
       User.create(newUserInfo).complete(function(err, user) {
         newUser = user;
-        assert.equal(user.password, null);
+        assert.ok(user.password);
         done();
       });
     });
 
-    it('should store a password digest', function(done) {
+    it('should encrypt password', function(done) {
       User.create(newUserInfo).complete(function(err, user) {
         newUser = user;
-        assert.notEqual(user.passwordDigest, null);
-        done();
-      });
-    });
-
-    it('should encrypt password digest', function(done) {
-      User.create(newUserInfo).complete(function(err, user) {
-        newUser = user;
-        assert.notEqual(user.passwordDigest, 'somepassword');
+        assert.notEqual(user.password, 'somepassword');
         done();
       });
     });
@@ -84,6 +76,30 @@ module.exports = function(User) {
         assert.equal(user, null);
         assert.ok(err.email);
         done();
+      });
+    });
+
+    it('should require password', function(done) {
+      newUserInfo.password = null;
+      User.create(newUserInfo).complete(function(err, user) {
+        newUser = user;
+        assert.equal(user, null);
+        assert.ok(err.password);
+        done();
+      });
+    });
+
+    it('should require a unique email', function(done) {
+      User.create(newUserInfo).complete(function(err, user) {
+        newUser = user;
+        newUserInfo.firstName = 'Bill';
+        newUserInfo.lastName = 'Johnson';
+        newUserInfo.password = 'newpassword';
+        User.create(newUserInfo).complete(function(err, user) {
+          assert.equal(user, null);
+          assert.ok(err);
+          done();
+        });
       });
     });
   });
