@@ -17,17 +17,21 @@ module.exports = function(sequelize, DataTypes) {
     },
     email: {
       type: DataTypes.STRING,
+      unique: true,
       validate: {
         notNull: true
       }
     },
     password: {
       type: DataTypes.STRING,
-      set: function(v) {
-        this.passwordDigest = bcrypt.hashSync(v, salt.value);
+      validate: {
+        notNull: true
+      },
+      set: function(v, cb) {
+        var hash = bcrypt.hashSync(v, salt.value);
+        this.setDataValue('password', hash);
       }
-    },
-    passwordDigest: DataTypes.STRING
+    }
   }, {
     classMethods: {
       associate: function(models) {
@@ -36,10 +40,10 @@ module.exports = function(sequelize, DataTypes) {
       authorize: function(email, password, fn) {
         User.find({ where: {email: email} })
           .success(function(user) {
-            if(user.passwordDigest === bcrypt.hashSync(password, salt.value)) {
+            if(user && user.password === bcrypt.hashSync(password, salt.value)) {
               return fn(undefined, user);
             }
-            fn(new Error('invalid password'), undefined);
+            fn(new Error('invalid username or password'), undefined);
           })
           .error(function(err) {
             fn(err, undefined);
