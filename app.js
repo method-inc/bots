@@ -4,8 +4,8 @@
  */
 
 var express = require('express')
-  , user = require('./handlers/user_handler')
-  , bot = require('./handlers/bot_handler')
+  , user = require('./handlers/user_handlers')
+  , bot = require('./handlers/bot_handlers')
   , http = require('http')
   , path = require('path')
   , models = require('./models');
