@@ -27,9 +27,11 @@ module.exports = function(sequelize, DataTypes) {
       validate: {
         notNull: true
       },
-      set: function(v, cb) {
-        var hash = bcrypt.hashSync(v, salt.value);
-        this.setDataValue('password', hash);
+      set: function(v) {
+        if(v) {
+          var hash = bcrypt.hashSync(v, salt.value);
+          this.setDataValue('password', hash);
+        }
       }
     }
   }, {
