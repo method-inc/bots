@@ -6,6 +6,7 @@ module.exports = function() {
   var options = {
     url: 'http://localhost:3000/users',
     method: 'POST',
+    jar: true,
     form: {
       firstName: 'John',
       lastName: 'Doe',
@@ -19,9 +20,9 @@ module.exports = function() {
   describe('create', function() {
     it('should create a new user and respond with a 201', function(done) {
       request(options, function(err, res, body) {
+        body = JSON.parse(body);
         newUserId = body.id;
         assert.equal(res.statusCode, 201);
-        assert.equal(res.headers['content-type'], 'text/json');
         assert.equal(body.firstName, 'John');
         assert.equal(body.lastName, 'Doe');
         assert.equal(body.email, 'johndoe@example.com');
@@ -43,23 +44,20 @@ module.exports = function() {
         done();
       });
     });
-
-    it('should respond with a 401 if unauthorized to create user', function(done) {
-
-    });
   });
 
   describe('read', function() {
     before(function() {
       options = {
         method: 'GET',
+        jar: true,
         url: 'http://localhost:3000/users/' + newUserId + '.json'
       };
     });
     it('should return an existing user and respond with a 200', function(done) {
       request(options, function(err, res, body) {
+        body = JSON.parse(body);
         assert.equal(res.statusCode, 200);
-        assert.equal(res.headers['content-type'], 'text/json');
         assert.equal(body.firstName, 'John');
         assert.equal(body.lastName, 'Doe');
         assert.equal(body.email, 'johndoe@example.com');
@@ -76,8 +74,8 @@ module.exports = function() {
     it('should return all users and respond with a 200', function(done) {
       options.url = 'http://localhost:3000/users.json';
       request(options, function(err, res, body) {
+        body = JSON.parse(body);
         assert.equal(res.statusCode, 200);
-        assert.equal(res.headers['content-type'], 'text/json');
         assert.ok(body instanceof Array);
         done();
       });
@@ -88,14 +86,20 @@ module.exports = function() {
     before(function() {
       options = {
         method: 'PUT',
-        url: 'http://localhost:3000/users/' + newUserId
+        jar: true,
+        url: 'http://localhost:3000/users/' + newUserId,
+        form: {
+          firstName: 'John',
+          lastName: 'Doe',
+          email: 'johndoe@example.com'
+        }
       };
     });
     it('should update an existing user and respond with a 200', function(done) {
       options.form.firstName = 'Joe';
       request(options, function(err, res, body) {
+        body = JSON.parse(body);
         assert.equal(res.statusCode, 200);
-        assert.equal(res.headers['content-type'], 'text/json');
         assert.equal(body.firstName, 'Joe');
         assert.equal(body.lastName, 'Doe');
         assert.equal(body.email, 'johndoe@example.com');
@@ -115,6 +119,7 @@ module.exports = function() {
     before(function() {
       options = {
         method: 'DELETE',
+        jar: true,
         url: 'http://localhost:3000/users/' + newUserId
       }
     });
