@@ -22,7 +22,12 @@ module.exports = {
         else if(err) res.json(400, err);
         else {
           req.session.userId = user.id;
-          res.json(201, user);
+          res.json(201, {
+            id: user.id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email
+          });
         }
       });
   },
@@ -33,7 +38,7 @@ module.exports = {
         where: {id:req.params.userId},
         attributes: ['id', 'firstName', 'lastName', 'email']
       }).complete(function(err, user) {
-        if(!user) res.json(404, {user: 'not found'});
+        if(!user) res.send(404, 'user not found');
         else {
           if(req.params.format === 'json') res.json(user);
           else res.render('profile', {user:user});
