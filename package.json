@@ -13,6 +13,10 @@
     "sqlite3": "*",
     "lodash": "*",
     "bcrypt": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "request": "*",
+    "express-session" : "*",
+    "connect-session-sequelize" : "*",
+    "cookie-parser" : "*"
   }
 }

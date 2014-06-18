@@ -8,9 +8,12 @@ var express = require('express')
   , bot = require('./handlers/bot_handlers')
   , http = require('http')
   , path = require('path')
-  , models = require('./models');
+  , models = require('./models')
+  , cookieParser = require('cookie-parser')
+  , session = require('express-session');
 
 var app = express();
+SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 // all environments
 app.set('port', process.env.PORT || 3000);
@@ -20,7 +23,14 @@ app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
-app.use(express.cookieParser('your secret here'));
+app.use(cookieParser())
+app.use(session({
+  secret: 'somesecret',
+  store: new SequelizeStore({
+    db: models.sequelize
+  }),
+  proxy: true
+}))
 app.use(express.session());
 app.use(app.router);
 app.use(require('stylus').middleware(__dirname + '/public'));
@@ -32,11 +42,11 @@ if ('development' == app.get('env')) {
 }
 
 // User methods
-app.get(   '/users',         user.listUsers);
-app.post(  '/users',         user.createUser);
-app.get(   '/users/:userId', user.getUser);
-app.put(   '/users/:userId', user.editUser);
-app.delete('/users/:userId', user.deleteUser);
+app.get(   '/users.:format?',         user.listUsers);
+app.post(  '/users',                  user.createUser);
+app.get(   '/users/:userId.:format?', user.getUser);
+app.put(   '/users/:userId',          user.editUser);
+app.delete('/users/:userId',          user.deleteUser);
 
 // Bot methods
 app.get(   '/users/:userId/bots',        bot.listUserBots);
