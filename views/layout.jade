@@ -3,8 +3,7 @@ html
   head
     title= title
     link(rel='stylesheet', href='/styles/style.css')
-    script(src='/js/react.min.js')
-    script(src='/js/JSXTransformer.js')
-    script(src='/js/jquery.min.js')
+    script(data-main='/js/main.js' src='/libs/require.js')
+    script(src='/js/requireconfig.js')
   body
     block content
