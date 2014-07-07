@@ -42,7 +42,7 @@ if ('development' == app.get('env')) {
 }
 
 // Landing page
-app.get('/', function(req, res) {res.render('landing')});
+app.get('/', function(req, res) {res.render('landing', {currentUserId:req.session.userId})});
 
 // User methods
 app.get(   '/users.:format?',         user.listUsers);
@@ -50,6 +50,8 @@ app.post(  '/users',                  user.createUser);
 app.get(   '/users/:userId.:format?', user.getUser);
 app.put(   '/users/:userId',          user.editUser);
 app.delete('/users/:userId',          user.deleteUser);
+app.post(  '/login',                  user.login);
+app.get(   '/logout',                 user.logout);
 
 // Bot methods
 app.get(   '/users/:userId/bots',        bot.listUserBots);

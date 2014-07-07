@@ -2,7 +2,7 @@
  * @jsx React.DOM
  */
 
-define(['jquery', 'react'], function ($, React) {
+define(['react'], function (React) {
 
   "use strict";
 

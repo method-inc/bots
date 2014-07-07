@@ -87,5 +87,27 @@ module.exports = {
           res.send(401, 'unauthorized');
         }
       });
+  },
+
+  login: function(req, res) {
+    User.authorize(req.body.email, req.body.password, function(err, user) {
+      if(user) {
+        req.session.userId = user.id;
+        res.json(201, {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email
+        });
+      }
+      else {
+        res.send(401, 'unauthorized');
+      }
+    });
+  },
+
+  logout: function(req, res) {
+    req.session.userId = null;
+    res.send(204);
   }
 };
