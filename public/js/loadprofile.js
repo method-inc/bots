@@ -7,13 +7,14 @@ require(['jsx!users/single_view', 'react'], function(UserSingleView, React) {
     var firstName = document.getElementById('user-firstname').value;
     var lastName = document.getElementById('user-lastname').value;
     var email = document.getElementById('user-email').value;
-    console.log(firstName);
+    var currentUserId = document.getElementById('current-user-id').value;
     React.renderComponent(
       UserSingleView({
         userId: userId,
         firstName: firstName,
         lastName: lastName,
-        email: email
+        email: email,
+        currentUserId: currentUserId
       }),
       document.getElementById('profile')
     );

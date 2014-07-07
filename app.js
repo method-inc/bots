@@ -41,6 +41,9 @@ if ('development' == app.get('env')) {
   app.use(express.errorHandler());
 }
 
+// Landing page
+app.get('/', function(req, res) {res.render('landing')});
+
 // User methods
 app.get(   '/users.:format?',         user.listUsers);
 app.post(  '/users',                  user.createUser);

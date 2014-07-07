@@ -18,10 +18,10 @@ define(['react', 'jsx!users/user_info', 'jsx!game/list_view'],
       };
     },
 
-    onUserEdit: function(coupon) {
+    onUserEdit: function() {
     },
 
-    onUserDelete: function(couponId) {
+    onUserDelete: function() {
     },
 
     render: function() {

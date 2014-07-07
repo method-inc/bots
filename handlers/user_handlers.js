@@ -41,7 +41,7 @@ module.exports = {
         if(!user) res.send(404, 'user not found');
         else {
           if(req.params.format === 'json') res.json(user);
-          else res.render('profile', {user:user});
+          else res.render('profile', {user:user, currentUserId:req.session.userId});
         }
       });
   },
