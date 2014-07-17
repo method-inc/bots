@@ -31,9 +31,8 @@ define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!u
           email: user.email
         },
         success: function(updatedUser) {
-          console.log(updatedUser);
           self.setState({
-            userId: updatedUser.id,
+            userId: ''+updatedUser.id,
             firstName: updatedUser.firstName,
             lastName: updatedUser.lastName,
             email: updatedUser.email,
