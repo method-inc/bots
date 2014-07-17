@@ -11,6 +11,7 @@
     "stylus": "*",
     "sequelize": "*",
     "sqlite3": "*",
+    "mysql": "*",
     "lodash": "*",
     "bcrypt": "*",
     "mocha": "*",

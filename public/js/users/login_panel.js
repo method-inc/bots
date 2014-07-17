@@ -35,7 +35,7 @@ define(['react'],
     render: function() {
       return (
         <div className='login-panel'>
-          <h2>Signup</h2>
+          <h2>Login</h2>
           <form>
             <label htmlFor='email'>Email</label>
             <input type='email' name='email' value={this.state.email} onChange={this.handleEmailChange} />
