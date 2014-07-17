@@ -12,3 +12,20 @@ form input {
 .hidden {
   display: none;
 }
+.modal-backdrop {
+  background-color: rgba(0,0,0,0.8);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+}
+.modal-content {
+  background-color: #fff;
+  border: 2px solid #000;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: 20px;
+  padding: 20px;
+}

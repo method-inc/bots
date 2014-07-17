@@ -9,17 +9,6 @@ block content
   div#profile
   script(src='/js/loadprofile.js')
 
-  h2 Edit User
-  form(action='/users/#{user.id}' method='post')
-    label First Name
-    input(type='text' name='firstName' value='#{user.firstName}')
-    label Last Name
-    input(type='text' name='lastName' value='#{user.lastName}')
-    label Email
-    input(type='email' name='email' value='#{user.email}')
-    input(type='hidden', name='_method' value='put')
-    input(type='submit')
-
   h2 Delete User
   form(action='/users/#{user.id}' method='post')
     input(type='hidden', name='_method' value='delete')

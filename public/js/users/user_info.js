@@ -14,6 +14,7 @@ define(['react'], function (React) {
         <div className='user-info'>
           <h1>{this.props.firstName} {this.props.lastName}</h1>
           <h2>{this.props.email}</h2>
+          <a className='user-edit' onClick={this.props.openEditModal}>Edit User</a>
         </div>
       );
     }
