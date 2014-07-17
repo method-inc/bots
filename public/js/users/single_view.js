@@ -2,8 +2,8 @@
  * @jsx React.DOM
  */
 
-define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!game/list_view'],
-    function (React, $, UserInfo, UserEditModal, GameListView) {
+define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!users/delete_modal', 'jsx!game/list_view'],
+    function (React, $, UserInfo, UserEditModal, UserDeleteModal, GameListView) {
 
   "use strict";
 
@@ -15,7 +15,8 @@ define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!g
         firstName: this.props.firstName,
         lastName: this.props.lastName,
         email: this.props.email,
-        editModalOpen: false
+        editModalOpen: false,
+        deleteModalOpen: false
       };
     },
 
@@ -46,16 +47,33 @@ define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!g
     },
 
     onUserDelete: function() {
+      var self = this;
+      $.ajax({
+        type: 'DELETE',
+        url: '/users/' + this.state.userId,
+        success: function(updatedUser) {
+          window.location = '/users';
+        },
+        error: function(error) {
+          console.log(error);
+        }
+      });
     },
 
     openEditModal: function() {
       this.setState({editModalOpen: true});
-      console.log('edit modal opened');
     },
 
     closeEditModal: function() {
       this.setState({editModalOpen: false});
-      console.log('edit modal closed');
+    },
+
+    openDeleteModal: function() {
+      this.setState({deleteModalOpen: true});
+    },
+
+    closeDeleteModal: function() {
+      this.setState({deleteModalOpen: false});
     },
 
     render: function() {
@@ -69,6 +87,12 @@ define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!g
           closeEditModal={this.closeEditModal}
         />
       }
+      else if(this.state.deleteModalOpen) {
+        modal = <UserDeleteModal
+          onUserDelete={this.onUserDelete}
+          closeDeleteModal={this.closeDeleteModal}
+        />
+      }
       return (
         <div className='user-single-view'>
           <UserInfo
@@ -77,6 +101,7 @@ define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!g
             lastName={this.state.lastName}
             email={this.state.email}
             openEditModal={this.openEditModal}
+            openDeleteModal={this.openDeleteModal}
             currentUserId={this.props.currentUserId}
           />
           { modal }

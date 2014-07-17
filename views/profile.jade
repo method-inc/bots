@@ -8,8 +8,3 @@ block content
   input#current-user-id(type='hidden' value=currentUserId)
   div#profile
   script(src='/js/loadprofile.js')
-
-  h2 Delete User
-  form(action='/users/#{user.id}' method='post')
-    input(type='hidden', name='_method' value='delete')
-    input(type='submit' value='delete')
