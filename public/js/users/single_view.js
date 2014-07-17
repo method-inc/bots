@@ -72,10 +72,12 @@ define(['react', 'jquery', 'jsx!users/user_info', 'jsx!users/edit_modal', 'jsx!g
       return (
         <div className='user-single-view'>
           <UserInfo
+            userId={this.state.userId}
             firstName={this.state.firstName}
             lastName={this.state.lastName}
             email={this.state.email}
             openEditModal={this.openEditModal}
+            currentUserId={this.props.currentUserId}
           />
           { modal }
         </div>
