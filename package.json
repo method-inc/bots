@@ -3,7 +3,7 @@
   "preferGlobal": true,
   "version": "0.3.0",
   "description": "Skookum Alien Bot Challenge",
-  "contributors": [ 
+  "contributors": [
     {
       "name": "Maximillian von Briesen",
       "email": "moby@skookum.com"
@@ -11,20 +11,21 @@
     {
       "name": "Eric LaForce",
       "email": "eric@skookum.com"
-    } 
+    }
   ],
-  "dependencies" : {
-    "underscore" : "*",
-    "socket.io" : "*",
-    "express" : "*",
-    "mongoose" : "*",
-    "express-sessions" : "*",
-    "stylus" : "*",
-    "jade" : "*",
-    "everyauth" : "*",
-    "node-schedule" : "*",
-    "node-markdown" : "*",
-    "request" : "*"
+  "dependencies": {
+    "everyauth": "*",
+    "express": "3.4.8",
+    "express-sessions": "1.0.5",
+    "favicon": "0.0.2",
+    "jade": "1.1.5",
+    "mongoose": "3.8.6",
+    "node-markdown": "*",
+    "node-schedule": "0.1.13",
+    "request": "2.33.0",
+    "socket.io": "0.9.16",
+    "stylus": "0.42.2",
+    "underscore": "1.5.2"
   },
   "license": "MIT",
   "engines": {
