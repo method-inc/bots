@@ -1,40 +1,29 @@
 {
-  "name": "skookum-aliens",
-  "preferGlobal": true,
-  "version": "0.3.0",
-  "description": "Skookum Alien Bot Challenge",
-  "contributors": [
-    {
-      "name": "Maximillian von Briesen",
-      "email": "moby@skookum.com"
-    },
-    {
-      "name": "Eric LaForce",
-      "email": "eric@skookum.com"
-    }
-  ],
+  "name": "botsnew",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
   "dependencies": {
-    "everyauth": "*",
-    "express": "3.4.8",
-    "express-sessions": "1.0.5",
-    "favicon": "0.0.2",
-    "jade": "1.1.5",
-    "mongoose": "3.8.6",
-    "node-markdown": "*",
-    "node-schedule": "0.1.13",
-    "request": "2.33.0",
-    "socket.io": "0.9.16",
-    "stylus": "0.42.2",
-    "underscore": "1.5.2"
-  },
-  "license": "MIT",
-  "engines": {
-    "node": ">=0.6"
-  },
-  "scripts:": {
-    "test": "mocha tests/test.js"
-  },
-  "devDependencies": {
-    "mocha": "~1.17.1"
+    "body-parser": "~1.15.1",
+    "connect": "^3.4.1",
+    "connect-session-sequelize": "^3.1.0",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.2.0",
+    "everyauth": "^0.4.9",
+    "express": "~4.13.4",
+    "express-session": "^1.14.1",
+    "jade": "~1.11.0",
+    "morgan": "~1.7.0",
+    "node-markdown": "^0.1.1",
+    "request": "^2.74.0",
+    "sequelize": "^3.24.1",
+    "sequelize-cli": "^2.4.0",
+    "sequelstore-connect": "^1.1.5",
+    "serve-favicon": "~2.3.0",
+    "socket.io": "^1.4.8",
+    "sqlite3": "^3.1.4",
+    "winston": "^2.2.0"
   }
 }

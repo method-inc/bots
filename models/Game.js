@@ -1,13 +1,16 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+"use strict";
 
-module.exports = mongoose.model('Game', new Schema({
-  p1: { type: String },
-  p2: { type: String },
-  turns: { type: Array },
-  end: { type: String, default:'elegant' },
-  winner: { type: String },
-  createdAt: { type: Date, default: Date.now },
-  finishedAt: { type: Date },
-  finished: { type: Boolean, default: false }
-}));
+module.exports = function(sequelize, DataTypes) {
+  var Game = sequelize.define("Game", {
+    p1: DataTypes.STRING,
+    p2: DataTypes.STRING,
+    end: { type: DataTypes.STRING, defaultValue: 'elegant' },
+    winner: DataTypes.STRING,
+    createdAt: { type: DataTypes.DATE, defaultValue: Date.now },
+    finishedAt: DataTypes.DATE,
+    finished: { type: DataTypes.BOOLEAN, defaultValue: false },
+    round: DataTypes.INTEGER
+  });
+
+  return Game;
+};

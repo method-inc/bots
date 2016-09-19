@@ -2,7 +2,7 @@ var gameTurns = [];
 if(typeof turns !== 'undefined') gameTurns = turns;
 var currentDisplayed = 0;
 var turn = 0;
-var socket = io.connect(window.location.hostname);
+var socket = io();
 var c;
 var ctx;
 var turnSpeed = 100;

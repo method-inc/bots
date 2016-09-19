@@ -1,13 +1,10 @@
 extends layout
 block head
-  script(src='/scripts/game.js')
-  script(src='/scripts/test.js')
+  script(src='/javascripts/game.js')
+  script(src='/javascripts/test.js')
 block content
-  h1 SDW Bot-Wars
-  h2#logout
-    a(href='/logout') Log Out
-  h2#back
-    a(href='/') &#x25C0; Back
+  - var subtitle = "Test your bot"
+  include partials/header
 
   form
     select#botlist1
@@ -15,8 +12,20 @@ block content
     select#botlist2
     button#newgame new game
 
+
   div#game-wrapper
-    canvas#game.test(width=500, height=500)
+    div#p1
+      h2.headcount 0
+      h3 Headcount
+      h2.energyconsumed 0
+      h3 Energy Consumed
+    canvas#game(width=500, height=500)
+    div#p2
+      h2.headcount 0
+      h3 Headcount
+      h2.energyconsumed 0
+      h3 Energy Consumed
+    br
 
   div#playback
     div#animate-game

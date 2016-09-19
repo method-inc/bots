@@ -1,11 +1,14 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+"use strict";
 
-module.exports = mongoose.model('User', new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true },
-  picture: { type: String },
-  bot: { },
-  participating: { type: Boolean, default: false },
-  googleId: { type: Number, required: true }
-}));
+module.exports = function(sequelize, DataTypes) {
+  var User = sequelize.define("User", {
+    name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    picture: DataTypes.STRING,
+    participating: DataTypes.BOOLEAN,
+    googleId: DataTypes.BIGINT,
+    bot: DataTypes.STRING
+  });
+
+  return User;
+};
