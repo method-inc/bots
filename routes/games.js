@@ -72,7 +72,7 @@ function getGames(cb) {
 
             if(users[0] && users[0].email === game.p1)
               p1 = users[0].name;
-            else if(users[0] && users[0].email === game.p2)
+            if(users[0] && users[0].email === game.p2)
               p2 = users[0].name;
 
             if(users[1] && users[1].email === game.p1)
@@ -134,7 +134,7 @@ function getPlayers(game, users) {
   if(users[0]) {
     if(users[0].email === game.p1)
       p1 = { name:users[0].name, picture:users[0].picture };
-    else
+    if(users[0].email === game.p2)
       p2 = { name:users[0].name, picture:users[0].picture };
   }
   if(users[1]) {
