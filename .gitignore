@@ -6,3 +6,6 @@ bots/*
 !bots/bots.json
 
 .DS_Store
+
+data.sqlite
+.vscode/*
