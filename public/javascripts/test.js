@@ -10,14 +10,7 @@ window.onload = function() {
 socket.on('game-data', function(data) {
   resetGame();
 });
-socket.on('bots', function(data) {
-  $('#botlist1').html('');
-  $('#botlist2').html('');
-  data.forEach(function(bot) {
-    $('#botlist1').append('<option value='+bot.name+'>'+bot.name+'</option>');
-    $('#botlist2').append('<option value='+bot.name+'>'+bot.name+'</option>');
-  });
-});
+
 $(document).on('click', '#newgame', function(e) {
   e.preventDefault();
   var bot1 = $('#botlist1').val() || 0;

@@ -61,17 +61,4 @@ module.exports = function (socket) {
       }
     });
   });
-
-  socket.on('getbots', function() {
-    User.findAll({ where: { bot: { $ne: '' } } })
-      .then(function(users, err) {
-        var toSend = [];
-        toSend.push({name:'nodebot'});
-        users.forEach(function(user) {
-          toSend.push({name:user.email});
-        });
-        console.log('sending bots '+ toSend);
-        socket.emit('bots', toSend);
-      });
-  });
 };

@@ -8,8 +8,14 @@ block content
 
   form
     select#botlist1
+      each bot in bots
+        option(value= bot.name)
+          = bot.name
     label vs
     select#botlist2
+      each bot in bots
+        option(value= bot.name)
+          = bot.name
     button#newgame new game
 
 
