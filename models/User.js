@@ -6,7 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     email: DataTypes.STRING,
     picture: DataTypes.STRING,
     participating: DataTypes.BOOLEAN,
-    googleId: DataTypes.BIGINT,
+    googleId: DataTypes.STRING,
     bot: DataTypes.STRING
   });
 
