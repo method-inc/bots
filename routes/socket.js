@@ -22,7 +22,7 @@ module.exports = function (socket) {
           if(user && user.bot) {
             botUrls.push(user.bot);
           } else {
-            botUrls.push('http://localhost:1337');
+            botUrls.push('nodebot');
           }
 
           if(botUrls.length >= 2) {

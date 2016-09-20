@@ -1,6 +1,7 @@
 var game = require('./game');
 var request = require('request');
 var models = require('../models/index');
+var testBot = require('./test_bot');
 var Turn = models.Turn;
 
 module.exports = function startGame(botUrls, gameStore, cb) {
@@ -44,30 +45,43 @@ function nextTurn(gameStore, gameState, cb) {
   p1Options.form.data = stringifyGameState('r', gameState);
   p2Options.form.data = stringifyGameState('b', gameState);
 
-  request(p1Options, function(err, res, body) {
-    if(!err) {
-      console.log('Player 1 received data: ' + body);
-      p1Moves = tryParse(body);
-      if(p1Moves && p2Moves) {
-        evalMoves(gameStore, gameState, p1Moves, p2Moves, cb);
+  if(p1Options.url === 'nodebot') {
+    p1Moves = testBot(p1Options.form.data);
+    playerResponse();
+  }
+  else {
+    request(p1Options, function(err, res, body) {
+      if(!err) {
+        console.log('Player 1 received data: ' + body);
+        p1Moves = tryParse(body);
+        playerResponse();
       }
-    }
-    else {
-      endGameForError(gameStore, 'ONE', gameStore.p1, gameStore.p2, err, cb);
-    }
-  });
+      else {
+        endGameForError(gameStore, 'ONE', gameStore.p1, gameStore.p2, err, cb);
+      }
+    });
+  }
+  
+  if(p2Options.url === 'nodebot') {
+    p2Moves = testBot(p2Options.form.data);
+    playerResponse();
+  }
   request(p2Options, function(err, res, body) {
     if(!err) {
       console.log('Player 2 received data: ' + body);
       p2Moves = tryParse(body);
-      if(p1Moves && p2Moves) {
-        evalMoves(gameStore, gameState, p1Moves, p2Moves, cb);
-      }
+      playerResponse();
     }
     else {
       endGameForError(gameStore, 'TWO', gameStore.p2, gameStore.p1, err, cb);
     }
   });
+
+  function playerResponse(body) {
+    if(p1Moves && p2Moves) {
+      evalMoves(gameStore, gameState, p1Moves, p2Moves, cb);
+    }
+  }
 }
 
 function stringifyGameState(playerString, gameState) {
