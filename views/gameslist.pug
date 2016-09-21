@@ -12,7 +12,7 @@ block content
   div.tournamentlist
     -for(var i=0; i<tournaments.length; i++)
       -var tournament = tournaments[i];
-      a(href='/tournament/#{tournament.id}').tournament
+      a(href='/tournament/' + tournament.id).tournament
         div.desc #{tournament.description}
         -var date = (tournament.time.getMonth()+1)+'/'+tournament.time.getDate()+'/'+tournament.time.getFullYear();
         div.time #{date} &#x25B6;
@@ -21,7 +21,7 @@ block content
   div.gamelist
     -for(var i=0; i<games.length; i++)
       -var game = games[i];
-      a(href='/games/#{game.id}').game
+      a(href='/games/' + game.id).game
         div.desc #{game.description}
         -var date = (game.time.getMonth()+1)+'/'+game.time.getDate()+'/'+game.time.getFullYear();
         div.time #{date} &#x25B6;
