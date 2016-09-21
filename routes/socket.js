@@ -38,7 +38,7 @@ module.exports = function (socket) {
           console.log('Game: ' + JSON.stringify(game));
         if(game) {
           socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-          game.getTurns().then(function(turns) {
+          game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns) {
             turns.forEach(function(turn) {
               socket.emit('game', turn);
             });
@@ -53,7 +53,7 @@ module.exports = function (socket) {
       .then(function(game, err) {
       if(game) {
         socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-        game.getTurns().then(function(turns) {
+        game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns) {
           turns.forEach(function(turn) {
             socket.emit('game', turn);
           });

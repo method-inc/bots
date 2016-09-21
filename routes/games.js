@@ -36,7 +36,7 @@ router.get('/:id', function(req, res) {
         .then(function(users, err) {
           var players = getPlayers(game, users);
 
-          game.getTurns().then(function(turns, err) {
+          game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns, err) {
             var prevpage = req.session.prevpage;
             req.session.prevpage = '';
             res.render('game', {
