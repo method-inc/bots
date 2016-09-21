@@ -3,7 +3,7 @@ var router = express.Router();
 var fs = require('fs');
 var path = require('path');
 
-var md = require('node-markdown').Markdown;
+var marked = require('marked');
 var instructions = path.join(__dirname + '/../' +  'README.md');
 var instructionData = '';
 fs.readFile(instructions, function (err, data) {
@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
     var user = req.session.auth.google.user;
     res.render('index', {
       email:user.email,
-      md: md,
+      md: marked,
       instructions: instructionData.toString()
     });
   }
