@@ -20,7 +20,6 @@
     "pug": "^2.0.0-beta6",
     "request": "^2.74.0",
     "sequelize": "^3.24.1",
-    "sequelize-cli": "^2.4.0",
     "sequelstore-connect": "^1.1.5",
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.4.8",
