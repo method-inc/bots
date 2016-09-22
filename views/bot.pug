@@ -1,9 +1,7 @@
 extends layout
 block content
-  h1 SDW Bot-Wars
-  h2 Update Your Bot
-  h2#logout
-    a(href='/logout') Log Out
+  - var subtitle = "Update your bot"
+  include partials/header
   h2#back
     a(href='/') &#x25C0; Back
   form(action='/bot', method='post')

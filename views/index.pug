@@ -1,21 +1,18 @@
 extends layout
 block content
-  h1 SDW Bot-Wars
-  h2 Choose Your Path
-  h2#logout
-    a(href='/logout') Log Out
-
+  - var subtitle = "Choose Your Path"
+  include partials/header
   div#path-select
     div#update-bot.choice
       a(href='/bot')
         div.icon
       h3 Update Your Bot
     div#view-tournament.choice
-      a(href='/tournament')
+      a(href='/tournaments')
         div.icon
       h3 View Current Tournament
     div#view-history.choice
-      a(href='/history')
+      a(href='/games')
         div.icon
       h3 View Past Matches
     br

@@ -4,14 +4,12 @@ block head
     var tournament = !{JSON.stringify(tournament)};
   script(src='/libs/jquery.gracket.min.js')
   script(src='/libs/jqueryuicustom.js')
-  script(src='/scripts/tournament.js')
+  script(src='/javascripts/tournament.js')
 block content
-  h1 SDW Bot-Wars
-  h2#logout
-    a(href='/logout') Log Out
+  include partials/header
   h2#back
     -if(prevpage)
-      a(href='#{prevpage}') &#x25C0; Back
+      a(href=prevpage) &#x25C0; Back
     -else
       a(href='/') &#x25C0; Back
   div.bracket-wrapper

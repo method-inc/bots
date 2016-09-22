@@ -1,33 +1,32 @@
 extends layout
 block head
-  script.
-    var turns=!{JSON.stringify(turns)};
-  script(src='/scripts/game.js')
+  script(src='/javascripts/game.js')
+  script(src='/javascripts/test.js')
 block content
-  div#game-id.hidden #{id}
+  - var subtitle = "Test your bot"
+  include partials/header
 
-  h1 SDW Bot-Wars
-  h2#logout
-    a(href='/logout') Log Out
-  h2#back
-    -if(prevpage)
-      a(href='#{prevpage}') &#x25C0; Back
-    -else
-      a(href='/') &#x25C0; Back
-  h2.data-received #{description}
+  form
+    select#botlist1
+      each bot in bots
+        option(value= bot.name)
+          = bot.name
+    label vs
+    select#botlist2
+      each bot in bots
+        option(value= bot.name)
+          = bot.name
+    button#newgame new game
+
 
   div#game-wrapper
     div#p1
-      img(src='#{p1.picture}')
-      h2 #{p1.name}
       h2.headcount 0
       h3 Headcount
       h2.energyconsumed 0
       h3 Energy Consumed
     canvas#game(width=500, height=500)
     div#p2
-      img(src='#{p2.picture}')
-      h2 #{p2.name}
       h2.headcount 0
       h3 Headcount
       h2.energyconsumed 0

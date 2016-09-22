@@ -1,13 +1,30 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+"use strict";
 
-module.exports = mongoose.model('Tournament', new Schema({
-  games: { type: Array },
-  nextGame: { },
-  winner: { type: String },
-  createdAt: { type: Date, default: Date.now }
-}));
+module.exports = function(sequelize, DataTypes) {
+  var Tournament = sequelize.define("Tournament", {
+    winner: DataTypes.STRING,
+    createdAt: { type: DataTypes.DATE, defaultValue: Date.now },
+    nextGameNumber: DataTypes.INTEGER,
+    nextGameTime: DataTypes.DATE,
+    nextGameRound: DataTypes.INTEGER,
+  }, {
+    getterMethods: {
+      nextGame: function() {
+        return {
+          time: this.nextGameTime,
+          game: this.nextGameGame,
+          number: this.nextGameNumber,
+        }
+      }
+    },
+    setterMethods: {
+      nextGame: function(value) {
+        this.setDataValue('nextGameNumber', value.number);
+        this.setDataValue('nextGameGame', value.game);
+        this.setDataValue('nextGameTime', value.time);
+      }
+    }
+  });
 
-// model.games[n-1]: list of games for round n
-// game layout: { id:objectId, p1:string, p2:string }
-// nextGame: { time:Date, round:Number, game:Number }
+  return Tournament;
+};
