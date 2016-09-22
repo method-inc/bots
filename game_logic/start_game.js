@@ -4,7 +4,7 @@ var models = require('../models/index');
 var testBot = require('./test_bot');
 var Turn = models.Turn;
 
-module.exports = function startGame(botUrls, gameStore, cb) {
+module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   var newState = game.create(20, 20, 200);
   var gameState = buildGameState(newState);
 
@@ -30,13 +30,13 @@ module.exports = function startGame(botUrls, gameStore, cb) {
   gameState.save().then(function (savedState) {
     gameStore.save().then(function (savedGameStore) {
       savedState.setGame(savedGameStore).then(function () {
-        nextTurn(savedGameStore, savedState, cb);
+        nextTurn(savedGameStore, savedState, cb, sendTurn);
       });
     });
   });
 }
 
-function nextTurn(gameStore, gameState, cb) {
+function nextTurn(gameStore, gameState, cb, sendTurn) {
   var p1Moves = null;
   var p2Moves = null;
   var p1Options = gameStore.playerOptions.p1Options;
@@ -48,8 +48,7 @@ function nextTurn(gameStore, gameState, cb) {
   if(p1Options.url === 'nodebot') {
     p1Moves = testBot(p1Options.form.data);
     playerResponse();
-  }
-  else {
+  } else {
     request(p1Options, function(err, res, body) {
       if(!err) {
         console.log('Player 1 received data: ' + body);
@@ -65,21 +64,22 @@ function nextTurn(gameStore, gameState, cb) {
   if(p2Options.url === 'nodebot') {
     p2Moves = testBot(p2Options.form.data);
     playerResponse();
+  } else {
+    request(p2Options, function(err, res, body) {
+      if(!err) {
+        console.log('Player 2 received data: ' + body);
+        p2Moves = tryParse(body);
+        playerResponse();
+      }
+      else {
+        endGameForError(gameStore, 'TWO', gameStore.p2, gameStore.p1, err, cb);
+      }
+    });
   }
-  request(p2Options, function(err, res, body) {
-    if(!err) {
-      console.log('Player 2 received data: ' + body);
-      p2Moves = tryParse(body);
-      playerResponse();
-    }
-    else {
-      endGameForError(gameStore, 'TWO', gameStore.p2, gameStore.p1, err, cb);
-    }
-  });
 
   function playerResponse(body) {
     if(p1Moves && p2Moves) {
-      evalMoves(gameStore, gameState, p1Moves, p2Moves, cb);
+      evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn);
     }
   }
 }
@@ -101,11 +101,12 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
   });
 }
 
-function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb) {
+function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = buildGameState(
     game.doTurn(gameState, p1Moves, p2Moves));
   newGameState.save()
     .then(function (savedState) {
+      sendTurn(savedState);
       savedState.setGame(gameStore)
         .then(function(completeState) {
           if(completeState.winner) {
@@ -130,7 +131,7 @@ function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb) {
             });
           }
           else {
-            nextTurn(gameStore, completeState, cb);
+            nextTurn(gameStore, completeState, cb, sendTurn);
           }
         });
     });

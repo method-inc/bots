@@ -26,11 +26,15 @@ module.exports = function (socket) {
           }
 
           if(botUrls.length >= 2) {
-            startGame(botUrls, gameStore, sendTurns);
+            startGame(botUrls, gameStore, sendTurns, sendTurn);
           }
         }
       );
     });
+
+    function sendTurn(turn) {
+      socket.emit('game', turn);
+    }
 
     function sendTurns() {
       Game.findOne({ where: { id: gameStore.id } })
