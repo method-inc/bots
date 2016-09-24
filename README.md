@@ -19,6 +19,7 @@ Please submit a [Github issue](https://github.com/Skookum/bots/issues) if you ha
 
 After cloning the repo run `npm install`
 
+In order to run the web server, run `npm start`.
 
 Go to `http://localhost:3000` in your browser.
 
