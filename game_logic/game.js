@@ -27,11 +27,13 @@ exports.create = function(rows, cols, maxTurns) {
 
   gameState.p1 = {
     energy:1,
-    spawn:coordToIndex(gameState, {x:1,y:1})
+    spawn:coordToIndex(gameState, {x:1,y:1}),
+    spawnDisabled: false,
   };
   gameState.p2 = {
     energy:1,
-    spawn:coordToIndex(gameState, {x:cols-2,y:rows-2})
+    spawn:coordToIndex(gameState, {x:cols-2,y:rows-2}),
+    spawnDisabled: false,
   };
   gameState.grid = makeEmptyGrid(gameState.rows, gameState.cols);
 
