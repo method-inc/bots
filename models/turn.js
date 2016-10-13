@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
         return {
           energy: this.p2Energy,
           spawn: this.p2Spawn,
-          spawnDisabled: this.p1SpawnDisabled,
+          spawnDisabled: this.p2SpawnDisabled,
         }
       }
     },
