@@ -1,44 +1,11 @@
 var game = require('./game');
 var request = require('request');
-var models = require('../models/index');
 var testBot = require('./test_bot');
-var Turn = models.Turn;
-
-function log() {
-  console.log(arguments);
-}
-
-function stringifyGameState(playerString, gameState) {
-  return JSON.stringify({ player: playerString, state: gameState }) + '\n';
-}
-
-function tryParse(str) {
-  var moves = [];
-  try {
-    moves = JSON.parse(str);
-  } finally {
-    return moves;
-  }
-}
-
-function buildGameState(newState) {
-  var gameState = Turn.build({
-    rows: newState.rows,
-    cols: newState.cols,
-    maxTurns: newState.maxTurns,
-    turnsElapsed: newState.turnsElapsed,
-    grid: newState.grid,
-    p1: newState.p1,
-    p2: newState.p2,
-  });
-
-  gameState.winner = newState.winner;
-  return gameState;
-}
+var utils = require('./utils');
 
 module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   var newState = game.create(20, 20, 200);
-  var gameState = buildGameState(newState);
+  var gameState = utils.buildGameState(newState);
 
   var gameStarted = true;
 
@@ -69,7 +36,7 @@ module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
 };
 
 function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
-  log('PLAYER ' + playerName + ' ERROR: ' + err);
+  utils.log('PLAYER ' + playerName + ' ERROR: ' + err);
   game.end = playerError + ' bot error';
   game.winner = playerWinner;
   game.finished = true;
@@ -87,8 +54,8 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   var p1Options = gameStore.playerOptions.p1Options;
   var p2Options = gameStore.playerOptions.p2Options;
 
-  p1Options.form.data = stringifyGameState('r', gameState);
-  p2Options.form.data = stringifyGameState('b', gameState);
+  p1Options.form.data = utils.stringifyGameState('r', gameState);
+  p2Options.form.data = utils.stringifyGameState('b', gameState);
 
   function playerResponse(body) {
     if (p1Moves && p2Moves) {
@@ -102,8 +69,8 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   } else {
     request(p1Options, function(err, res, body) {
       if (!err) {
-        log('Player 1 received data: ' + body);
-        p1Moves = tryParse(body);
+        utils.log('Player 1 received data: ' + body);
+        p1Moves = utils.tryParse(body);
         playerResponse();
       } else {
         endGameForError(gameStore, 'ONE', gameStore.p1, gameStore.p2, err, cb);
@@ -117,8 +84,8 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   } else {
     request(p2Options, function(err, res, body) {
       if (!err) {
-        log('Player 2 received data: ' + body);
-        p2Moves = tryParse(body);
+        utils.log('Player 2 received data: ' + body);
+        p2Moves = utils.tryParse(body);
         playerResponse();
       } else {
         endGameForError(gameStore, 'TWO', gameStore.p2, gameStore.p1, err, cb);
@@ -129,13 +96,13 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
 
 function onComplete(gameStore, cb, sendTurn, completeState) {
   if (completeState.winner) {
-    log('GAME ENDED');
+    utils.log('GAME ENDED');
     if (completeState.winner) {
       if (completeState.winner === 'r') {
-        log('Client 1 wins');
+        utils.log('Client 1 wins');
         gameStore.winner = gameStore.p1;
       } else if (completeState.winner === 'b') {
-        log('Client 2 wins');
+        utils.log('Client 2 wins');
         gameStore.winner = gameStore.p2;
       }
 
