@@ -1,3 +1,11 @@
+var distance = {
+  move:1,
+  raze:1,
+  attack:1,
+  energy:0,
+  spawn:1
+};
+
 var exports = module.exports = {};
 
 exports.getAllIndices = function(grid, search) {
@@ -58,8 +66,8 @@ exports.showGrid = function(state) {
   }
 }
 
-exports.makeEmptyGrid = function(rows, cols) {
-  return Array(rows*cols+1).join(gridIds.empty);
+exports.makeEmptyGrid = function(rows, cols, key) {
+  return Array(rows*cols+1).join(key);
 }
 
 exports.adjacent = function(state, index1, index2) {

@@ -10,13 +10,7 @@ var gridIds = {
   energy:'*',
   empty:'.'
 };
-var distance = {
-  move:1,
-  raze:1,
-  attack:1,
-  energy:0,
-  spawn:1
-};
+
 var spawnFrequency = 5;
 
 exports.create = function(rows, cols, maxTurns) {
@@ -37,7 +31,7 @@ exports.create = function(rows, cols, maxTurns) {
     spawn:utils.coordToIndex(gameState, {x:cols-2,y:rows-2}),
     spawnDisabled: false,
   };
-  gameState.grid = utils.makeEmptyGrid(gameState.rows, gameState.cols);
+  gameState.grid = utils.makeEmptyGrid(gameState.rows, gameState.cols, gridIds.empty);
 
   return gameState;
 };
