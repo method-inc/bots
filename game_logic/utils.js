@@ -34,5 +34,8 @@ function buildGameState(newState) {
 }
 
 module.exports = {
-  log, stringifyGameState, tryParse, buildGameState,
+  log: log,
+  stringifyGameState: stringifyGameState,
+  tryParse: tryParse,
+  buildGameState: buildGameState,
 };
