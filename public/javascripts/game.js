@@ -40,14 +40,11 @@ if(!gameTurns.length) {
 $(document).keydown(function(e) {
   animating = false;
   if (e.keyCode === 37) {
-    currentDisplayed--;
+    updateCurrentDisplayed(-1);
   }
   else if(e.keyCode === 39) {
-    currentDisplayed++;
+    updateCurrentDisplayed(1);
   }
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
-  showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
 $(document).on('click', '#animate-game', function(e) {
@@ -61,18 +58,12 @@ $(document).on('click', '#animate-game', function(e) {
 });
 $(document).on('click', '.forward', function(e) {
   animating = false;
-  currentDisplayed++;
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
-  showTurn(gameTurns[currentDisplayed]);
+  updateCurrentDisplayed(1);
   updateRound();
 });
 $(document).on('click', '.back', function(e) {
   animating = false;
-  currentDisplayed--;
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
-  showTurn(gameTurns[currentDisplayed]);
+  updateCurrentDisplayed(-1);
   updateRound();
 });
 $(document).on('click', '.beginning', function(e) {
@@ -118,6 +109,14 @@ function resetGame() {
   turn = 0;
   ctx.clearRect (0, 0, c.width, c.height);
   updateRound();
+}
+
+function updateCurrentDisplayed(aChange) {
+  currentDisplayed += aChange;
+
+  if(currentDisplayed < 0) currentDisplayed = 0;
+  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
+  showTurn(gameTurns[currentDisplayed]);
 }
 
 function showTurn(state) {
