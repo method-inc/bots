@@ -247,17 +247,3 @@ function validMoves(moves) {
   }
   return true;
 }
-
-// grid functions
-
-
-
-
-
-
-
-
-
-
-
-
