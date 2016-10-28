@@ -1,6 +1,5 @@
-var _ = require('underscore');
 var assert = require('assert');
-var game = require('../game.js');
+var game = require('../game_logic/game.js');
 var beginState = {};
 var p1Moves = [];
 var p2Moves = [];
@@ -12,8 +11,8 @@ describe('Game', function(){
     beginState = {
       rows:5,
       cols:10,
-      p1:{energy:0, spawn:11},
-      p2:{energy:0, spawn:38},
+      p1:{energy:0, spawn:11, spawnDisabled: false},
+      p2:{energy:0, spawn:38, spawnDisabled: false},
       grid:'...........r..........................b...........',
       maxTurns:20,
       turnsElapsed:0
@@ -24,8 +23,8 @@ describe('Game', function(){
     testState = {
       rows:5,
       cols:10,
-      p1:{energy:0, spawn:11},
-      p2:{energy:0, spawn:38},
+      p1:{energy:0, spawn:11, spawnDisabled: false},
+      p2:{energy:0, spawn:38, spawnDisabled: false},
       grid:'...........r..........................b...........',
       maxTurns:20,
       turnsElapsed:1
@@ -46,8 +45,8 @@ describe('Game', function(){
       createdState = game.create(6,4, 30);
       testState.rows = 6;
       testState.cols = 4;
-      testState.p1 = {energy:1, spawn:5};
-      testState.p2 = {energy:1, spawn:18};
+      testState.p1 = {energy:1, spawn:5, spawnDisabled: false};
+      testState.p2 = {energy:1, spawn:18, spawnDisabled: false};
       testState.grid = '........................';
       testState.maxTurns = 30;
       testState.turnsElapsed = 0;
