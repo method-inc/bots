@@ -1,4 +1,4 @@
-var utils = require('../utils');
+var utils = require('../../game_logic/utils');
 var fs = require('fs')
   , util = require('util')
   , http = require('http')

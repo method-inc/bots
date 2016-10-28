@@ -94,16 +94,6 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   }
 }
 
-function onComplete(gameStore, cb, sendTurn, completeState) {
-  var newGameState = buildGameState( game.doTurn(gameState, p1Moves, p2Moves));
-  newGameState.save().then(function (savedState) {
-    sendTurn(savedState);
-    savedState.setGame(gameStore).then(function(completeState) {
-      detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);
-    });
-  });
-}
-
 function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
   if (completeState.winner) {
     utils.log('GAME ENDED');
@@ -129,11 +119,11 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
 }
 
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
-  var newGameState = buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
-  newGameState.save()
-    .then(function(savedState) {
-      sendTurn(savedState);
-      savedState.setGame(gameStore)
-        .then(onComplete.bind(null, gameStore, cb, sendTurn));
+  var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
+  newGameState.save().then(function (savedState) {
+    sendTurn(savedState);
+    savedState.setGame(gameStore).then(function(completeState) {
+      detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);
     });
+  });
 }
