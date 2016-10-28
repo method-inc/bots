@@ -63,7 +63,7 @@ function getMoves(state, player) {
   playerIndices.forEach(function(playerIndex) {
     var adjacent = getAdjacentIndices(state, playerIndex);
     var to = adjacent[Math.floor(Math.random()*adjacent.length)];
-    moves.push({from: playerIndex, to: to});
+    moves.push({ from: playerIndex, to: to });
   });
 
   return moves;

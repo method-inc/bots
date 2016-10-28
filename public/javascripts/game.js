@@ -216,5 +216,5 @@ function addMarkOut(x, y, coordWidth) {
 function indexToCoord(state, index) {
   var x = index%state.cols;
   var y = ~~(index/state.cols);
-  return {x: x, y: y};
+  return { x: x, y: y };
 }

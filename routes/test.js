@@ -6,11 +6,11 @@ router.get('/', function(req, res) {
   if(!process.env.HEROKU) {
     var sessionUser = req.session.auth.google.user;
 
-    User.findOne({where: {googleId: sessionUser.id}})
+    User.findOne({ where: { googleId: sessionUser.id } })
       .then(function(user, err) {
         var toSend = [];
-        toSend.push({name: 'nodebot'});
-        toSend.push({name: user.email});
+        toSend.push({ name: 'nodebot' });
+        toSend.push({ name: user.email });
         console.log('sending bots '+ toSend);
         res.render('test', {
           bots: toSend,

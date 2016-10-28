@@ -90,12 +90,12 @@ $(document).on('click', '#newgame', function(e) {
   e.preventDefault();
   var bot1 = $('#botlist1').val() || 0;
   var bot2 = $('#botlist2').val() || 0;
-  socket.emit('start', {bot1: bot1, bot2: bot2});
+  socket.emit('start', { bot1: bot1, bot2: bot2 });
 });
 $(document).on('click', '#showgame', function(e) {
   e.preventDefault();
   var gameId = $('#gamelist').val();
-  socket.emit('show', {id: gameId});
+  socket.emit('show', { id: gameId });
 });
 $(document).on('click', '#animate-game', function(e) {
   if(gameTurns.length) {
@@ -220,5 +220,5 @@ function showTurn(state) {
 function indexToCoord(state, index) {
   var x = index%state.cols;
   var y = ~~(index/state.cols);
-  return {x: x, y: y};
+  return { x: x, y: y };
 }

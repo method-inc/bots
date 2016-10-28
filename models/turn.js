@@ -4,7 +4,7 @@ module.exports = function(sequelize, DataTypes) {
   var Turn = sequelize.define('Turn', {
     rows: DataTypes.INTEGER,
     cols: DataTypes.INTEGER,
-    maxTurns: {type: DataTypes.INTEGER, defaultValue: 20},
+    maxTurns: { type: DataTypes.INTEGER, defaultValue: 20 },
     turnsElapsed: DataTypes.INTEGER,
     grid: DataTypes.STRING,
     p1Energy: DataTypes.INTEGER,

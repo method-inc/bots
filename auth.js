@@ -9,11 +9,11 @@ module.exports = function(everyauth, User) {
     .findOrCreateUser( function(session, accessToken, accessTokenExtra, googleUserMetadata) {
       var promise = this.Promise();
 
-      User.findOrCreate({where: {googleId: googleUserMetadata.id}, defaults: {
+      User.findOrCreate({ where: { googleId: googleUserMetadata.id }, defaults: {
         name: googleUserMetadata.name,
         email: googleUserMetadata.email,
         picture: googleUserMetadata.picture,
-      }}).spread(function(user, created) {
+      } }).spread(function(user, created) {
         promise.fulfill(user);
       });
 

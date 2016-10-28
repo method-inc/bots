@@ -3,6 +3,7 @@
     "rules": {
         "no-var": "off",
         "require-jsdoc": "off",
-        "new-cap": "off"
+        "new-cap": "off",
+        "object-curly-spacing": [ "error", "always" ]
     }
 }

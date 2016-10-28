@@ -24,12 +24,12 @@ exports.create = function(rows, cols, maxTurns) {
 
   gameState.p1 = {
     energy: 1,
-    spawn: utils.coordToIndex(gameState, {x: 1, y: 1}),
+    spawn: utils.coordToIndex(gameState, { x: 1, y: 1 }),
     spawnDisabled: false,
   };
   gameState.p2 = {
     energy: 1,
-    spawn: utils.coordToIndex(gameState, {x: cols - 2, y: rows - 2}),
+    spawn: utils.coordToIndex(gameState, { x: cols - 2, y: rows - 2 }),
     spawnDisabled: false,
   };
   gameState.grid = utils.makeEmptyGrid(gameState.rows, gameState.cols, gridIds.empty);
@@ -98,7 +98,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   // fight
   var p1Indices = utils.getAllIndices(state.grid, gridIds.player1);
   var p2Indices = utils.getAllIndices(state.grid, gridIds.player2);
-  var battleData = {p1: {}, p2: {}};
+  var battleData = { p1: {}, p2: {} };
   p1Indices.forEach(function(p1Index) {
     battleData.p1[p1Index] = 0;
     p2Indices.forEach(function(p2Index) {

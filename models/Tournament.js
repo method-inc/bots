@@ -3,7 +3,7 @@
 module.exports = function(sequelize, DataTypes) {
   var Tournament = sequelize.define('Tournament', {
     winner: DataTypes.STRING,
-    createdAt: {type: DataTypes.DATE, defaultValue: Date.now},
+    createdAt: { type: DataTypes.DATE, defaultValue: Date.now },
     nextGameNumber: DataTypes.INTEGER,
     nextGameTime: DataTypes.DATE,
     nextGameRound: DataTypes.INTEGER,

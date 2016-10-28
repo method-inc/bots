@@ -31,10 +31,10 @@ router.get('/:id', function(req, res) {
   if(prevpage === '/tournaments/' + req.params.id) prevpage = '/';
   req.session.prevpage = '/tournaments/' + req.params.id;
   Tournament.findOne(
-    {include: {model: Game, order: ['round']}, where: {id: req.params.id}}
+    { include: { model: Game, order: ['round'] }, where: { id: req.params.id } }
   ).then(function(tournament, err) {
       if(tournament) {
-        res.render('tournament', {tournament: tournament, prevpage: prevpage});
+        res.render('tournament', { tournament: tournament, prevpage: prevpage });
       } else {
         console.log('no tournaments');
         res.redirect('/');
@@ -53,10 +53,10 @@ router.get('/startdummy/:players', function(req, res) {
 });
 
 router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
-  Tournament.findOne({where: {id: req.params.tournamentId}})
+  Tournament.findOne({ where: { id: req.params.tournamentId } })
     .then(function(tournament, err) {
     if(!err && tournament) {
-      GameStore.findOne({where: {id: req.params.gameId}})
+      GameStore.findOne({ where: { id: req.params.gameId } })
       .then(function(game, err) {
         if(!err && game) {
           tournament.getGames().then(function(games) {
@@ -83,7 +83,7 @@ router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
 });
 
 function organizeTournament() {
-  User.find({bot: {$exists: true}, participating: true}, function(err, users) {
+  User.find({ bot: { $exists: true }, participating: true }, function(err, users) {
     var players = [];
     users.forEach(function(user) {
       players.push(user.email);
@@ -174,10 +174,10 @@ function nextGame(tournament, round, gameNum, test) {
   console.log('NEXT GAME');
   var now = new Date().valueOf();
   var scheduleDate = new Date(now+100);
-  tournament.nextGame = {time: scheduleDate, round: round, game: gameNum};
+  tournament.nextGame = { time: scheduleDate, round: round, game: gameNum };
   tournament.save();
 
-  tournament.getGames({where: {round: round}, order: ['id']})
+  tournament.getGames({ where: { round: round }, order: ['id'] })
     .then(function(roundGames) {
     var game = roundGames[gameNum];
 
@@ -191,7 +191,7 @@ function nextGame(tournament, round, gameNum, test) {
         var botUrls = ['', ''];
         var botsFound = 0;
         [game.p1, game.p2].forEach(function(email) {
-          User.findOne({where: {email: email}}).then(function(user, err) {
+          User.findOne({ where: { email: email } }).then(function(user, err) {
             if(user && user.bot) {
               if(email === game.p1) {
                 botUrls[0] = user.bot.url;
@@ -216,7 +216,7 @@ function nextGame(tournament, round, gameNum, test) {
             if(round + 1 < tournamentGames.length) {
               var nextRound = round + 1;
               var nextGameNum = ~~(gameNum / 2);
-              tournament.getGames({where: {round: nextRound}, order: ['id']})
+              tournament.getGames({ where: { round: nextRound }, order: ['id'] })
                 .then(function(nextRoundGames) {
                 var nextRoundGame = nextRoundGames[nextGameNum];
                 var nextRoundPlayer = gameNum%2===0 ? 1 : 0;

@@ -11,12 +11,12 @@ router.get('/', function(req, res) {
   var currentUrl = '';
   var sessionUser = req.session.auth.google.user;
   models.User.findOne({
-    where: {googleId: sessionUser.id},
+    where: { googleId: sessionUser.id },
   }).then(function(user) {
     if (user.bot) {
       currentUrl = user.bot;
     }
-    res.render('bot', {currentBotPath: currentUrl, participating: user.participating});
+    res.render('bot', { currentBotPath: currentUrl, participating: user.participating });
   });
 });
 
@@ -28,8 +28,8 @@ router.post('/', function(req, res) {
 
   var user = req.session.auth.google.user;
   models.User.update(
-    {bot: req.body.url},
-    {where: {googleId: user.id}}
+    { bot: req.body.url },
+    { where: { googleId: user.id } }
   ).then(function() {
     res.redirect('/bot');
   });
@@ -43,8 +43,8 @@ router.post('/participate', function(req, res) {
 
   var user = req.session.auth.google.user;
   models.User.update(
-    {participating: req.body.participating},
-    {where: {googleId: user.id}}
+    { participating: req.body.participating },
+    { where: { googleId: user.id } }
   ).then(function() {
     res.redirect('/bot');
   });
