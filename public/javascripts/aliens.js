@@ -11,7 +11,7 @@ window.onload = function() {
   ctx=c.getContext('2d');
 
   turnSpeed = 1000-$('#turn-speed').val();
-}
+};
 
 socket.on('message', function(data) {
   if(data === 'new') {
@@ -37,7 +37,7 @@ socket.on('game-data', function(data) {
       winnerText = 'winner: ' + data.winner;
     }
     else {
-      winnerText = 'tie'
+      winnerText = 'tie';
     }
   }
   else {
@@ -90,12 +90,12 @@ $(document).on('click', '#newgame', function(e) {
   e.preventDefault();
   var bot1 = $('#botlist1').val() || 0;
   var bot2 = $('#botlist2').val() || 0;
-  socket.emit('start', {bot1:bot1,bot2:bot2});
+  socket.emit('start', {bot1: bot1, bot2: bot2});
 });
 $(document).on('click', '#showgame', function(e) {
   e.preventDefault();
   var gameId = $('#gamelist').val();
-  socket.emit('show', {id:gameId});
+  socket.emit('show', {id: gameId});
 });
 $(document).on('click', '#animate-game', function(e) {
   if(gameTurns.length) {
@@ -131,11 +131,11 @@ function resetGame() {
   currentDisplayed = 0;
   turn = 0;
   $('#turns li').remove();
-  ctx.clearRect (0, 0, c.width, c.height);
+  ctx.clearRect(0, 0, c.width, c.height);
 }
 
 function showTurn(state) {
-  ctx.clearRect (0, 0, c.width, c.height);
+  ctx.clearRect(0, 0, c.width, c.height);
   ctx.strokeStyle = 'lightgrey';
   var coordWidth = c.width/state.cols;
   for(var i=1; i<state.cols; i++) {
@@ -220,5 +220,5 @@ function showTurn(state) {
 function indexToCoord(state, index) {
   var x = index%state.cols;
   var y = ~~(index/state.cols);
-  return {x:x, y:y};
+  return {x: x, y: y};
 }

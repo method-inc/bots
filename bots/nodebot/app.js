@@ -1,9 +1,9 @@
 var utils = require('../../game_logic/utils');
-var fs = require('fs')
-  , util = require('util')
-  , http = require('http')
-  , express = require('express')
-  , app = express()
+var fs = require('fs'),
+   util = require('util'),
+   http = require('http'),
+   express = require('express'),
+   app = express();
 
 app.set('port', process.argv[2]);
 app.use(express.logger('dev'));
@@ -24,7 +24,7 @@ app.get('/', function(req, res) {
   res.end();
 });
 
-var server = http.createServer(app).listen(app.get('port'), function(){
+var server = http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
@@ -63,8 +63,8 @@ function getMoves(state, player) {
   playerIndices.forEach(function(playerIndex) {
     var adjacent = getAdjacentIndices(state, playerIndex);
     var to = adjacent[Math.floor(Math.random()*adjacent.length)];
-    moves.push({from:playerIndex, to:to});
-  })
+    moves.push({from: playerIndex, to: to});
+  });
 
   return moves;
 }

@@ -110,9 +110,9 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
     }
     gameStarted = false;
     ready = 0;
-    gameStore.save().then(function (savedStore) {
+    gameStore.save().then(function(savedStore) {
       if (cb) { cb(); }
-    })
+    });
   } else {
     nextTurn(gameStore, completeState, cb, sendTurn);
   }
@@ -120,7 +120,7 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
 
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
-  newGameState.save().then(function (savedState) {
+  newGameState.save().then(function(savedState) {
     sendTurn(savedState);
     savedState.setGame(gameStore).then(function(completeState) {
       detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);

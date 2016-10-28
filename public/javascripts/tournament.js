@@ -29,12 +29,12 @@ gamesList.forEach(function(game) {
   }
 
   if(currentRound === game.round) {
-    roundArray.push([{name:p1, id:p1Id}, {name:p2, id:p2Id}]);
+    roundArray.push([{name: p1, id: p1Id}, {name: p2, id: p2Id}]);
   }
   else {
     gracketData.push(roundArray);
     roundArray = [];
-    roundArray.push([{name:p1, id:p1Id}, {name:p2, id:p2Id}]);
+    roundArray.push([{name: p1, id: p1Id}, {name: p2, id: p2Id}]);
     currentRound = game.round;
   }
 });
@@ -46,9 +46,9 @@ else
   gracketData.push([[{name: '', id: 'empty'+empty}]]);
 
 $(document).ready(function() {
-  $('.bracket').gracket({src:gracketData});
+  $('.bracket').gracket({src: gracketData});
   $('.g_game:not(.g_winner)').each(function(i) {
     $(this).wrap('<a href="/games/' + games[i] + '""></a>');
   });
-  $('.bracket').draggable({axis:'x'});
+  $('.bracket').draggable({axis: 'x'});
 });

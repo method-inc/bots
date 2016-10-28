@@ -3,8 +3,7 @@ var startGame = require('../game_logic/start_game');
 var Game = models.Game;
 var User = models.User;
 
-module.exports = function (socket) {
-
+module.exports = function(socket) {
   socket.on('start', function(data) {
     var bots = [];
     var botUrls = [];
@@ -17,7 +16,7 @@ module.exports = function (socket) {
     socket.emit('message', 'new');
 
     [data.bot1, data.bot2].forEach(function(botName) {
-      User.findOne({ where: { email: botName } })
+      User.findOne({where: {email: botName}})
         .then(function(user, err) {
           if(user && user.bot) {
             botUrls.push(user.bot);
@@ -37,12 +36,12 @@ module.exports = function (socket) {
     }
 
     function sendTurns() {
-      Game.findOne({ where: { id: gameStore.id } })
+      Game.findOne({where: {id: gameStore.id}})
         .then(function(game, err) {
           console.log('Game: ' + JSON.stringify(game));
         if(game) {
-          socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-          game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns) {
+          socket.emit('game-data', {p1: game.p1, p2: game.p2, winner: game.winner, end: game.end});
+          game.getTurns({order: ['turnsElapsed']}).then(function(turns) {
             turns.forEach(function(turn) {
               socket.emit('game', turn);
             });
@@ -53,11 +52,11 @@ module.exports = function (socket) {
   });
 
   socket.on('show', function(data) {
-    Game.findOne({ where: { id: data.id } })
+    Game.findOne({where: {id: data.id}})
       .then(function(game, err) {
       if(game) {
-        socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-        game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns) {
+        socket.emit('game-data', {p1: game.p1, p2: game.p2, winner: game.winner, end: game.end});
+        game.getTurns({order: ['turnsElapsed']}).then(function(turns) {
           turns.forEach(function(turn) {
             socket.emit('game', turn);
           });
