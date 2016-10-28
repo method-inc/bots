@@ -16,7 +16,6 @@
     "express": "~4.13.4",
     "express-session": "^1.14.1",
     "marked": "^0.3.6",
-    "mocha": "^3.1.2",
     "morgan": "~1.7.0",
     "pg": "^6.1.0",
     "pug": "^2.0.0-beta6",
@@ -28,5 +27,8 @@
     "sqlite3": "^3.1.4",
     "stylus": "^0.54.5",
     "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "mocha": "^3.1.2"
   }
 }
