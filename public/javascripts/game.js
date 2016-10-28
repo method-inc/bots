@@ -40,14 +40,11 @@ if(!gameTurns.length) {
 $(document).keydown(function(e) {
   animating = false;
   if (e.keyCode === 37) {
-    currentDisplayed--;
+    updateCurrentDisplayed(-1);
   }
   else if(e.keyCode === 39) {
-    currentDisplayed++;
+    updateCurrentDisplayed(1);
   }
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
-  showTurn(gameTurns[currentDisplayed]);
   updateRound();
 });
 $(document).on('click', '#animate-game', function(e) {
@@ -61,18 +58,12 @@ $(document).on('click', '#animate-game', function(e) {
 });
 $(document).on('click', '.forward', function(e) {
   animating = false;
-  currentDisplayed++;
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
-  showTurn(gameTurns[currentDisplayed]);
+  updateCurrentDisplayed(1);
   updateRound();
 });
 $(document).on('click', '.back', function(e) {
   animating = false;
-  currentDisplayed--;
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
-  showTurn(gameTurns[currentDisplayed]);
+  updateCurrentDisplayed(-1);
   updateRound();
 });
 $(document).on('click', '.beginning', function(e) {
@@ -118,6 +109,14 @@ function resetGame() {
   turn = 0;
   ctx.clearRect (0, 0, c.width, c.height);
   updateRound();
+}
+
+function updateCurrentDisplayed(aChange) {
+  currentDisplayed += aChange;
+
+  if(currentDisplayed < 0) currentDisplayed = 0;
+  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
+  showTurn(gameTurns[currentDisplayed]);
 }
 
 function showTurn(state) {
@@ -167,50 +166,22 @@ function showTurn(state) {
       switch(gridId) {
         case 'r':
           p1Headcount++;
-          ctx.fillStyle = '#F26140';
-          ctx.beginPath();
-          ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
-          ctx.fill();
+          drawBot(x, y, coordWidth, '#F26140');
           break;
         case 'b':
           p2Headcount++;
-          ctx.fillStyle = '#6EA1D7';
-          ctx.beginPath();
-          ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
-          ctx.fill();
+          drawBot(x, y, coordWidth, '#6EA1D7');
           break;
         case '*':
           ctx.drawImage(energyImage, 679, 51, 94, 94, x-coordWidth/2, y-coordHeight/2, coordWidth, coordHeight);
           break;
         case 'x':
-          ctx.fillStyle = '#F26140';
-          ctx.beginPath();
-          ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
-          ctx.fill();
-          ctx.strokeStyle = 'black';
-          ctx.beginPath();
-          ctx.moveTo(x-coordWidth/4, y-coordWidth/4);
-          ctx.lineTo(x+coordWidth/4, y+coordWidth/4);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x-coordWidth/4, y+coordWidth/4);
-          ctx.lineTo(x+coordWidth/4, y-coordWidth/4);
-          ctx.stroke();
+          drawBot(x, y, coordWidth, '#F26140');
+          addMarkOut(x, y, coordWidth);
           break;
         case 'X':
-          ctx.fillStyle = '#6EA1D7';
-          ctx.beginPath();
-          ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
-          ctx.fill();
-          ctx.strokeStyle = 'black';
-          ctx.beginPath();
-          ctx.moveTo(x-coordWidth/4, y-coordWidth/4);
-          ctx.lineTo(x+coordWidth/4, y+coordWidth/4);
-          ctx.stroke();
-          ctx.beginPath();
-          ctx.moveTo(x-coordWidth/4, y+coordWidth/4);
-          ctx.lineTo(x+coordWidth/4, y-coordWidth/4);
-          ctx.stroke();
+          drawBot(x, y, coordWidth, '#6EA1D7');
+          addMarkOut(x, y, coordWidth);
           break;
         default:
           console.log(gridId);
@@ -221,6 +192,25 @@ function showTurn(state) {
   $('#p2 .headcount').html(p2Headcount);
   $('#p1 .energyconsumed').html(state.p1.energy);
   $('#p2 .energyconsumed').html(state.p2.energy);
+}
+
+function drawBot(x, y, coordWidth, color){
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
+    ctx.fill();
+}
+
+function addMarkOut(x, y, coordWidth){
+    ctx.strokeStyle = 'black';
+    ctx.beginPath();
+    ctx.moveTo(x-coordWidth/4, y-coordWidth/4);
+    ctx.lineTo(x+coordWidth/4, y+coordWidth/4);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x-coordWidth/4, y+coordWidth/4);
+    ctx.lineTo(x+coordWidth/4, y-coordWidth/4);
+    ctx.stroke();
 }
 
 function indexToCoord(state, index) {

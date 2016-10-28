@@ -95,6 +95,16 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
 }
 
 function onComplete(gameStore, cb, sendTurn, completeState) {
+  var newGameState = buildGameState( game.doTurn(gameState, p1Moves, p2Moves));
+  newGameState.save().then(function (savedState) {
+    sendTurn(savedState);
+    savedState.setGame(gameStore).then(function(completeState) {
+      detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);
+    });
+  });
+}
+
+function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
   if (completeState.winner) {
     utils.log('GAME ENDED');
     if (completeState.winner) {
@@ -105,15 +115,14 @@ function onComplete(gameStore, cb, sendTurn, completeState) {
         utils.log('Client 2 wins');
         gameStore.winner = gameStore.p2;
       }
-
       gameStore.finished = true;
       gameStore.finishedAt = Date.now();
     }
     gameStarted = false;
     ready = 0;
-    gameStore.save().then(function(savedStore) {
+    gameStore.save().then(function (savedStore) {
       if (cb) { cb(); }
-    });
+    })
   } else {
     nextTurn(gameStore, completeState, cb, sendTurn);
   }
