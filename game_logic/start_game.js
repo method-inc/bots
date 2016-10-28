@@ -102,39 +102,39 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
 }
 
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
-  var newGameState = buildGameState(
-    game.doTurn(gameState, p1Moves, p2Moves));
-  newGameState.save()
-    .then(function (savedState) {
-      sendTurn(savedState);
-      savedState.setGame(gameStore)
-        .then(function(completeState) {
-          if(completeState.winner) {
-            console.log('GAME ENDED');
-            if(completeState.winner) {
-              if(completeState.winner == 'r') {
-                console.log('Client 1 wins');
-                gameStore.winner = gameStore.p1;
-              }
-              else if(completeState.winner == 'b') {
-                console.log('Client 2 wins');
-                gameStore.winner = gameStore.p2;
-              }
-
-              gameStore.finished = true;
-              gameStore.finishedAt = Date.now();
-            }
-            gameStarted = false;
-            ready = 0;
-            gameStore.save().then(function (savedStore) {
-              if(cb) cb();
-            });
-          }
-          else {
-            nextTurn(gameStore, completeState, cb, sendTurn);
-          }
-        });
+  var newGameState = buildGameState( game.doTurn(gameState, p1Moves, p2Moves));
+  newGameState.save().then(function (savedState) {
+    sendTurn(savedState);
+    savedState.setGame(gameStore).then(function(completeState) {
+      detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);
     });
+  });
+}
+
+function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
+  if (completeState.winner) {
+    console.log('GAME ENDED');
+    if (completeState.winner) {
+      if (completeState.winner == 'r') {
+        console.log('Client 1 wins');
+        gameStore.winner = gameStore.p1;
+      } else if (completeState.winner == 'b') {
+        console.log('Client 2 wins');
+        gameStore.winner = gameStore.p2;
+      }
+        gameStore.finished = true;
+        gameStore.finishedAt = Date.now();
+    }
+    gameStarted = false;
+    ready = 0;
+    gameStore.save().then(function (savedStore) {
+      if (cb) {
+        cb();
+      }
+    });
+  } else {
+    nextTurn(gameStore, completeState, cb, sendTurn);
+  }
 }
 
 function tryParse(str) {
