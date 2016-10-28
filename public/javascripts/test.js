@@ -1,7 +1,6 @@
 window.onload = function() {
   c=document.getElementById('game');
   ctx=c.getContext('2d');
-  var gameId = $('#game-id').html();
   socket.emit('getbots');
   energyImage = new Image();
   energyImage.src = '/images/iconSprite.png';

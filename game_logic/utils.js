@@ -2,11 +2,11 @@ var models = require('../models/index');
 var Turn = models.Turn;
 
 var distance = {
-  move:1,
-  raze:1,
-  attack:1,
-  energy:0,
-  spawn:1
+  move: 1,
+  raze: 1,
+  attack: 1,
+  energy: 0,
+  spawn: 1,
 };
 
 function log() {
@@ -71,8 +71,7 @@ function getMirroredIndex(state, index) {
   var mirroredIndex = coordToIndex(state, mirroredCoord);
   if(mirroredIndex !== index) {
     return mirroredIndex;
-  }
-  else {
+  } else {
     return -1;
   }
 }
@@ -82,20 +81,20 @@ function getCoord(state, coord) {
   return state.grid[index];
 }
 
-function setCoord (state, coord, val) {
+function setCoord(state, coord, val) {
   var index = coordToIndex(state, coord);
   state.grid = state.grid.substr(0, index) + val + state.grid.substr(index + 1);
 }
 
 function setIndex(state, index, val) {
-  state.grid = state.grid.substr(0,index) + val + state.grid.substr(index+1);
+  state.grid = state.grid.substr(0, index) + val + state.grid.substr(index+1);
 }
 
 function showGrid(state) {
   for(var y=0; y<state.rows; y++) {
     var row = '';
     for(var x=0; x<state.cols; x++) {
-      row += state.grid[coordToIndex(state, {x:x,y:y})];
+      row += state.grid[coordToIndex(state, { x: x, y: y })];
     }
     console.log(row+'\n');
   }
@@ -122,7 +121,7 @@ function adjacent(state, index1, index2) {
 function indexToCoord(state, index) {
   var x = index%state.cols;
   var y = ~~(index/state.cols);
-  return {x:x, y:y};
+  return { x: x, y: y };
 }
 
 function coordToIndex(state, coord) {
@@ -134,20 +133,20 @@ function copyObj(object) {
 }
 
 module.exports = {
-  log,
-  stringifyGameState,
-  tryParse,
-  buildGameState,
-  getAllIndices,
-  getAdjacentIndices,
-  getMirroredIndex,
-  getCoord,
-  setCoord,
-  setIndex,
-  showGrid,
-  makeEmptyGrid,
-  adjacent,
-  indexToCoord,
-  coordToIndex,
-  copyObj,
+  log: log,
+  stringifyGameState: stringifyGameState,
+  tryParse: tryParse,
+  buildGameState: buildGameState,
+  getAllIndices: getAllIndices,
+  getAdjacentIndices: getAdjacentIndices,
+  getMirroredIndex: getMirroredIndex,
+  getCoord: getCoord,
+  setCoord: setCoord,
+  setIndex: setIndex,
+  showGrid: showGrid,
+  makeEmptyGrid: makeEmptyGrid,
+  adjacent: adjacent,
+  indexToCoord: indexToCoord,
+  coordToIndex: coordToIndex,
+  copyObj: copyObj,
 };

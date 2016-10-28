@@ -66,8 +66,8 @@ function getGames(cb) {
       games.forEach(function(game, i) {
         User.findAll({ where: { 'email': { $in: [game.p1, game.p2] } } })
           .then(function(users, err) {
-            var p1 = 'nodebot',
-                p2 = 'nodebot';
+            var p1 = 'nodebot';
+            var p2 = 'nodebot';
             var description = '';
 
             if(users[0] && users[0].email === game.p1)
@@ -82,11 +82,9 @@ function getGames(cb) {
 
             if(game.winner === game.p1) {
               description = p1 + ' defeated ' + p2;
-            }
-            else if(game.winner === game.p2) {
+            } else if(game.winner === game.p2) {
               description = p2 + ' defeated ' + p1;
-            }
-            else {
+            } else {
               description = 'Tie between ' + p1 + ' and ' + p2;
             }
             gamesList[i] = { id: game.id, description: description, time: game.finishedAt };
@@ -112,7 +110,12 @@ function getTournaments(cb) {
           var winner = 'nodebot';
           if(user && user.name) winner = user.name;
           var description = 'Winner: ' + winner;
-          tournamentsList[i] = { id: tournament.id, description: description, time: tournament.createdAt };
+          tournamentsList[i] =
+            {
+              id: tournament.id,
+              description: description,
+              time: tournament.createdAt,
+            };
           completed++;
 
           if(completed===tournaments.length) {

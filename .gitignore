@@ -9,3 +9,5 @@ bots/*
 
 data.sqlite
 .vscode/*
+
+npm-debug.log

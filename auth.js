@@ -1,8 +1,11 @@
+var profileScope = 'https://www.googleapis.com/auth/userinfo.profile';
+var emailScope = 'https://www.googleapis.com/auth/userinfo.email';
+
 module.exports = function(everyauth, User) {
   everyauth.google
     .appId(process.env.GOOGLE_APP_ID || '3335216477.apps.googleusercontent.com')
     .appSecret(process.env.GOOGLE_APP_SECRET || 'PJMW_uP39nogdu0WpBuqMhtB')
-    .scope('https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email') // What you want access to
+    .scope(profileScope + ' ' + emailScope) // What you want access to
     .handleAuthCallbackError( function(req, res) {
       console.log(req);
     })
