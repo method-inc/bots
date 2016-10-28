@@ -113,24 +113,26 @@ describe('Game', function() {
       assert.deepEqual(createdState, testState);
     });
 
-    it('should kill aliens of different teams that move to the same position', function() {
-      beginState.grid = 'r.......................r..........b..............';
-      p1Moves = [{from: 24, to: 25}];
-      p2Moves = [{from: 35, to: 25}];
-      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = 'r........................X........................';
-      testState.winner = 'r';
-      assert.deepEqual(createdState, testState);
+    it('should kill aliens of different teams that move to the same position',
+      function() {
+        beginState.grid = 'r.......................r..........b..............';
+        p1Moves = [{from: 24, to: 25}];
+        p2Moves = [{from: 35, to: 25}];
+        createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+        testState.grid = 'r........................X........................';
+        testState.winner = 'r';
+        assert.deepEqual(createdState, testState);
     });
 
-    it('should kill aliens of the same team that move to the same position', function() {
-      beginState.grid = '.......................r..b......r..b.............';
-      p1Moves = [{from: 33, to: 23}];
-      p2Moves = [{from: 26, to: 27}, {from: 36, to: 26}];
-      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      testState.grid = '.......................x..bb......................';
-      testState.winner = 'b';
-      assert.deepEqual(createdState, testState);
+    it('should kill aliens of the same team that move to the same position',
+      function() {
+        beginState.grid = '.......................r..b......r..b.............';
+        p1Moves = [{from: 33, to: 23}];
+        p2Moves = [{from: 26, to: 27}, {from: 36, to: 26}];
+        createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+        testState.grid = '.......................x..bb......................';
+        testState.winner = 'b';
+        assert.deepEqual(createdState, testState);
     });
 
     it('should conduct simple combat correctly', function() {
@@ -193,11 +195,12 @@ describe('Game', function() {
       assert.deepEqual(createdState, testState);
     });
 
-    it('should end the game after a certain number of turns have passed', function() {
-      beginState.turnsElapsed = 19;
-      testState.turnsElapsed = 20;
-      createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
-      assert.ok(createdState.winner);
+    it('should end the game after a certain number of turns have passed',
+      function() {
+        beginState.turnsElapsed = 19;
+        testState.turnsElapsed = 20;
+        createdState = game.doTurn(beginState, p1Moves, p2Moves, true);
+        assert.ok(createdState.winner);
     });
 
     it('should declare winners correctly', function() {

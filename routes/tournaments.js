@@ -16,8 +16,7 @@ router.get('/', function(req, res) {
   .then(function(tournament, err) {
     if(tournament) {
       res.redirect('/tournaments/' + tournament.id);
-    }
-    else {
+    } else {
       res.redirect('/');
     }
   });
@@ -31,12 +30,12 @@ router.get('/:id', function(req, res) {
   var prevpage = req.session.prevpage;
   if(prevpage === '/tournaments/' + req.params.id) prevpage = '/';
   req.session.prevpage = '/tournaments/' + req.params.id;
-  Tournament.findOne({include: {model: Game, order: ['round']}, where: {id: req.params.id}})
-    .then(function(tournament, err) {
+  Tournament.findOne(
+    {include: {model: Game, order: ['round']}, where: {id: req.params.id}}
+  ).then(function(tournament, err) {
       if(tournament) {
         res.render('tournament', {tournament: tournament, prevpage: prevpage});
-      }
-      else {
+      } else {
         console.log('no tournaments');
         res.redirect('/');
       }
@@ -72,13 +71,11 @@ router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
               });
             });
           });
-        }
-        else {
+        } else {
           console.log(err);
         }
       });
-    }
-    else {
+    } else {
       console.log(err);
     }
   });
@@ -111,7 +108,7 @@ function organizeDummyTournament(user, numPlayers) {
   var round = 1;
   console.log('starting tournament with ' + players.length + ' players');
   if(players.length > 1) {
-    var tournament = Tournament.build({}).save().then(function(savedTournament) {
+    Tournament.build({}).save().then(function(savedTournament) {
       console.log(savedTournament.id);
       tournamentRound(savedTournament, round, players, [], true);
     });
@@ -150,8 +147,7 @@ function tournamentRound(tournament, round, players, assigned, test) {
 
     round++;
     tournamentRound(tournament, round, players, assigned, test);
-  }
-  else {
+  } else {
     setTimeout(function() {
       startTournament(tournament, test);
     }, 5000);
@@ -181,7 +177,8 @@ function nextGame(tournament, round, gameNum, test) {
   tournament.nextGame = {time: scheduleDate, round: round, game: gameNum};
   tournament.save();
 
-  tournament.getGames({where: {round: round}, order: ['id']}).then(function(roundGames) {
+  tournament.getGames({where: {round: round}, order: ['id']})
+    .then(function(roundGames) {
     var game = roundGames[gameNum];
 
     if(!game) {
@@ -199,8 +196,7 @@ function nextGame(tournament, round, gameNum, test) {
               if(email === game.p1) {
                 botUrls[0] = user.bot.url;
                 botsFound++;
-              }
-              else {
+              } else {
                 botUrls[1] = user.bot.url;
                 botsFound++;
               }
@@ -209,8 +205,7 @@ function nextGame(tournament, round, gameNum, test) {
             }
           });
         });
-      }
-      else {
+      } else {
         startGameWithUrls([testBotUrl, testBotUrl], game);
       }
 
@@ -218,17 +213,17 @@ function nextGame(tournament, round, gameNum, test) {
         startGame(botUrls, game, function() {
           var winner = game.winner;
           tournament.getGames().then(function(tournamentGames) {
-            if(round+1 < tournamentGames.length) {
-              var nextRound = round+1;
-              var nextGameNum = ~~(gameNum/2);
-              tournament.getGames({where: {round: nextRound}, order: ['id']}).then(function(nextRoundGames) {
+            if(round + 1 < tournamentGames.length) {
+              var nextRound = round + 1;
+              var nextGameNum = ~~(gameNum / 2);
+              tournament.getGames({where: {round: nextRound}, order: ['id']})
+                .then(function(nextRoundGames) {
                 var nextRoundGame = nextRoundGames[nextGameNum];
                 var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
                 if(nextRoundPlayer) {
                   nextRoundGame.p1 = winner;
                   tournament.games[nextRound][nextGameNum].p1 = winner;
-                }
-                else {
+                } else {
                   nextRoundGame.p2 = winner;
                   tournament.games[nextRound][nextGameNum].p2 = winner;
                 }
@@ -243,8 +238,7 @@ function nextGame(tournament, round, gameNum, test) {
                 tournament.markModified('games');
                 tournament.save();
               });
-            }
-            else {
+            } else {
               console.log('tournament done');
               tournament.winner = winner;
               tournament.save();
@@ -252,8 +246,7 @@ function nextGame(tournament, round, gameNum, test) {
           });
         });
       }
-    }
-    else {
+    } else {
       console.log('p1 or p2 is missing');
       console.log(JSON.stringify(game, null, 4));
     }

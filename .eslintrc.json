@@ -1,6 +1,8 @@
 {
     "extends": "google",
     "rules": {
-        "no-var": "off"
+        "no-var": "off",
+        "require-jsdoc": "off",
+        "new-cap": "off"
     }
 }

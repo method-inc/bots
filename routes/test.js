@@ -16,8 +16,7 @@ router.get('/', function(req, res) {
           bots: toSend,
         });
     });
-  }
-  else {
+  } else {
     res.redirect('/');
   }
 });

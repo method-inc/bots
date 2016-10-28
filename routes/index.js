@@ -15,8 +15,7 @@ fs.readFile(instructions, function(err, data) {
 router.get('/', function(req, res, next) {
   if(!req.loggedIn) {
     res.render('loggedout');
-  }
-  else {
+  } else {
     req.session.prevpage = '';
     var user = req.session.auth.google.user;
     res.render('index', {
