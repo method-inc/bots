@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  var Turn = sequelize.define("Turn", {
+  var Turn = sequelize.define('Turn', {
     rows: DataTypes.INTEGER,
     cols: DataTypes.INTEGER,
     maxTurns: { type: DataTypes.INTEGER, defaultValue: 20 },
@@ -22,13 +22,13 @@ module.exports = function(sequelize, DataTypes) {
           spawnDisabled: this.p1SpawnDisabled,
         };
       },
-      p2: function () {
+      p2: function() {
         return {
           energy: this.p2Energy,
           spawn: this.p2Spawn,
           spawnDisabled: this.p2SpawnDisabled,
-        }
-      }
+        };
+      },
     },
     setterMethods: {
       p1: function(value) {
@@ -40,8 +40,8 @@ module.exports = function(sequelize, DataTypes) {
         this.setDataValue('p2Energy', value.energy);
         this.setDataValue('p2Spawn', value.spawn);
         this.setDataValue('p2SpawnDisabled', value.spawnDisabled);
-      }
-    }
+      },
+    },
   });
 
   return Turn;

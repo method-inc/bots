@@ -12,7 +12,6 @@ var animating = false;
 window.onload = function() {
   c=document.getElementById('game');
   ctx=c.getContext('2d');
-  var gameId = $('#game-id').html();
   energyImage = new Image();
   energyImage.src = '/images/iconSprite.png';
   if(gameTurns.length) {
@@ -20,7 +19,7 @@ window.onload = function() {
     showTurn(gameTurns[currentDisplayed]);
     updateRound();
   }
-}
+};
 
 socket.on('message', function(data) {
   if(data === 'new') {
@@ -41,8 +40,7 @@ $(document).keydown(function(e) {
   animating = false;
   if (e.keyCode === 37) {
     updateCurrentDisplayed(-1);
-  }
-  else if(e.keyCode === 39) {
+  } else if(e.keyCode === 39) {
     updateCurrentDisplayed(1);
   }
   updateRound();
@@ -87,8 +85,7 @@ function animateNextTurn() {
       currentDisplayed++;
       if(currentDisplayed >= gameTurns.length) {
         currentDisplayed = gameTurns.length-1;
-      }
-      else {
+      } else {
         animateNextTurn();
       }
     }, turnSpeed);
@@ -107,20 +104,24 @@ function resetGame() {
   gameTurns = [];
   currentDisplayed = 0;
   turn = 0;
-  ctx.clearRect (0, 0, c.width, c.height);
+  ctx.clearRect(0, 0, c.width, c.height);
   updateRound();
 }
 
 function updateCurrentDisplayed(aChange) {
   currentDisplayed += aChange;
 
-  if(currentDisplayed < 0) currentDisplayed = 0;
-  else if(currentDisplayed >= gameTurns.length && gameTurns.length) currentDisplayed = gameTurns.length-1;
+  if(currentDisplayed < 0) {
+    currentDisplayed = 0;
+  } else if(currentDisplayed >= gameTurns.length && gameTurns.length) {
+    currentDisplayed = gameTurns.length-1;
+  }
+
   showTurn(gameTurns[currentDisplayed]);
 }
 
 function showTurn(state) {
-  ctx.clearRect (0, 0, c.width, c.height);
+  ctx.clearRect(0, 0, c.width, c.height);
   ctx.strokeStyle = 'lightgrey';
   var coordWidth = c.width/state.cols;
   for(var i=1; i<state.cols; i++) {
@@ -173,7 +174,17 @@ function showTurn(state) {
           drawBot(x, y, coordWidth, '#6EA1D7');
           break;
         case '*':
-          ctx.drawImage(energyImage, 679, 51, 94, 94, x-coordWidth/2, y-coordHeight/2, coordWidth, coordHeight);
+          ctx.drawImage(
+            energyImage,
+            679,
+            51,
+            94,
+            94,
+            x-coordWidth / 2,
+            y-coordHeight / 2,
+            coordWidth,
+            coordHeight
+          );
           break;
         case 'x':
           drawBot(x, y, coordWidth, '#F26140');
@@ -194,14 +205,14 @@ function showTurn(state) {
   $('#p2 .energyconsumed').html(state.p2.energy);
 }
 
-function drawBot(x, y, coordWidth, color){
+function drawBot(x, y, coordWidth, color) {
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.arc(x, y, coordWidth/2-2, 0, 2*Math.PI);
     ctx.fill();
 }
 
-function addMarkOut(x, y, coordWidth){
+function addMarkOut(x, y, coordWidth) {
     ctx.strokeStyle = 'black';
     ctx.beginPath();
     ctx.moveTo(x-coordWidth/4, y-coordWidth/4);
@@ -216,5 +227,5 @@ function addMarkOut(x, y, coordWidth){
 function indexToCoord(state, index) {
   var x = index%state.cols;
   var y = ~~(index/state.cols);
-  return {x:x, y:y};
+  return { x: x, y: y };
 }

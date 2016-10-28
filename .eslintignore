@@ -1,0 +1,6 @@
+public/libs/*
+package.json
+initial.json
+makefile
+data.sqlite
+README.md

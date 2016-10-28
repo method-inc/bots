@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  var Game = sequelize.define("Game", {
+  var Game = sequelize.define('Game', {
     p1: DataTypes.STRING,
     p2: DataTypes.STRING,
     end: { type: DataTypes.STRING, defaultValue: 'elegant' },
@@ -9,7 +9,7 @@ module.exports = function(sequelize, DataTypes) {
     createdAt: { type: DataTypes.DATE, defaultValue: Date.now },
     finishedAt: DataTypes.DATE,
     finished: { type: DataTypes.BOOLEAN, defaultValue: false },
-    round: DataTypes.INTEGER
+    round: DataTypes.INTEGER,
   });
 
   return Game;

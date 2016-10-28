@@ -1,9 +1,7 @@
 var utils = require('../../game_logic/utils');
-var fs = require('fs')
-  , util = require('util')
-  , http = require('http')
-  , express = require('express')
-  , app = express()
+var http = require('http');
+var express = require('express');
+var app = express();
 
 app.set('port', process.argv[2]);
 app.use(express.logger('dev'));
@@ -24,7 +22,7 @@ app.get('/', function(req, res) {
   res.end();
 });
 
-var server = http.createServer(app).listen(app.get('port'), function(){
+http.createServer(app).listen(app.get('port'), function() {
   console.log('Express server listening on port ' + app.get('port'));
 });
 
@@ -35,36 +33,20 @@ process.stdin.on('data', function(data) {
 });
 
 function getMoves(state, player) {
-  var energy;
-  var spawn;
-  var enemyenergy;
-  var enemySpawn;
   var playerIndices;
-  var enemyIndices;
   var moves = [];
 
   if(player === 'r') {
-    energy = state.p1.energy;
-    spawn = state.p1.spawn;
-    enemyenergy = state.p2.energy;
-    enemySpawn = state.p2.spawn;
     playerIndices = utils.getAllIndices(state.grid, 'r');
-    enemyIndices = utils.getAllIndices(state.grid, 'b');
-  }
-  else {
-    energy = state.p2.energy;
-    spawn = state.p2.spawn;
-    enemyenergy = state.p1.energy;
-    enemySpawn = state.p1.spawn;
+  } else {
     playerIndices = utils.getAllIndices(state.grid, 'b');
-    enemyIndices = utils.getAllIndices(state.grid, 'r');
   }
 
   playerIndices.forEach(function(playerIndex) {
     var adjacent = getAdjacentIndices(state, playerIndex);
     var to = adjacent[Math.floor(Math.random()*adjacent.length)];
-    moves.push({from:playerIndex, to:to});
-  })
+    moves.push({ from: playerIndex, to: to });
+  });
 
   return moves;
 }

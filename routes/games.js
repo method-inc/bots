@@ -14,8 +14,8 @@ router.get('/', function(req, res) {
   req.session.prevpage = '/games';
   getGames(function(gamesList) {
     getTournaments(function(tournamentsList) {
-      res.render('gameslist', {games:gamesList, tournaments:tournamentsList});
-    })
+      res.render('gameslist', { games: gamesList, tournaments: tournamentsList });
+    });
   });
 });
 
@@ -36,7 +36,7 @@ router.get('/:id', function(req, res) {
         .then(function(users, err) {
           var players = getPlayers(game, users);
 
-          game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns, err) {
+          game.getTurns({ order: ['turnsElapsed'] }).then(function(turns, err) {
             var prevpage = req.session.prevpage;
             req.session.prevpage = '';
             res.render('game', {
@@ -46,7 +46,7 @@ router.get('/:id', function(req, res) {
               winner: game.winner,
               prevpage: prevpage,
               turns: turns,
-              description: getDescription(game)
+              description: getDescription(game),
             });
           });
       });
@@ -54,7 +54,7 @@ router.get('/:id', function(req, res) {
 });
 
 function getGames(cb) {
-  Game.findAll({ where: { finished:true }, order: [ ['finishedAt', 'DESC' ] ] })
+  Game.findAll({ where: { finished: true }, order: [['finishedAt', 'DESC']] })
     .then(function(games, err) {
       if(!games.length) {
         if(cb) cb([]);
@@ -66,8 +66,8 @@ function getGames(cb) {
       games.forEach(function(game, i) {
         User.findAll({ where: { 'email': { $in: [game.p1, game.p2] } } })
           .then(function(users, err) {
-            var p1 = 'nodebot', 
-                p2 = 'nodebot';
+            var p1 = 'nodebot';
+            var p2 = 'nodebot';
             var description = '';
 
             if(users[0] && users[0].email === game.p1)
@@ -77,19 +77,17 @@ function getGames(cb) {
 
             if(users[1] && users[1].email === game.p1)
               p1 = users[1].name;
-            else if (users[1] && users[1].email === game.p2) 
+            else if (users[1] && users[1].email === game.p2)
               p2 = users[1].name;
 
             if(game.winner === game.p1) {
               description = p1 + ' defeated ' + p2;
-            }
-            else if(game.winner === game.p2) {
+            } else if(game.winner === game.p2) {
               description = p2 + ' defeated ' + p1;
+            } else {
+              description = 'Tie between ' + p1 + ' and ' + p2;
             }
-            else {
-              description = 'Tie between ' + p1 + ' and ' + p2
-            }
-            gamesList[i] = {id:game.id, description:description, time:game.finishedAt};
+            gamesList[i] = { id: game.id, description: description, time: game.finishedAt };
             completed++;
 
             if(completed===games.length) {
@@ -102,17 +100,22 @@ function getGames(cb) {
 
 function getTournaments(cb) {
   Tournament
-  .findAll({ where: { winner: { $not: null } }, order: [ [ 'createdAt', 'DESC' ] ] })
+  .findAll({ where: { winner: { $not: null } }, order: [['createdAt', 'DESC']] })
   .then(function(tournaments, err) {
     if(tournaments.length) {
       var tournamentsList = [];
       var completed = 0;
       tournaments.forEach(function(tournament, i) {
-        User.findOne({ where: {'email': tournament.winner } }).then(function(user, err) {
+        User.findOne({ where: { 'email': tournament.winner } }).then(function(user, err) {
           var winner = 'nodebot';
           if(user && user.name) winner = user.name;
           var description = 'Winner: ' + winner;
-          tournamentsList[i] = {id:tournament.id, description:description, time:tournament.createdAt};
+          tournamentsList[i] =
+            {
+              id: tournament.id,
+              description: description,
+              time: tournament.createdAt,
+            };
           completed++;
 
           if(completed===tournaments.length) {
@@ -120,31 +123,30 @@ function getTournaments(cb) {
           }
         });
       });
-    }
-    else {
-      if(cb) 
+    } else {
+      if(cb)
         cb([]);
     }
   });
 }
 
 function getPlayers(game, users) {
-  var p1 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
-  var p2 = { name:'nodebot', picture:'/images/nodejs-icon.png' };
+  var p1 = { name: 'nodebot', picture: '/images/nodejs-icon.png' };
+  var p2 = { name: 'nodebot', picture: '/images/nodejs-icon.png' };
   if(users[0]) {
     if(users[0].email === game.p1)
-      p1 = { name:users[0].name, picture:users[0].picture };
+      p1 = { name: users[0].name, picture: users[0].picture };
     if(users[0].email === game.p2)
-      p2 = { name:users[0].name, picture:users[0].picture };
+      p2 = { name: users[0].name, picture: users[0].picture };
   }
   if(users[1]) {
     if(users[1].email === game.p1)
-      p1 = { name:users[1].name, picture:users[1].picture };
+      p1 = { name: users[1].name, picture: users[1].picture };
     else
-      p2 = { name:users[1].name, picture:users[1].picture };
+      p2 = { name: users[1].name, picture: users[1].picture };
   }
 
-  return { p1, p2 };
+  return { p1: p1, p2: p2 };
 }
 
 function getDescription(game) {

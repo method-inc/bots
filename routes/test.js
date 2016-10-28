@@ -9,15 +9,14 @@ router.get('/', function(req, res) {
     User.findOne({ where: { googleId: sessionUser.id } })
       .then(function(user, err) {
         var toSend = [];
-        toSend.push({name:'nodebot'});
-        toSend.push({name:user.email});
+        toSend.push({ name: 'nodebot' });
+        toSend.push({ name: user.email });
         console.log('sending bots '+ toSend);
         res.render('test', {
-          bots: toSend
+          bots: toSend,
         });
     });
-  }
-  else {
+  } else {
     res.redirect('/');
   }
 });

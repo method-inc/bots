@@ -7,8 +7,6 @@ module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   var newState = game.create(20, 20, 200);
   var gameState = utils.buildGameState(newState);
 
-  var gameStarted = true;
-
   var playerOptions = {
     p1Options: {
       url: botUrls[0],
@@ -44,7 +42,9 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
   gameStarted = false;
   ready = 0;
   game.save().then(function() {
-    if (cb) { cb(); }
+    if (cb) {
+      cb();
+    }
   });
 }
 
@@ -110,9 +110,11 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
     }
     gameStarted = false;
     ready = 0;
-    gameStore.save().then(function (savedStore) {
-      if (cb) { cb(); }
-    })
+    gameStore.save().then(function(savedStore) {
+      if (cb) {
+        cb();
+      }
+    });
   } else {
     nextTurn(gameStore, completeState, cb, sendTurn);
   }
@@ -120,7 +122,7 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
 
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
-  newGameState.save().then(function (savedState) {
+  newGameState.save().then(function(savedState) {
     sendTurn(savedState);
     savedState.setGame(gameStore).then(function(completeState) {
       detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);

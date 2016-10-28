@@ -4,9 +4,9 @@ var fs = require('fs');
 var path = require('path');
 
 var marked = require('marked');
-var instructions = path.join(__dirname + '/../' +  'README.md');
+var instructions = path.join(__dirname + '/../' + 'README.md');
 var instructionData = '';
-fs.readFile(instructions, function (err, data) {
+fs.readFile(instructions, function(err, data) {
   if (err) throw err;
   instructionData = data;
 });
@@ -15,14 +15,13 @@ fs.readFile(instructions, function (err, data) {
 router.get('/', function(req, res, next) {
   if(!req.loggedIn) {
     res.render('loggedout');
-  }
-  else {
+  } else {
     req.session.prevpage = '';
     var user = req.session.auth.google.user;
     res.render('index', {
-      email:user.email,
+      email: user.email,
       md: marked,
-      instructions: instructionData.toString()
+      instructions: instructionData.toString(),
     });
   }
 });

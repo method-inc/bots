@@ -1,12 +1,10 @@
 var express = require('express');
 var path = require('path');
-var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var everyauth = require('everyauth');
 var session = require('express-session');
-var SequelizeStore = require('connect-session-sequelize')(session.Store)
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
 
 var routes = require('./routes/index');
 var bots = require('./routes/bot');
@@ -25,7 +23,7 @@ var app = express();
 require('./auth')(everyauth, models.User);
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -35,7 +33,7 @@ app.use(session({
   cookie: { secure: false },
   resave: false,
   saveUninitialized: true,
-  store: new SequelizeStore({ db: models.sequelize })
+  store: new SequelizeStore({ db: models.sequelize }),
 }))
 .use(everyauth.middleware());
 
@@ -66,7 +64,7 @@ if (app.get('env') === 'development') {
     res.status(err.status || 500);
     res.render('error', {
       message: err.message,
-      error: err
+      error: err,
     });
   });
 }
@@ -77,10 +75,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: {},
   });
 });
-
 
 
 module.exports = app;

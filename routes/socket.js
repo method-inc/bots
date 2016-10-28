@@ -3,12 +3,9 @@ var startGame = require('../game_logic/start_game');
 var Game = models.Game;
 var User = models.User;
 
-module.exports = function (socket) {
-
+module.exports = function(socket) {
   socket.on('start', function(data) {
-    var bots = [];
     var botUrls = [];
-    var failed = false;
     var gameStore = Game.build({
       p1: data.bot1,
       p2: data.bot2,
@@ -41,8 +38,10 @@ module.exports = function (socket) {
         .then(function(game, err) {
           console.log('Game: ' + JSON.stringify(game));
         if(game) {
-          socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-          game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns) {
+          socket.emit('game-data',
+            { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
+          );
+          game.getTurns({ order: ['turnsElapsed'] }).then(function(turns) {
             turns.forEach(function(turn) {
               socket.emit('game', turn);
             });
@@ -56,8 +55,10 @@ module.exports = function (socket) {
     Game.findOne({ where: { id: data.id } })
       .then(function(game, err) {
       if(game) {
-        socket.emit('game-data', {p1:game.p1, p2:game.p2, winner:game.winner, end:game.end});
-        game.getTurns({ order: [ 'turnsElapsed' ]}).then(function(turns) {
+        socket.emit('game-data',
+          { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
+        );
+        game.getTurns({ order: ['turnsElapsed'] }).then(function(turns) {
           turns.forEach(function(turn) {
             socket.emit('game', turn);
           });
