@@ -13,10 +13,6 @@ var games = require('./routes/games');
 var tournaments = require('./routes/tournaments');
 
 var models = require('./models/index');
-models.Game.hasMany(models.Turn);
-models.Turn.belongsTo(models.Game);
-models.Tournament.hasMany(models.Game);
-models.Game.belongsTo(models.Tournament);
 
 var app = express();
 

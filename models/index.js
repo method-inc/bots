@@ -33,4 +33,9 @@ Object.keys(db).forEach(function(modelName) {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
+db.Game.hasMany(db.Turn);
+db.Turn.belongsTo(db.Game);
+db.Tournament.hasMany(db.Game);
+db.Game.belongsTo(db.Tournament);
+
 module.exports = db;
