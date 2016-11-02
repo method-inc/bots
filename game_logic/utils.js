@@ -27,7 +27,7 @@ function tryParse(str) {
 }
 
 function buildGameState(newState) {
-  var gameState = Turn.build({
+  var gameState = {
     rows: newState.rows,
     cols: newState.cols,
     maxTurns: newState.maxTurns,
@@ -35,9 +35,9 @@ function buildGameState(newState) {
     grid: newState.grid,
     p1: newState.p1,
     p2: newState.p2,
-  });
+    winner: newState.winner,
+  };
 
-  gameState.winner = newState.winner;
   return gameState;
 }
 
