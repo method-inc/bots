@@ -5,6 +5,8 @@ var utils = require('./utils');
 var models = require('../models');
 var Turn = models.Turn;
 
+var turns = [];
+
 module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   var newState = game.create(20, 20, 200);
   var gameState = utils.buildGameState(newState);
@@ -109,8 +111,6 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
     nextTurn(gameStore, completeState, cb, sendTurn);
   }
 }
-
-var turns = [];
 
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
