@@ -1,6 +1,3 @@
-var models = require('../models/index');
-var Turn = models.Turn;
-
 var distance = {
   move: 1,
   raze: 1,
