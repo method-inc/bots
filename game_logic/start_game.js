@@ -2,11 +2,15 @@ var game = require('./game');
 var request = require('request');
 var testBot = require('./test_bot');
 var utils = require('./utils');
+var models = require('../models');
+var Turn = models.Turn;
+
+var turns = [];
 
 module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   var newState = game.create(20, 20, 200);
   var gameState = utils.buildGameState(newState);
-
+  turns = [];
   var playerOptions = {
     p1Options: {
       url: botUrls[0],
@@ -24,12 +28,8 @@ module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
 
   gameStore.playerOptions = playerOptions;
 
-  gameState.save().then(function(savedState) {
-    gameStore.save().then(function(savedGameStore) {
-      savedState.setGame(savedGameStore).then(function() {
-        nextTurn(savedGameStore, savedState, cb, sendTurn);
-      });
-    });
+  gameStore.save().then(function(savedGame) {
+    nextTurn(savedGame, gameState, cb, sendTurn);
   });
 };
 
@@ -41,11 +41,7 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
   game.finishedAt = Date.now();
   gameStarted = false;
   ready = 0;
-  game.save().then(function() {
-    if (cb) {
-      cb();
-    }
-  });
+  saveGameAndTurns(game, cb);
 }
 
 function nextTurn(gameStore, gameState, cb, sendTurn) {
@@ -94,7 +90,7 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   }
 }
 
-function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
+function detectGameComplete(gameStore, completeState, cb, sendTurn) {
   if (completeState.winner) {
     utils.log('GAME ENDED');
     if (completeState.winner) {
@@ -110,11 +106,7 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
     }
     gameStarted = false;
     ready = 0;
-    gameStore.save().then(function(savedStore) {
-      if (cb) {
-        cb();
-      }
-    });
+    saveGameAndTurns(gameStore, cb);
   } else {
     nextTurn(gameStore, completeState, cb, sendTurn);
   }
@@ -122,10 +114,18 @@ function detectGameComplete(gameStore, gameState, completeState, cb, sendTurn) {
 
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
-  newGameState.save().then(function(savedState) {
-    sendTurn(savedState);
-    savedState.setGame(gameStore).then(function(completeState) {
-      detectGameComplete(gameStore, gameState, completeState, cb, sendTurn);
+  newGameState.GameId = gameStore.id;
+  sendTurn(newGameState);
+  turns.push(utils.copyObj(newGameState));
+  detectGameComplete(gameStore, newGameState, cb, sendTurn);
+}
+
+function saveGameAndTurns(game, cb) {
+  game.save().then(function(savedStore) {
+    Turn.bulkCreate(turns).then(function() {
+      if (cb) {
+        cb();
+      }
     });
   });
 }
