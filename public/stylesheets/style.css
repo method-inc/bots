@@ -21,14 +21,14 @@ h2 {
   color: #d3d3d3;
   font-size: 20px;
 }
-#logout a {
+.login a {
   color: #d3d3d3;
   margin: 0;
   position: absolute;
   right: 50px;
   top: 60px;
 }
-#logout a:hover {
+.login a:hover {
   color: #000;
 }
 #back a {

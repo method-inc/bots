@@ -13,17 +13,15 @@ fs.readFile(instructions, function(err, data) {
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  if(!req.loggedIn) {
-    res.render('loggedout');
-  } else {
-    req.session.prevpage = '';
-    var user = req.session.auth.google.user;
-    res.render('index', {
-      email: user.email,
-      md: marked,
-      instructions: instructionData.toString(),
-    });
-  }
+  req.session.prevpage = '';
+  res.render('index', {
+    md: marked,
+    instructions: instructionData.toString(),
+  });
+});
+
+router.get('/loggedout', function(req, res, next) {
+  res.render('loggedout');
 });
 
 module.exports = router;

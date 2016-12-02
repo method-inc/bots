@@ -6,11 +6,6 @@ var User = models.User;
 var Tournament = models.Tournament;
 
 router.get('/', function(req, res) {
-  if(!req.loggedIn) {
-    res.redirect('/');
-    return;
-  }
-
   req.session.prevpage = '/games';
   getGames(function(gamesList) {
     getTournaments(function(tournamentsList) {
@@ -20,11 +15,6 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  if(!req.loggedIn) {
-    res.redirect('/');
-    return;
-  }
-
   Game.findOne({ where: { id: req.params.id } })
     .then(function(game, err) {
       if(!game) {

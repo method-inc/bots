@@ -6,10 +6,6 @@ var Tournament = models.Tournament;
 var Game = models.Game;
 
 router.get('/', function(req, res) {
-  if(!req.loggedIn) {
-    res.redirect('/');
-    return;
-  }
   Tournament.findOne({
     order: [['createdAt', 'DESC']],
   })
@@ -23,10 +19,6 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  if(!req.loggedIn) {
-    res.redirect('/');
-    return;
-  }
   var prevpage = req.session.prevpage;
   if(prevpage === '/tournaments/' + req.params.id) prevpage = '/';
   req.session.prevpage = '/tournaments/' + req.params.id;
