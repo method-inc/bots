@@ -10,15 +10,8 @@ router.get('/', function(req, res) {
     res.redirect('/');
     return;
   }
-  Tournament.findOne({
-    order: [['createdAt', 'DESC']],
-  })
-  .then(function(tournament, err) {
-    if(tournament) {
-      res.redirect('/tournaments/' + tournament.id);
-    } else {
-      res.redirect('/');
-    }
+  getTournaments(function(tournamentsList) {
+    res.render('tournaments/index', { tournaments: tournamentsList });
   });
 });
 
@@ -81,6 +74,38 @@ router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
   });
   res.redirect('/');
 });
+
+function getTournaments(cb) {
+  Tournament
+  .findAll({ where: { winner: { $not: null } }, order: [['createdAt', 'DESC']] })
+  .then(function(tournaments, err) {
+    if(tournaments.length) {
+      var tournamentsList = [];
+      var completed = 0;
+      tournaments.forEach(function(tournament, i) {
+        User.findOne({ where: { 'email': tournament.winner } }).then(function(user, err) {
+          var winner = 'nodebot';
+          if(user && user.name) winner = user.name;
+          var description = 'Winner: ' + winner;
+          tournamentsList[i] =
+            {
+              id: tournament.id,
+              description: description,
+              time: tournament.createdAt,
+            };
+          completed++;
+
+          if(completed===tournaments.length) {
+            if(cb) cb(tournamentsList);
+          }
+        });
+      });
+    } else {
+      if(cb)
+        cb([]);
+    }
+  });
+}
 
 function organizeTournament() {
   User.find({ bot: { $exists: true }, participating: true }, function(err, users) {
