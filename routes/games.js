@@ -5,11 +5,6 @@ var Game = models.Game;
 var User = models.User;
 
 router.get('/', function(req, res) {
-  if(!req.loggedIn) {
-    res.redirect('/');
-    return;
-  }
-
   req.session.prevpage = '/games';
   getGames(function(gamesList) {
     res.render('gameslist', { games: gamesList });
@@ -17,11 +12,6 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  if(!req.loggedIn) {
-    res.redirect('/');
-    return;
-  }
-
   Game.findOne({ where: { id: req.params.id } })
     .then(function(game, err) {
       if(!game) {

@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha tests/test.js",
-    "lint": "eslint . --fix"
+    "lint": "eslint . --fix",
+    "stylus": "stylus public/stylesheets"
   },
   "dependencies": {
     "body-parser": "~1.15.1",

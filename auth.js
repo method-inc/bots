@@ -29,7 +29,7 @@ module.exports = function(everyauth, User) {
   everyauth.everymodule.findUserById(function(userId, callback) {
     User.findById(userId)
       .then(function(user, err) {
-        return callback(user, err);
+        return callback(err, user);
       });
   });
 };
