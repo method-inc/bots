@@ -3,7 +3,6 @@ var router = express.Router();
 var models = require('./../models/index');
 var Game = models.Game;
 var User = models.User;
-var Tournament = models.Tournament;
 
 router.get('/', function(req, res) {
   if(!req.loggedIn) {
@@ -13,9 +12,7 @@ router.get('/', function(req, res) {
 
   req.session.prevpage = '/games';
   getGames(function(gamesList) {
-    getTournaments(function(tournamentsList) {
-      res.render('gameslist', { games: gamesList, tournaments: tournamentsList });
-    });
+    res.render('gameslist', { games: gamesList });
   });
 });
 
@@ -95,38 +92,6 @@ function getGames(cb) {
             }
         });
       });
-  });
-}
-
-function getTournaments(cb) {
-  Tournament
-  .findAll({ where: { winner: { $not: null } }, order: [['createdAt', 'DESC']] })
-  .then(function(tournaments, err) {
-    if(tournaments.length) {
-      var tournamentsList = [];
-      var completed = 0;
-      tournaments.forEach(function(tournament, i) {
-        User.findOne({ where: { 'email': tournament.winner } }).then(function(user, err) {
-          var winner = 'nodebot';
-          if(user && user.name) winner = user.name;
-          var description = 'Winner: ' + winner;
-          tournamentsList[i] =
-            {
-              id: tournament.id,
-              description: description,
-              time: tournament.createdAt,
-            };
-          completed++;
-
-          if(completed===tournaments.length) {
-            if(cb) cb(tournamentsList);
-          }
-        });
-      });
-    } else {
-      if(cb)
-        cb([]);
-    }
   });
 }
 
