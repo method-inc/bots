@@ -4,7 +4,7 @@ var models = require('./../models/index');
 
 router.get('/', function(req, res) {
   if(!req.loggedIn) {
-    res.redirect('/');
+    res.redirect('/loggedout');
     return;
   }
 
@@ -22,7 +22,7 @@ router.get('/', function(req, res) {
 
 router.post('/', function(req, res) {
   if(!req.loggedIn) {
-    res.redirect('/');
+    res.redirect('/loggedout');
     return;
   }
 
@@ -37,7 +37,7 @@ router.post('/', function(req, res) {
 
 router.post('/participate', function(req, res) {
   if(!req.loggedIn) {
-    res.redirect('/');
+    res.redirect('/loggedout');
     return;
   }
 

@@ -1,4 +1,8 @@
 h1 Skookum Bot-Wars
 h2= subtitle
-h2#logout
-  a(href='/logout') Log Out
+if (everyauth.user)
+  h2.login
+    a(href='/logout') Log Out
+else
+  h2.login
+    a(href='/loggedout') Log In
