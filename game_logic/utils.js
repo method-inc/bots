@@ -10,12 +10,8 @@ function log() {
   console.log(arguments);
 }
 
-function stringifyGameState(playerString, gameState, gameId) {
-  return JSON.stringify({
-    player: playerString,
-    state: gameState,
-    gameId,
-  }) + '\n';
+function stringifyGameState(player, state, gameId) {
+  return JSON.stringify({ player, state, gameId }) + '\n';
 }
 
 function tryParse(str) {
