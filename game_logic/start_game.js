@@ -47,11 +47,10 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
 function nextTurn(gameStore, gameState, cb, sendTurn) {
   var p1Moves = null;
   var p2Moves = null;
-  var p1Options = gameStore.playerOptions.p1Options;
-  var p2Options = gameStore.playerOptions.p2Options;
+  var { p1Options, p2Options } = gameStore.playerOptions;
 
-  p1Options.form.data = utils.stringifyGameState('r', gameState);
-  p2Options.form.data = utils.stringifyGameState('b', gameState);
+  p1Options.form.data = utils.stringifyGameState('r', gameState, gameStore.id);
+  p2Options.form.data = utils.stringifyGameState('b', gameState, gameStore.id);
 
   function playerResponse(body) {
     if (p1Moves && p2Moves) {

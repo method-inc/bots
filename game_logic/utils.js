@@ -10,8 +10,12 @@ function log() {
   console.log(arguments);
 }
 
-function stringifyGameState(playerString, gameState) {
-  return JSON.stringify({ player: playerString, state: gameState }) + '\n';
+function stringifyGameState(playerString, gameState, gameId) {
+  return JSON.stringify({
+    player: playerString,
+    state: gameState,
+    gameId,
+  }) + '\n';
 }
 
 function tryParse(str) {
@@ -130,20 +134,20 @@ function copyObj(object) {
 }
 
 module.exports = {
-  log: log,
-  stringifyGameState: stringifyGameState,
-  tryParse: tryParse,
-  buildGameState: buildGameState,
-  getAllIndices: getAllIndices,
-  getAdjacentIndices: getAdjacentIndices,
-  getMirroredIndex: getMirroredIndex,
-  getCoord: getCoord,
-  setCoord: setCoord,
-  setIndex: setIndex,
-  showGrid: showGrid,
-  makeEmptyGrid: makeEmptyGrid,
-  adjacent: adjacent,
-  indexToCoord: indexToCoord,
-  coordToIndex: coordToIndex,
-  copyObj: copyObj,
+  log,
+  stringifyGameState,
+  tryParse,
+  buildGameState,
+  getAllIndices,
+  getAdjacentIndices,
+  getMirroredIndex,
+  getCoord,
+  setCoord,
+  setIndex,
+  showGrid,
+  makeEmptyGrid,
+  adjacent,
+  indexToCoord,
+  coordToIndex,
+  copyObj
 };
