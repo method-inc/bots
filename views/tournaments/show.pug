@@ -1,4 +1,4 @@
-extends layout
+extends /layout
 block head
   script.
     var tournament = !{JSON.stringify(tournament)};
@@ -6,7 +6,7 @@ block head
   script(src='/libs/jqueryuicustom.js')
   script(src='/javascripts/tournament.js')
 block content
-  include partials/header
+  include /partials/header
   h2#back
     -if(prevpage)
       a(href=prevpage) &#x25C0; Back

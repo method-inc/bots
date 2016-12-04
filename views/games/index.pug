@@ -1,10 +1,10 @@
-extends layout
+extends /layout
 block head
   script(src='/javascripts/game.js')
 block content
   div#game-id.hidden #{id}
 
-  include partials/header
+  include /partials/header
   h2#back
     a(href='/') &#x25C0; Back
 

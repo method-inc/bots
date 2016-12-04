@@ -7,7 +7,7 @@ var User = models.User;
 router.get('/', function(req, res) {
   req.session.prevpage = '/games';
   getGames(function(gamesList) {
-    res.render('gameslist', { games: gamesList });
+    res.render('games/index', { games: gamesList });
   });
 });
 
@@ -26,7 +26,7 @@ router.get('/:id', function(req, res) {
           game.getTurns({ order: ['turnsElapsed'] }).then(function(turns, err) {
             var prevpage = req.session.prevpage;
             req.session.prevpage = '';
-            res.render('game', {
+            res.render('games/show', {
               id: req.params.id,
               p1: players.p1,
               p2: players.p2,

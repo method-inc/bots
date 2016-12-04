@@ -19,7 +19,7 @@ router.get('/:id', function(req, res) {
     { include: { model: Game, order: ['round'] }, where: { id: req.params.id } }
   ).then(function(tournament, err) {
       if(tournament) {
-        res.render('tournament', { tournament: tournament, prevpage: prevpage });
+        res.render('tournaments/show', { tournament: tournament, prevpage: prevpage });
       } else {
         console.log('no tournaments');
         res.redirect('/');

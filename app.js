@@ -35,6 +35,7 @@ app.use(session({
 
 
 // view engine setup
+app.locals.basedir = path.join(__dirname, 'views');
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 

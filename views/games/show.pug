@@ -1,4 +1,4 @@
-extends layout
+extends /layout
 block head
   script.
     var turns=!{JSON.stringify(turns)};
@@ -7,7 +7,7 @@ block content
   div#game-id.hidden #{id}
 
   - var subtitle = description
-  include partials/header
+  include /partials/header
   h2#back
     -if(prevpage)
       a(href=prevpage) &#x25C0; Back
