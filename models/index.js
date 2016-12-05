@@ -38,4 +38,8 @@ db.Turn.belongsTo(db.Game);
 db.Tournament.hasMany(db.Game);
 db.Game.belongsTo(db.Tournament);
 
+db.Game.belongsTo(db.User, { as: 'p1', foreignKey: 'p1Id' });
+db.Game.belongsTo(db.User, { as: 'p2', foreignKey: 'p2Id' });
+db.Game.belongsTo(db.User, { as: 'winner', foreignKey: 'winnerId' });
+
 module.exports = db;

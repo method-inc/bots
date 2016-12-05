@@ -13,8 +13,8 @@ module.exports = function(socket) {
 
     socket.emit('message', 'new');
 
-    [data.bot1, data.bot2].forEach(function(botName) {
-      User.findOne({ where: { email: botName } })
+    [data.bot1, data.bot2].forEach(function(botId) {
+      User.findOne({ where: { id: botId } })
         .then(function(user, err) {
           if(user && user.bot) {
             botUrls.push(user.bot);

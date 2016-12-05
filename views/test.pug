@@ -9,12 +9,12 @@ block content
   form
     select#botlist1
       each bot in bots
-        option(value= bot.name)
+        option(value= bot.id)
           = bot.name
     label vs
     select#botlist2
       each bot in bots
-        option(value= bot.name)
+        option(value= bot.id)
           = bot.name
     button#newgame new game
 
