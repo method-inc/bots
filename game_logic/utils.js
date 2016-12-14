@@ -145,5 +145,5 @@ module.exports = {
   adjacent,
   indexToCoord,
   coordToIndex,
-  copyObj
+  copyObj,
 };
