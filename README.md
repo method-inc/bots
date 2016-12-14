@@ -141,7 +141,7 @@ Your bot will run through HTTP communication instead of stdin/stdout. In order t
 
 Go to the `/test` route to run test matches. In the dropdown menus, you can choose the bots to compete. Click the "new game" button to start and view the match.
 
-** Note: Game Id is attached to gameState object once s new game has been initialized for debugging purposes
+** Note: Game Id will be attached to the gameState object once a new game has been initialized for debugging purposes
 
 # Questions or Issues
 
