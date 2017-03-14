@@ -1,11 +1,12 @@
 {
   "development": {
-    "storage": "data.sqlite",
-    "dialect": "sqlite"
+    "use_env_variable": "DATABASE_URL",
+    "retry": {
+      "max": 5
+    }
   },
   "test": {
-    "storage": "data.sqlite",
-    "dialect": "sqlite"
+    "use_env_variable": "DATABASE_URL"
   },
   "production": {
     "use_env_variable": "DATABASE_URL"

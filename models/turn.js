@@ -6,7 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     cols: DataTypes.INTEGER,
     maxTurns: { type: DataTypes.INTEGER, defaultValue: 20 },
     turnsElapsed: DataTypes.INTEGER,
-    grid: DataTypes.STRING,
+    grid: DataTypes.STRING(401),
     p1Energy: DataTypes.INTEGER,
     p1Spawn: DataTypes.INTEGER,
     p1SpawnDisabled: DataTypes.BOOLEAN,
