@@ -3,7 +3,7 @@ var router = express.Router();
 var models = require('./../models/index');
 
 router.get('/', function(req, res) {
-  if(!req.loggedIn) {
+  if (!req.loggedIn) {
     res.redirect('/loggedout');
     return;
   }
@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/', function(req, res) {
-  if(!req.loggedIn) {
+  if (!req.loggedIn) {
     res.redirect('/loggedout');
     return;
   }
@@ -36,7 +36,7 @@ router.post('/', function(req, res) {
 });
 
 router.post('/participate', function(req, res) {
-  if(!req.loggedIn) {
+  if (!req.loggedIn) {
     res.redirect('/loggedout');
     return;
   }

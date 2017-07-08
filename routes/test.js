@@ -3,7 +3,7 @@ var router = express.Router();
 var User = require('../models/index').User;
 
 router.get('/', function(req, res) {
-  if(!req.loggedIn) {
+  if (!req.loggedIn) {
     res.redirect('/loggedout');
     return;
   }

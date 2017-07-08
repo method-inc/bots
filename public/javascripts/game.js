@@ -1,5 +1,5 @@
 var gameTurns = [];
-if(typeof turns !== 'undefined') gameTurns = turns;
+if (typeof turns !== 'undefined') gameTurns = turns;
 var currentDisplayed = 0;
 var turn = 0;
 var socket = io();
@@ -14,7 +14,7 @@ window.onload = function() {
   ctx=c.getContext('2d');
   energyImage = new Image();
   energyImage.src = '/images/iconSprite.png';
-  if(gameTurns.length) {
+  if (gameTurns.length) {
     currentDisplayed = gameTurns.length-1;
     showTurn(gameTurns[currentDisplayed]);
     updateRound();
@@ -22,11 +22,11 @@ window.onload = function() {
 };
 
 socket.on('message', function(data) {
-  if(data === 'new') {
+  if (data === 'new') {
     resetGame();
   }
 });
-if(!gameTurns.length) {
+if (!gameTurns.length) {
   socket.on('game', function(data) {
     gameTurns.push(data);
     showTurn(data);
@@ -40,15 +40,15 @@ $(document).keydown(function(e) {
   animating = false;
   if (e.keyCode === 37) {
     updateCurrentDisplayed(-1);
-  } else if(e.keyCode === 39) {
+  } else if (e.keyCode === 39) {
     updateCurrentDisplayed(1);
   }
   updateRound();
 });
 $(document).on('click', '#animate-game', function(e) {
-  if(gameTurns.length) {
+  if (gameTurns.length) {
     animating = !animating;
-    if(animating) {
+    if (animating) {
       currentDisplayed = 0;
       animateNextTurn();
     }
@@ -78,12 +78,12 @@ $(document).on('click', '.end', function(e) {
 });
 
 function animateNextTurn() {
-  if(animating) {
+  if (animating) {
     setTimeout(function() {
       showTurn(gameTurns[currentDisplayed]);
       updateRound();
       currentDisplayed++;
-      if(currentDisplayed >= gameTurns.length) {
+      if (currentDisplayed >= gameTurns.length) {
         currentDisplayed = gameTurns.length-1;
       } else {
         animateNextTurn();
@@ -94,10 +94,11 @@ function animateNextTurn() {
 
 function updateRound() {
   $('#turn .current').html(currentDisplayed);
-  if(gameTurns.length)
+  if (gameTurns.length) {
     $('#turn .total').html(gameTurns.length-1);
-  else
+  } else {
     $('#turn .total').html(0);
+  }
 }
 
 function resetGame() {
@@ -111,9 +112,9 @@ function resetGame() {
 function updateCurrentDisplayed(aChange) {
   currentDisplayed += aChange;
 
-  if(currentDisplayed < 0) {
+  if (currentDisplayed < 0) {
     currentDisplayed = 0;
-  } else if(currentDisplayed >= gameTurns.length && gameTurns.length) {
+  } else if (currentDisplayed >= gameTurns.length && gameTurns.length) {
     currentDisplayed = gameTurns.length-1;
   }
 
@@ -124,7 +125,7 @@ function showTurn(state) {
   ctx.clearRect(0, 0, c.width, c.height);
   ctx.strokeStyle = 'lightgrey';
   var coordWidth = c.width/state.cols;
-  for(var i=1; i<state.cols; i++) {
+  for (var i=1; i<state.cols; i++) {
     var x = i*coordWidth;
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -133,21 +134,21 @@ function showTurn(state) {
   }
 
   var coordHeight = c.height/state.rows;
-  for(var i=1; i<state.rows; i++) {
+  for (var i=1; i<state.rows; i++) {
     var y = i*coordHeight;
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(c.width, y);
     ctx.stroke();
   }
-  if(!state.p1.spawnDisabled) {
+  if (!state.p1.spawnDisabled) {
     var p1Spawn = indexToCoord(state, state.p1.spawn);
     ctx.fillStyle = 'rgba(242, 97, 64, 0.5)';
     ctx.beginPath();
     ctx.rect(p1Spawn.x*coordWidth, p1Spawn.y*coordHeight, coordWidth, coordHeight);
     ctx.fill();
   }
-  if(!state.p2.spawnDisabled) {
+  if (!state.p2.spawnDisabled) {
     var p2Spawn = indexToCoord(state, state.p2.spawn);
     ctx.beginPath();
     ctx.fillStyle = 'rgba(110, 161, 215, 0.5)';
@@ -157,14 +158,14 @@ function showTurn(state) {
 
   var p1Headcount = 0;
   var p2Headcount = 0;
-  for(var i=0; i<state.grid.length; i++) {
+  for (var i=0; i<state.grid.length; i++) {
     var gridId = state.grid[i];
-    if(gridId !== '.') {
+    if (gridId !== '.') {
       var coord = indexToCoord(state, i);
       var x = coord.x*coordWidth + coordWidth/2;
       var y = coord.y*coordHeight + coordHeight/2;
 
-      switch(gridId) {
+      switch (gridId) {
         case 'r':
           p1Headcount++;
           drawBot(x, y, coordWidth, '#F26140');

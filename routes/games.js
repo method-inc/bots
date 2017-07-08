@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
 router.get('/:id', function(req, res) {
   Game.findOne({ where: { id: req.params.id } })
     .then(function(game, err) {
-      if(!game) {
+      if (!game) {
         res.redirect('/');
         return;
       }
@@ -43,8 +43,8 @@ router.get('/:id', function(req, res) {
 function getGames(cb) {
   Game.findAll({ where: { finished: true }, order: [['finishedAt', 'DESC']] })
     .then(function(games, err) {
-      if(!games.length) {
-        if(cb) cb([]);
+      if (!games.length) {
+        if (cb) cb([]);
         return;
       }
 
@@ -57,19 +57,22 @@ function getGames(cb) {
             var p2 = 'nodebot';
             var description = '';
 
-            if(users[0] && users[0].email === game.p1)
+            if (users[0] && users[0].email === game.p1) {
               p1 = users[0].name;
-            if(users[0] && users[0].email === game.p2)
+            }
+            if (users[0] && users[0].email === game.p2) {
               p2 = users[0].name;
+            }
 
-            if(users[1] && users[1].email === game.p1)
+            if (users[1] && users[1].email === game.p1) {
               p1 = users[1].name;
-            else if (users[1] && users[1].email === game.p2)
+            } else if (users[1] && users[1].email === game.p2) {
               p2 = users[1].name;
+            }
 
-            if(game.winner === game.p1) {
+            if (game.winner === game.p1) {
               description = p1 + ' defeated ' + p2;
-            } else if(game.winner === game.p2) {
+            } else if (game.winner === game.p2) {
               description = p2 + ' defeated ' + p1;
             } else {
               description = 'Tie between ' + p1 + ' and ' + p2;
@@ -77,8 +80,8 @@ function getGames(cb) {
             gamesList[i] = { id: game.id, description: description, time: game.finishedAt };
             completed++;
 
-            if(completed===games.length) {
-              if(cb) cb(gamesList);
+            if (completed===games.length) {
+              if (cb) cb(gamesList);
             }
         });
       });
@@ -88,28 +91,31 @@ function getGames(cb) {
 function getPlayers(game, users) {
   var p1 = { name: 'nodebot', picture: '/images/nodejs-icon.png' };
   var p2 = { name: 'nodebot', picture: '/images/nodejs-icon.png' };
-  if(users[0]) {
-    if(users[0].email === game.p1)
+  if (users[0]) {
+    if (users[0].email === game.p1) {
       p1 = { name: users[0].name, picture: users[0].picture };
-    if(users[0].email === game.p2)
+    }
+    if (users[0].email === game.p2) {
       p2 = { name: users[0].name, picture: users[0].picture };
+    }
   }
-  if(users[1]) {
-    if(users[1].email === game.p1)
+  if (users[1]) {
+    if (users[1].email === game.p1) {
       p1 = { name: users[1].name, picture: users[1].picture };
-    else
+    } else {
       p2 = { name: users[1].name, picture: users[1].picture };
+    }
   }
 
   return { p1: p1, p2: p2 };
 }
 
 function getDescription(game) {
-  if(!game.winner) {
+  if (!game.winner) {
     return '';
   }
 
-  if(game.end === 'elegant') {
+  if (game.end === 'elegant') {
     return game.winner + ' wins';
   }
   return game.winner + ' wins (' + game.end + ')';

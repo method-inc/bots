@@ -82,14 +82,14 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
   var unmovedP1s = utils.getAllIndices(state.grid, gridIds.player1);
   var unmovedP2s = utils.getAllIndices(state.grid, gridIds.player2);
   unmovedP1s.forEach(function(index) {
-    if(newState.grid[index] === gridIds.player1 || newState.grid[index] === gridIds.player2) {
+    if (newState.grid[index] === gridIds.player1 || newState.grid[index] === gridIds.player2) {
       utils.setIndex(newState, index, gridIds.dead1);
     } else {
       utils.setIndex(newState, index, gridIds.player1);
     }
   });
   unmovedP2s.forEach(function(index) {
-    if(newState.grid[index] === gridIds.player1 || newState.grid[index] === gridIds.player2) {
+    if (newState.grid[index] === gridIds.player1 || newState.grid[index] === gridIds.player2) {
       utils.setIndex(newState, index, gridIds.dead2);
     } else {
       utils.setIndex(newState, index, gridIds.player2);
@@ -180,18 +180,18 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
     var surroundingP1 = 0;
     var surroundingP2 = 0;
     utils.getAdjacentIndices(state, energyIndex).forEach(function(adjIndex) {
-      if(state.grid[adjIndex] === gridIds.player1) {
+      if (state.grid[adjIndex] === gridIds.player1) {
         surroundingP1++;
-      } else if(state.grid[adjIndex] === gridIds.player2) {
+      } else if (state.grid[adjIndex] === gridIds.player2) {
         surroundingP2++;
       }
     });
     if (surroundingP1 && surroundingP2) {
       utils.setIndex(state, energyIndex, gridIds.empty);
-    } else if(surroundingP1) {
+    } else if (surroundingP1) {
       utils.setIndex(state, energyIndex, gridIds.empty);
       state.p1.energy++;
-    } else if(surroundingP2) {
+    } else if (surroundingP2) {
       utils.setIndex(state, energyIndex, gridIds.empty);
       state.p2.energy++;
     }
@@ -209,7 +209,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
         }
       }
     });
-    if(available.length) {
+    if (available.length) {
       var randomIndex = available[Math.floor(Math.random() * available.length)];
       var mirroredIndex = utils.getMirroredIndex(state, randomIndex);
       utils.setIndex(state, randomIndex, gridIds.energy);
@@ -230,7 +230,7 @@ exports.doTurn = function(state, p1Moves, p2Moves, testing) {
       state.winner = gridIds.player2;
     } else {
       var i = ~~(Math.random() * 2);
-      if(i) state.winner = gridIds.player1;
+      if (i) state.winner = gridIds.player1;
       else state.winner = gridIds.player2;
     }
   }
@@ -245,7 +245,7 @@ function validMoves(moves) {
   }
   var allMovesValid = true;
   moves.forEach(function(move) {
-    if(typeof move.from !== 'number' || typeof move.to !== 'number') {
+    if (typeof move.from !== 'number' || typeof move.to !== 'number') {
       allMovesValid = false;
     }
   });

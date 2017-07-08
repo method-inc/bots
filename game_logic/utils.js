@@ -40,7 +40,7 @@ function buildGameState(newState) {
 
 function getAllIndices(grid, search) {
   var arr = [];
-  if(search === '.') search = '\\.';
+  if (search === '.') search = '\\.';
   var re = new RegExp(search, 'g');
   while (m = re.exec(grid)) {
     arr.push(m.index);
@@ -51,14 +51,18 @@ function getAllIndices(grid, search) {
 function getAdjacentIndices(state, index) {
   var indices = [];
   var coord = indexToCoord(state, index);
-  if(coord.x > 0)
+  if (coord.x > 0) {
     indices.push(coordToIndex(state, { x: coord.x - 1, y: coord.y }));
-  if(coord.x < state.cols-1)
+  }
+  if (coord.x < state.cols-1) {
     indices.push(coordToIndex(state, { x: coord.x + 1, y: coord.y }));
-  if(coord.y > 0)
+  }
+  if (coord.y > 0) {
     indices.push(coordToIndex(state, { x: coord.x, y: coord.y - 1 }));
-  if(coord.y < state.rows-1)
+  }
+  if (coord.y < state.rows-1) {
     indices.push(coordToIndex(state, { x: coord.x, y: coord.y + 1 }));
+  }
 
   return indices;
 }
@@ -66,7 +70,7 @@ function getMirroredIndex(state, index) {
   var coord = indexToCoord(state, index);
   var mirroredCoord = { x: state.cols - 1 - coord.x, y: state.rows - 1 - coord.y };
   var mirroredIndex = coordToIndex(state, mirroredCoord);
-  if(mirroredIndex !== index) {
+  if (mirroredIndex !== index) {
     return mirroredIndex;
   } else {
     return -1;
@@ -88,9 +92,9 @@ function setIndex(state, index, val) {
 }
 
 function showGrid(state) {
-  for(var y=0; y<state.rows; y++) {
+  for (var y=0; y<state.rows; y++) {
     var row = '';
-    for(var x=0; x<state.cols; x++) {
+    for (var x=0; x<state.cols; x++) {
       row += state.grid[coordToIndex(state, { x: x, y: y })];
     }
     console.log(row+'\n');
@@ -102,12 +106,12 @@ function makeEmptyGrid(rows, cols, key) {
 }
 
 function adjacent(state, index1, index2) {
-  if(index1 < state.grid.length && index2 < state.grid.length && index1 >= 0 && index2 >= 0) {
+  if (index1 < state.grid.length && index2 < state.grid.length && index1 >= 0 && index2 >= 0) {
     var coord1 = indexToCoord(state, index1);
     var coord2 = indexToCoord(state, index2);
     var horizontal = Math.abs(coord1.x-coord2.x);
     var vertical = Math.abs(coord1.y-coord2.y);
-    if((horizontal <= distance.move && vertical === 0) ||
+    if ((horizontal <= distance.move && vertical === 0) ||
       (vertical <= distance.move && horizontal === 0)) {
       return true;
     }

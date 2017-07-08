@@ -10,7 +10,7 @@ function getMoves(state, player) {
   var playerIndices;
   var moves = [];
 
-  if(player === 'r') {
+  if (player === 'r') {
     playerIndices = utils.getAllIndices(state.grid, 'r');
   } else {
     playerIndices = utils.getAllIndices(state.grid, 'b');

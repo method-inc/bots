@@ -16,13 +16,13 @@ module.exports = function(socket) {
     [data.bot1, data.bot2].forEach(function(botName) {
       User.findOne({ where: { email: botName } })
         .then(function(user, err) {
-          if(user && user.bot) {
+          if (user && user.bot) {
             botUrls.push(user.bot);
           } else {
             botUrls.push('nodebot');
           }
 
-          if(botUrls.length >= 2) {
+          if (botUrls.length >= 2) {
             startGame(botUrls, gameStore, sendTurns, sendTurn);
           }
         }
@@ -37,7 +37,7 @@ module.exports = function(socket) {
       Game.findOne({ where: { id: gameStore.id } })
         .then(function(game, err) {
           console.log('Game: ' + JSON.stringify(game));
-        if(game) {
+        if (game) {
           socket.emit('game-data',
             { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
           );
@@ -54,7 +54,7 @@ module.exports = function(socket) {
   socket.on('show', function(data) {
     Game.findOne({ where: { id: data.id } })
       .then(function(game, err) {
-      if(game) {
+      if (game) {
         socket.emit('game-data',
           { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
         );
