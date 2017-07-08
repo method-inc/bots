@@ -9,30 +9,30 @@
     "stylus": "stylus public/stylesheets"
   },
   "dependencies": {
-    "body-parser": "~1.15.1",
+    "body-parser": "~1.17.2",
     "connect": "^3.4.1",
-    "connect-session-sequelize": "^3.1.0",
+    "connect-session-sequelize": "^3.2.0",
     "cookie-parser": "~1.4.3",
-    "debug": "~2.2.0",
+    "debug": "~2.6.8",
     "everyauth": "^0.4.9",
-    "express": "~4.13.4",
+    "express": "~4.15.3",
     "express-session": "^1.14.1",
     "marked": "^0.3.6",
-    "morgan": "~1.7.0",
+    "morgan": "~1.8.2",
     "pg": "^6.1.0",
     "pug": "^2.0.0-beta6",
     "request": "^2.74.0",
-    "sequelize": "^3.24.1",
+    "sequelize": "^3.30.4",
     "sequelstore-connect": "^1.1.5",
-    "serve-favicon": "~2.3.0",
-    "socket.io": "^1.4.8",
+    "serve-favicon": "~2.3.2",
+    "socket.io": "^1.7.4",
     "sqlite3": "^3.1.4",
     "stylus": "^0.54.5",
     "winston": "^2.2.0"
   },
   "devDependencies": {
-    "eslint": "^3.8.1",
-    "eslint-config-google": "^0.7.0",
+    "eslint": "^4.1.1",
+    "eslint-config-google": "^0.9.1",
     "mocha": "^3.1.2"
   }
 }
