@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  var Turn = sequelize.define('Turn', {
+  return sequelize.define('Turn', {
     rows: DataTypes.INTEGER,
     cols: DataTypes.INTEGER,
     maxTurns: { type: DataTypes.INTEGER, defaultValue: 20 },
@@ -43,6 +43,4 @@ module.exports = function(sequelize, DataTypes) {
       },
     },
   });
-
-  return Turn;
 };

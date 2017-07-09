@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-  var Tournament = sequelize.define('Tournament', {
+  return sequelize.define('Tournament', {
     winner: DataTypes.STRING,
     createdAt: { type: DataTypes.DATE, defaultValue: Date.now },
     nextGameNumber: DataTypes.INTEGER,
@@ -25,6 +25,4 @@ module.exports = function(sequelize, DataTypes) {
       },
     },
   });
-
-  return Tournament;
 };
