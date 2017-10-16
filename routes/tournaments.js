@@ -4,6 +4,7 @@ var models = require('./../models/index');
 var startGame = require('../game_logic/start_game');
 var Tournament = models.Tournament;
 var Game = models.Game;
+var User = models.User;
 
 router.get('/', function(req, res) {
   getTournaments(function(tournamentsList) {
@@ -27,7 +28,7 @@ router.get('/:id', function(req, res) {
     });
 });
 
-router.get('/start', function(req, res) {
+router.get('/new/start', function(req, res) {
   organizeTournament();
   res.redirect('/');
 });
@@ -41,19 +42,17 @@ router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
   Tournament.findOne({ where: { id: req.params.tournamentId } })
     .then(function(tournament, err) {
     if (!err && tournament) {
-      GameStore.findOne({ where: { id: req.params.gameId } })
+      Game.findOne({ where: { id: req.params.gameId } })
       .then(function(game, err) {
         if (!err && game) {
           tournament.getGames().then(function(games) {
-            games.forEach(function(round, roundI) {
-              round.forEach(function(match, matchI) {
-                if (match.id === game.id) {
-                  game.turns = [];
-                  game.save(function() {
-                    nextGame(tournament, roundI, matchI);
-                  });
-                }
-              });
+            games.forEach(function(match, gameIndex) {
+              if (match.id === game.id) {
+                game.turns = [];
+                game.save().then(function() {
+                  nextGame(tournament, 1, gameIndex);
+                });
+              }
             });
           });
         } else {
@@ -101,7 +100,7 @@ function getTournaments(cb) {
 }
 
 function organizeTournament() {
-  User.find({ bot: { $exists: true }, participating: true }, function(err, users) {
+  User.findAll({ where: { participating: true } }).then(function(users, err) {
     var players = [];
     users.forEach(function(user) {
       players.push(user.email);
@@ -112,9 +111,10 @@ function organizeTournament() {
     var round = 1;
     console.log('starting tournament with ' + players.length + ' players');
     if (players.length > 1) {
-      var tournament = new Tournament();
-      console.log(tournament.id);
-      tournamentRound(tournament, round, players, []);
+      Tournament.build({}).save().then(function(savedTournament) {
+        console.log(savedTournament.id);
+        tournamentRound(savedTournament, round, players, []);
+      });
     }
   });
 }
@@ -186,16 +186,16 @@ function shuffleArray(array) {
 
 function startTournament(tournament, test) {
   console.log('TOURNAMENT STARTED');
-  nextGame(tournament, 0, 0, test);
+  nextGame(tournament, 1, 0, test);
 }
 function nextGame(tournament, round, gameNum, test) {
   console.log('NEXT GAME');
   var now = new Date().valueOf();
   var scheduleDate = new Date(now+100);
   tournament.nextGame = { time: scheduleDate, round: round, game: gameNum };
-  tournament.save();
+  tournament.save().then(function(savedTournament) {
 
-  tournament.getGames({ where: { round: round }, order: ['id'] })
+    savedTournament.getGames({ where: { round: round }, order: ['id'] })
     .then(function(roundGames) {
     var game = roundGames[gameNum];
 
@@ -212,10 +212,10 @@ function nextGame(tournament, round, gameNum, test) {
           User.findOne({ where: { email: email } }).then(function(user, err) {
             if (user && user.bot) {
               if (email === game.p1) {
-                botUrls[0] = user.bot.url;
+                botUrls[0] = user.bot;
                 botsFound++;
               } else {
-                botUrls[1] = user.bot.url;
+                botUrls[1] = user.bot;
                 botsFound++;
               }
 
@@ -230,20 +230,20 @@ function nextGame(tournament, round, gameNum, test) {
       function startGameWithUrls(botUrls, game) {
         startGame(botUrls, game, function() {
           var winner = game.winner;
-          tournament.getGames().then(function(tournamentGames) {
+          savedTournament.getGames().then(function(tournamentGames) {
             if (round + 1 < tournamentGames.length) {
               var nextRound = round + 1;
               var nextGameNum = ~~(gameNum / 2);
-              tournament.getGames({ where: { round: nextRound }, order: ['id'] })
+              savedTournament.getGames({ where: { round: nextRound }, order: ['id'] })
                 .then(function(nextRoundGames) {
                 var nextRoundGame = nextRoundGames[nextGameNum];
                 var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
                 if (nextRoundPlayer) {
                   nextRoundGame.p1 = winner;
-                  tournament.games[nextRound][nextGameNum].p1 = winner;
+                  savedTournament.games[nextRound][nextGameNum].p1 = winner;
                 } else {
                   nextRoundGame.p2 = winner;
-                  tournament.games[nextRound][nextGameNum].p2 = winner;
+                  savedTournament.games[nextRound][nextGameNum].p2 = winner;
                 }
                 nextRoundGame.save().then(function(savedGame) {
                   gameNum++;
@@ -251,15 +251,15 @@ function nextGame(tournament, round, gameNum, test) {
                     gameNum = 0;
                     round++;
                   }
-                  nextGame(tournament, round, gameNum, test);
+                  nextGame(savedTournament, round, gameNum, test);
                 });
-                tournament.markModified('games');
-                tournament.save();
+                savedTournament.markModified('games');
+                savedTournament.save();
               });
             } else {
               console.log('tournament done');
-              tournament.winner = winner;
-              tournament.save();
+              savedTournament.winner = winner;
+              savedTournament.save();
             }
           });
         });
@@ -269,6 +269,7 @@ function nextGame(tournament, round, gameNum, test) {
       console.log(JSON.stringify(game, null, 4));
     }
   });
+});
 }
 
 module.exports = router;

@@ -114,7 +114,9 @@ function detectGameComplete(gameStore, completeState, cb, sendTurn) {
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
   newGameState.GameId = gameStore.id;
-  sendTurn(newGameState);
+  if(sendTurn) {
+    sendTurn(newGameState);
+  }
   turns.push(utils.copyObj(newGameState));
   detectGameComplete(gameStore, newGameState, cb, sendTurn);
 }
