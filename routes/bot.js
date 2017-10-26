@@ -1,13 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var models = require('./../models/index');
+var isAuthenticated = require('./../middleware/is_authenticated');
 
-router.get('/', function(req, res) {
-  if (!req.loggedIn) {
-    res.redirect('/loggedout');
-    return;
-  }
-
+router.get('/', isAuthenticated, function(req, res) {
   var currentUrl = '';
   var sessionUser = req.session.auth.google.user;
   models.User.findOne({
@@ -20,12 +16,7 @@ router.get('/', function(req, res) {
   });
 });
 
-router.post('/', function(req, res) {
-  if (!req.loggedIn) {
-    res.redirect('/loggedout');
-    return;
-  }
-
+router.post('/', isAuthenticated, function(req, res) {
   var user = req.session.auth.google.user;
   models.User.update(
     { bot: req.body.url },
@@ -35,12 +26,7 @@ router.post('/', function(req, res) {
   });
 });
 
-router.post('/participate', function(req, res) {
-  if (!req.loggedIn) {
-    res.redirect('/loggedout');
-    return;
-  }
-
+router.post('/participate', isAuthenticated, function(req, res) {
   var user = req.session.auth.google.user;
   models.User.update(
     { participating: req.body.participating },

@@ -9,5 +9,8 @@ bots/*
 
 data.sqlite
 .vscode/*
+.vs/*
+bin/Microsoft.NodejsTools.WebRole.dll
+obj/*
 
 npm-debug.log

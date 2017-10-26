@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{b5f7194a-5eeb-42f5-b25b-17bbc0e8485d}</ProjectGuid>
+    <ProjectHome />
+    <ProjectView>ProjectFiles</ProjectView>
+    <StartupFile>bin\www</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <NodejsPort>3000</NodejsPort>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include=".eslintignore" />
+    <Content Include=".eslintrc.json" />
+    <Content Include="bin\www" />
+    <Content Include="initial.json" />
+    <Content Include="package.json" />
+    <Content Include="README.md" />
+    <Compile Include="app.js" />
+    <Compile Include="auth.js" />
+    <Content Include="config\config.json" />
+    <Compile Include="game_logic\game.js" />
+    <Compile Include="game_logic\start_game.js" />
+    <Compile Include="game_logic\test_bot.js" />
+    <Compile Include="game_logic\utils.js" />
+    <Compile Include="middleware\is_authenticated.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="models\game.js" />
+    <Compile Include="models\index.js" />
+    <Compile Include="models\tournament.js" />
+    <Compile Include="models\turn.js" />
+    <Compile Include="models\user.js" />
+    <Compile Include="routes\bot.js" />
+    <Compile Include="routes\games.js" />
+    <Compile Include="routes\index.js" />
+    <Compile Include="routes\socket.js" />
+    <Compile Include="routes\test.js" />
+    <Compile Include="routes\tournaments.js" />
+    <Compile Include="tests\test.js" />
+    <Content Include="views\bot.pug" />
+    <Content Include="views\error.pug" />
+    <Content Include="views\index.pug" />
+    <Content Include="views\layout.pug" />
+    <Content Include="views\loggedout.pug" />
+    <Content Include="views\test.pug" />
+    <Compile Include="bots\nodebot\app.js" />
+    <Content Include="public\images\botHead.png" />
+    <Content Include="public\images\bracket.png" />
+    <Content Include="public\images\history.png" />
+    <Content Include="public\images\iconSprite.png" />
+    <Content Include="public\images\nodejs-icon.png" />
+    <Content Include="public\images\test-hover.png" />
+    <Content Include="public\images\test.png" />
+    <Compile Include="public\javascripts\game.js" />
+    <Compile Include="public\javascripts\test.js" />
+    <Compile Include="public\javascripts\tournament.js" />
+    <Compile Include="public\libs\jquery.gracket.min.js" />
+    <Compile Include="public\libs\jqueryuicustom.js" />
+    <Content Include="public\stylesheets\style.css" />
+    <Content Include="public\stylesheets\style.styl" />
+    <Content Include="views\games\index.pug" />
+    <Content Include="views\games\show.pug" />
+    <Content Include="views\partials\header.pug" />
+    <Content Include="views\tournaments\index.pug" />
+    <Content Include="views\tournaments\show.pug" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin" />
+    <Folder Include="bots" />
+    <Folder Include="bots\bots" />
+    <Folder Include="bots\nodebot" />
+    <Folder Include="config" />
+    <Folder Include="game_logic" />
+    <Folder Include="models" />
+    <Folder Include="middleware\" />
+    <Folder Include="public" />
+    <Folder Include="public\images" />
+    <Folder Include="public\javascripts" />
+    <Folder Include="public\libs" />
+    <Folder Include="public\stylesheets" />
+    <Folder Include="routes" />
+    <Folder Include="tests" />
+    <Folder Include="views" />
+    <Folder Include="views\games" />
+    <Folder Include="views\partials" />
+    <Folder Include="views\tournaments" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

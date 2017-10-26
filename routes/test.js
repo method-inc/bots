@@ -1,13 +1,9 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/index').User;
+var isAuthenticated = require('./../middleware/is_authenticated');
 
-router.get('/', function(req, res) {
-  if (!req.loggedIn) {
-    res.redirect('/loggedout');
-    return;
-  }
-
+router.get('/', isAuthenticated, function(req, res) {
   var sessionUser = req.session.auth.google.user;
 
   User.findOne({ where: { googleId: sessionUser.id } })
