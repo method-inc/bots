@@ -30,7 +30,7 @@ router.get('/:id', function(req, res) {
 
 router.get('/new/start', function(req, res) {
   organizeTournament();
-  res.redirect('/');
+  res.redirect('/tournaments');
 });
 
 router.get('/startdummy/:players', function(req, res) {
@@ -224,43 +224,44 @@ function nextGame(tournament, round, gameNum, test) {
           });
         });
       } else {
-        startGameWithUrls([testBotUrl, testBotUrl], game);
+        startGameWithUrls(['nodebot', 'nodebot'], game);
       }
 
       function startGameWithUrls(botUrls, game) {
         startGame(botUrls, game, function() {
           var winner = game.winner;
           savedTournament.getGames().then(function(tournamentGames) {
-            if (round + 1 < tournamentGames.length) {
               var nextRound = round + 1;
               var nextGameNum = ~~(gameNum / 2);
               savedTournament.getGames({ where: { round: nextRound }, order: ['id'] })
-                .then(function(nextRoundGames) {
-                var nextRoundGame = nextRoundGames[nextGameNum];
-                var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
-                if (nextRoundPlayer) {
-                  nextRoundGame.p1 = winner;
-                  savedTournament.games[nextRound][nextGameNum].p1 = winner;
-                } else {
-                  nextRoundGame.p2 = winner;
-                  savedTournament.games[nextRound][nextGameNum].p2 = winner;
-                }
-                nextRoundGame.save().then(function(savedGame) {
-                  gameNum++;
-                  if (roundGames && roundGames.length === gameNum) {
-                    gameNum = 0;
-                    round++;
+                .then(function (nextRoundGames) {
+                  if (nextRoundGames.length !== 0) {
+                    var nextRoundGame = nextRoundGames[nextGameNum];
+                    var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
+                    if (nextRoundPlayer) {
+                      nextRoundGame.p1 = winner;
+                      nextRoundGames[nextGameNum].p1 = winner;
+                    } else {
+                      nextRoundGame.p2 = winner;
+                      nextRoundGames[nextGameNum].p2 = winner;
+                    }
+                    nextRoundGame.save().then(function(savedGame) {
+                      gameNum++;
+                      if (roundGames && roundGames.length === gameNum) {
+                        gameNum = 0;
+                        round++;
+                      }
+                      nextGame(savedTournament, round, gameNum, test);
+                    });
+                
+                    savedTournament.save();
+
+                  } else {
+                    console.log('tournament done');
+                    savedTournament.winner = winner;
+                    savedTournament.save();
                   }
-                  nextGame(savedTournament, round, gameNum, test);
-                });
-                savedTournament.markModified('games');
-                savedTournament.save();
               });
-            } else {
-              console.log('tournament done');
-              savedTournament.winner = winner;
-              savedTournament.save();
-            }
           });
         });
       }
