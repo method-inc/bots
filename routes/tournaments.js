@@ -1,12 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var models = require('./../models/index');
-var nextGame = require('./../game_logic/tournament');
 var Tournament = models.Tournament;
 var Game = models.Game;
 var User = models.User;
 
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
+  req.session.prevpage = '/tournaments';
   getTournaments(function(tournamentsList) {
     res.render('tournaments/index', { tournaments: tournamentsList });
   });
@@ -26,7 +26,7 @@ router.get('/:id', function(req, res) {
       },{ model: User, as: 'winner' }
       ],
       where: { id: req.params.id }
-    },
+    }
   ).then(function(tournament, err) {
       if (tournament) {
         res.render('tournaments/show', { tournament: tournament, prevpage: prevpage });
@@ -45,34 +45,6 @@ router.get('/new/start', function(req, res) {
 
 router.get('/startdummy/:players', function(req, res) {
   organizeDummyTournament(req.user, req.params.players);
-  res.redirect('/');
-});
-
-router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
-  Tournament.findOne({ where: { id: req.params.tournamentId } })
-    .then(function(tournament, err) {
-    if (!err && tournament) {
-      Game.findOne({ where: { id: req.params.gameId } })
-      .then(function(game, err) {
-        if (!err && game) {
-          tournament.getGames().then(function(games) {
-            games.forEach(function(match, gameIndex) {
-              if (match.id === game.id) {
-                game.turns = [];
-                game.save().then(function() {
-                  nextGame(tournament, 1, gameIndex);
-                });
-              }
-            });
-          });
-        } else {
-          console.log(err);
-        }
-      });
-    } else {
-      console.log(err);
-    }
-  });
   res.redirect('/');
 });
 
@@ -141,6 +113,7 @@ function organizeDummyTournament(user, numPlayers) {
     });
   }
 }
+
 function tournamentRound(tournament, round, players, assigned, test, callback) {
   if (players.length > 1) {
     var numPlayers = players.length;
@@ -191,9 +164,6 @@ function tournamentRound(tournament, round, players, assigned, test, callback) {
     if (callback) {
       callback(tournament);
     }
-    //setTimeout(function() {
-    //  startTournament(tournament, test);
-    //}, 5000);
   }
 }
 function log2(num) {
@@ -208,11 +178,5 @@ function shuffleArray(array) {
     }
     return array;
 }
-
-function startTournament(tournament, test) {
-  console.log('TOURNAMENT STARTED');
-  nextGame(tournament, 1, 0, test);
-}
-
 
 module.exports = router;

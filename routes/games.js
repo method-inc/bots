@@ -20,8 +20,8 @@ router.get('/:id', function(req, res) {
       }
 
       var players = {
-        p1: getPlayer(game.p1),
-        p2: getPlayer(game.p2)
+        p1: getPlayer(game.p1, game.TournamentId),
+        p2: getPlayer(game.p2, game.TournamentId)
       };
 
       game.getTurns({ order: ['turnsElapsed'] }).then(function(turns, err) {
@@ -35,6 +35,7 @@ router.get('/:id', function(req, res) {
           prevpage: prevpage,
           turns: turns,
           description: getDescription(game, players),
+          tournamentId: game.TournamentId
         });
       });
   });
@@ -82,9 +83,11 @@ function getGames(cb) {
   });
 }
 
-function getPlayer(user) {
+function getPlayer(user, isTournament) {
   if (!user) {
-    return { name: 'nodebot', picture: '/images/nodejs-icon.png' };
+    var name = isTournament ? 'TBD' : 'nodebot';
+    var picture = isTournament ? '' : '/images/nodejs-icon.png';
+    return { name: name, picture:  picture };
   }
 
   return { name: user.name, picture: user.picture };

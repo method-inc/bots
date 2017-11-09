@@ -5,6 +5,7 @@ block head
   script(src='/javascripts/game.js')
 block content
   div#game-id.hidden #{id}
+  div#tournament-id.hidden #{tournamentId}
 
   - var subtitle = description
   include /partials/header
@@ -14,7 +15,7 @@ block content
     -else
       a(href='/') &#x25C0; Back
   
-  -if(!winner)
+  -if(!winner && tournamentId)
     div
       button#start-game Start Game
 
