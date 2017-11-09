@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var models = require('./../models/index');
-var startGame = require('../game_logic/start_game');
+var nextGame = require('./../game_logic/tournament');
 var Tournament = models.Tournament;
 var Game = models.Game;
 var User = models.User;
@@ -17,7 +17,16 @@ router.get('/:id', function(req, res) {
   if (prevpage === '/tournaments/' + req.params.id) prevpage = '/';
   req.session.prevpage = '/tournaments/' + req.params.id;
   Tournament.findOne(
-    { include: { model: Game, order: ['round'] }, where: { id: req.params.id } }
+    {
+      include: [
+        {
+        model: Game, order: ['round'], include: [
+          { model: User, as: 'p1' }, { model: User, as: 'p2' }
+        ]
+      },{ model: User, as: 'winner' }
+      ],
+      where: { id: req.params.id }
+    },
   ).then(function(tournament, err) {
       if (tournament) {
         res.render('tournaments/show', { tournament: tournament, prevpage: prevpage });
@@ -29,8 +38,9 @@ router.get('/:id', function(req, res) {
 });
 
 router.get('/new/start', function(req, res) {
-  organizeTournament();
-  res.redirect('/tournaments');
+  organizeTournament(function(tournament) {
+    res.redirect('/tournaments/' + tournament.id);
+  });
 });
 
 router.get('/startdummy/:players', function(req, res) {
@@ -67,16 +77,17 @@ router.get('/:tournamentId/kickstart/:gameId', function(req, res) {
 });
 
 function getTournaments(cb) {
-  Tournament
-  .findAll({ where: { winner: { $not: null } }, order: [['createdAt', 'DESC']] })
-  .then(function(tournaments, err) {
+  Tournament.findAll({
+    order: [['createdAt', 'DESC']],
+    include: [ { model: User, as: 'winner'} ]
+  }).then(function(tournaments, err) {
     if (tournaments.length) {
       var tournamentsList = [];
       var completed = 0;
-      tournaments.forEach(function(tournament, i) {
-        User.findOne({ where: { 'email': tournament.winner } }).then(function(user, err) {
+      tournaments.forEach(function (tournament, i) {
+        
           var winner = 'nodebot';
-          if (user && user.name) winner = user.name;
+          if (tournament.winner && tournament.winner.name) winner = tournament.winner.name;
           var description = 'Winner: ' + winner;
           tournamentsList[i] =
             {
@@ -89,7 +100,6 @@ function getTournaments(cb) {
           if (completed===tournaments.length) {
             if (cb) cb(tournamentsList);
           }
-        });
       });
     } else {
       if (cb) {
@@ -99,13 +109,13 @@ function getTournaments(cb) {
   });
 }
 
-function organizeTournament() {
+function organizeTournament(callback) {
   User.findAll({ where: { participating: true } }).then(function(users, err) {
     var players = [];
     users.forEach(function(user) {
-      players.push(user.email);
-      user.participating = false;
-      user.save();
+      players.push(user);
+      //user.participating = false;
+      //user.save();
     });
     players = shuffleArray(players);
     var round = 1;
@@ -113,7 +123,7 @@ function organizeTournament() {
     if (players.length > 1) {
       Tournament.build({}).save().then(function(savedTournament) {
         console.log(savedTournament.id);
-        tournamentRound(savedTournament, round, players, []);
+        tournamentRound(savedTournament, round, players, [], false, callback);
       });
     }
   });
@@ -132,7 +142,7 @@ function organizeDummyTournament(user, numPlayers) {
     });
   }
 }
-function tournamentRound(tournament, round, players, assigned, test) {
+function tournamentRound(tournament, round, players, assigned, test, callback) {
   if (players.length > 1) {
     var numPlayers = players.length;
     var eliminated = [];
@@ -141,20 +151,32 @@ function tournamentRound(tournament, round, players, assigned, test) {
     if (!numPlaying) numPlaying = numPlayers;
 
     for (var i=0; i<numPlaying-1; i+=2) {
-      var newGame = Game.build({});
+      
       var p1 = players[i];
-      var p2 = players[i+1];
+      var p2 = players[i + 1];
+
+      var gameP1, gameP2;
+
       if (assigned.indexOf(p1) === -1) {
-        newGame.p1 = p1;
+        gameP1 = p1;
         assigned.push(p1);
       }
       if (assigned.indexOf(p2) === -1) {
-        newGame.p2 = p2;
+        gameP2 = p2;
         assigned.push(p2);
       }
-      newGame.round = round;
-      newGame.save().then(function(savedGame) {
-        savedGame.setTournament(tournament);
+      var newGame = Game.build({
+        round: round,
+      });
+
+      newGame.save().then(function(result) {
+        return result.setP1(gameP1);
+      }).then(function (result) {
+        return result;
+      }).then(function(result) {
+        return result.setP2(gameP2);
+      }).then(function(result) {
+        return result.setTournament(tournament);
       });
       eliminated.push(players[i+1]);
     }
@@ -164,11 +186,15 @@ function tournamentRound(tournament, round, players, assigned, test) {
     });
 
     round++;
-    tournamentRound(tournament, round, players, assigned, test);
-  } else {
-    setTimeout(function() {
-      startTournament(tournament, test);
-    }, 5000);
+    tournamentRound(tournament, round, players, assigned, test, callback);
+  }
+  else {
+    if (callback) {
+      callback(tournament);
+    }
+    //setTimeout(function() {
+    //  startTournament(tournament, test);
+    //}, 5000);
   }
 }
 function log2(num) {
@@ -188,89 +214,6 @@ function startTournament(tournament, test) {
   console.log('TOURNAMENT STARTED');
   nextGame(tournament, 1, 0, test);
 }
-function nextGame(tournament, round, gameNum, test) {
-  console.log('NEXT GAME');
-  var now = new Date().valueOf();
-  var scheduleDate = new Date(now+100);
-  tournament.nextGame = { time: scheduleDate, round: round, game: gameNum };
-  tournament.save().then(function(savedTournament) {
 
-    savedTournament.getGames({ where: { round: round }, order: ['id'] })
-    .then(function(roundGames) {
-    var game = roundGames[gameNum];
-
-    if (!game) {
-      console.log('Game does not exist');
-      return;
-    }
-    console.log('game details: ' + game.id);
-    if (game.p1 && game.p2) {
-      if (!test) {
-        var botUrls = ['', ''];
-        var botsFound = 0;
-        [game.p1, game.p2].forEach(function(email) {
-          User.findOne({ where: { email: email } }).then(function(user, err) {
-            if (user && user.bot) {
-              if (email === game.p1) {
-                botUrls[0] = user.bot;
-                botsFound++;
-              } else {
-                botUrls[1] = user.bot;
-                botsFound++;
-              }
-
-              if (botsFound === 2) startGameWithUrls(botUrls, game);
-            }
-          });
-        });
-      } else {
-        startGameWithUrls(['nodebot', 'nodebot'], game);
-      }
-
-      function startGameWithUrls(botUrls, game) {
-        startGame(botUrls, game, function() {
-          var winner = game.winner;
-          savedTournament.getGames().then(function(tournamentGames) {
-              var nextRound = round + 1;
-              var nextGameNum = ~~(gameNum / 2);
-              savedTournament.getGames({ where: { round: nextRound }, order: ['id'] })
-                .then(function (nextRoundGames) {
-                  if (nextRoundGames.length !== 0) {
-                    var nextRoundGame = nextRoundGames[nextGameNum];
-                    var nextRoundPlayer = gameNum%2===0 ? 1 : 0;
-                    if (nextRoundPlayer) {
-                      nextRoundGame.p1 = winner;
-                      nextRoundGames[nextGameNum].p1 = winner;
-                    } else {
-                      nextRoundGame.p2 = winner;
-                      nextRoundGames[nextGameNum].p2 = winner;
-                    }
-                    nextRoundGame.save().then(function(savedGame) {
-                      gameNum++;
-                      if (roundGames && roundGames.length === gameNum) {
-                        gameNum = 0;
-                        round++;
-                      }
-                      nextGame(savedTournament, round, gameNum, test);
-                    });
-                
-                    savedTournament.save();
-
-                  } else {
-                    console.log('tournament done');
-                    savedTournament.winner = winner;
-                    savedTournament.save();
-                  }
-              });
-          });
-        });
-      }
-    } else {
-      console.log('p1 or p2 is missing');
-      console.log(JSON.stringify(game, null, 4));
-    }
-  });
-});
-}
 
 module.exports = router;

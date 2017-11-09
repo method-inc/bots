@@ -13,11 +13,15 @@ block content
       a(href=prevpage) &#x25C0; Back
     -else
       a(href='/') &#x25C0; Back
+  
+  -if(!winner)
+    div
+      button#start-game Start Game
 
   div#game-wrapper
     div#p1
       img(src=p1.picture)
-      h2 #{p1.name}
+      h2.playername #{p1.name}
       h2.headcount 0
       h3 Headcount
       h2.energyconsumed 0
@@ -25,7 +29,7 @@ block content
     canvas#game(width=500, height=500)
     div#p2
       img(src=p2.picture)
-      h2 #{p2.name}
+      h2.playername #{p2.name}
       h2.headcount 0
       h3 Headcount
       h2.energyconsumed 0

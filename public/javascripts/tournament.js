@@ -12,15 +12,15 @@ gamesList.forEach(function(game) {
   var p1Id = '';
   var p2Id = '';
   if (game.p1) {
-    p1 = game.p1;
-    p1Id = game.p1.replace(/@|\.|\s/g, '');
+    p1 = game.p1.name;
+    p1Id = game.p1.name.replace(/@|\.|\s/g, '');
   } else {
     p1Id = 'empty' + empty;
     empty++;
   }
   if (game.p2) {
-    p2 = game.p2;
-    p2Id = game.p2.replace(/@|\.|\s/g, '');
+    p2 = game.p2.name;
+    p2Id = game.p2.name.replace(/@|\.|\s/g, '');
   } else {
     p2Id = 'empty' + empty;
     empty++;
@@ -37,7 +37,7 @@ gamesList.forEach(function(game) {
 });
 gracketData.push(roundArray);
 if (tournament.winner) {
-  gracketData.push([[{ name: tournament.winner, id: tournament.winner.replace(/@|\.|\s/g, '') }]]);
+  gracketData.push([[{ name: tournament.winner.name, id: tournament.winner.name.replace(/@|\.|\s/g, '') }]]);
 } else {
 gracketData.push([[{ name: '', id: 'empty'+empty }]]);
 }

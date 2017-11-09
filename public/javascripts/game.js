@@ -19,6 +19,16 @@ window.onload = function() {
     showTurn(gameTurns[currentDisplayed]);
     updateRound();
   }
+
+  var startGamebutton = document.getElementById('start-game');
+  if (startGamebutton) {
+    startGamebutton.onclick = function() {
+      var gameIdElement = document.getElementById('game-id');
+      var gameId = gameIdElement.innerText;
+      $('#start-game').hide();
+      socket.emit('start-tournament-game', { id: gameId });
+    }
+  }
 };
 
 socket.on('message', function(data) {
@@ -26,15 +36,24 @@ socket.on('message', function(data) {
     resetGame();
   }
 });
-if (!gameTurns.length) {
-  socket.on('game', function(data) {
-    gameTurns.push(data);
-    showTurn(data);
-    currentDisplayed = turn;
-    turn++;
-    updateRound();
-  });
-}
+
+socket.on('game-data', function(data) {
+  var winnerText = $('#' + data.winner + ' .playername')[0].innerText + ' WINS';
+  if (data.end !== 'elegant') {
+    winnerText += ' (' + data.end + ')';
+  }
+  $('.subtitle').text(winnerText);
+});
+
+socket.on('game', function(data) {
+  gameTurns.push(data);
+  showTurn(data);
+  currentDisplayed = turn;
+  turn++;
+  updateRound();
+});
+
+
 
 $(document).keydown(function(e) {
   animating = false;

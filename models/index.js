@@ -36,6 +36,9 @@ db.Sequelize = Sequelize;
 db.Game.hasMany(db.Turn);
 db.Turn.belongsTo(db.Game);
 db.Tournament.hasMany(db.Game);
+db.Tournament.belongsTo(db.User, { as: 'winner' });
 db.Game.belongsTo(db.Tournament);
+db.Game.belongsTo(db.User, { as: 'p1' });
+db.Game.belongsTo(db.User, { as: 'p2' });
 
 module.exports = db;

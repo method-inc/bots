@@ -1,11 +1,3 @@
-window.onload = function() {
-  c=document.getElementById('game');
-  ctx=c.getContext('2d');
-  socket.emit('getbots');
-  energyImage = new Image();
-  energyImage.src = '/images/iconSprite.png';
-};
-
 socket.on('game-data', function(data) {
   resetGame();
 });

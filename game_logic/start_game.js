@@ -33,7 +33,7 @@ module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   });
 };
 
-function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
+function endGameForError(game, playerName, playerError, playerWinner, err, cb, sendTurn) {
   utils.log('PLAYER ' + playerName + ' ERROR: ' + err);
   game.end = playerError + ' bot error';
   game.winner = playerWinner;
@@ -42,6 +42,7 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb) {
   gameStarted = false;
   ready = 0;
   saveGameAndTurns(game, cb);
+  sendTurn({ GameId: game.id, winner: playerWinner });
 }
 
 function nextTurn(gameStore, gameState, cb, sendTurn) {
@@ -68,7 +69,13 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
         p1Moves = utils.tryParse(body);
         playerResponse();
       } else {
-        endGameForError(gameStore, 'ONE', gameStore.p1, gameStore.p2, err, cb);
+        if (gameStore.p1) {
+          endGameForError(gameStore, 'ONE', gameStore.p1.name, 'p2', err, cb, sendTurn);
+        } else {
+          gameStore.getP1().then(function(p1) {
+            endGameForError(gameStore, 'ONE', p1.name, 'p2', err, cb, sendTurn);
+          });
+        }
       }
     });
   }
@@ -83,7 +90,7 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
         p2Moves = utils.tryParse(body);
         playerResponse();
       } else {
-        endGameForError(gameStore, 'TWO', gameStore.p2, gameStore.p1, err, cb);
+        endGameForError(gameStore, 'TWO', gameStore.p2.name, 'p1', err, cb, sendTurn);
       }
     });
   }
@@ -95,16 +102,19 @@ function detectGameComplete(gameStore, completeState, cb, sendTurn) {
     if (completeState.winner) {
       if (completeState.winner === 'r') {
         utils.log('Client 1 wins');
-        gameStore.winner = gameStore.p1;
+        gameStore.winner = 'p1';
       } else if (completeState.winner === 'b') {
         utils.log('Client 2 wins');
-        gameStore.winner = gameStore.p2;
+        gameStore.winner = 'p2';
       }
       gameStore.finished = true;
       gameStore.finishedAt = Date.now();
     }
     gameStarted = false;
     ready = 0;
+    if (sendTurn) {
+      sendTurn(completeState);
+    }
     saveGameAndTurns(gameStore, cb);
   } else {
     nextTurn(gameStore, completeState, cb, sendTurn);
@@ -114,10 +124,10 @@ function detectGameComplete(gameStore, completeState, cb, sendTurn) {
 function evalMoves(gameStore, gameState, p1Moves, p2Moves, cb, sendTurn) {
   var newGameState = utils.buildGameState(game.doTurn(gameState, p1Moves, p2Moves));
   newGameState.GameId = gameStore.id;
-  if(sendTurn) {
+  turns.push(utils.copyObj(newGameState));
+  if (sendTurn && !newGameState.winner) {
     sendTurn(newGameState);
   }
-  turns.push(utils.copyObj(newGameState));
   detectGameComplete(gameStore, newGameState, cb, sendTurn);
 }
 
