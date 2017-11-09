@@ -85,21 +85,20 @@ function getTournaments(cb) {
       var tournamentsList = [];
       var completed = 0;
       tournaments.forEach(function (tournament, i) {
-        
-          var winner = 'nodebot';
-          if (tournament.winner && tournament.winner.name) winner = tournament.winner.name;
-          var description = 'Winner: ' + winner;
-          tournamentsList[i] =
-            {
-              id: tournament.id,
-              description: description,
-              time: tournament.createdAt,
-            };
-          completed++;
+        var winner = 'Not Finished';
+        if (tournament.winner && tournament.winner.name) winner = tournament.winner.name;
+        var description = 'Winner: ' + winner;
+        tournamentsList[i] =
+          {
+            id: tournament.id,
+            description: description,
+            time: tournament.createdAt,
+          };
+        completed++;
 
-          if (completed===tournaments.length) {
-            if (cb) cb(tournamentsList);
-          }
+        if (completed===tournaments.length) {
+          if (cb) cb(tournamentsList);
+        }
       });
     } else {
       if (cb) {

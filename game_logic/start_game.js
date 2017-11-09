@@ -135,7 +135,7 @@ function saveGameAndTurns(game, cb) {
   game.save().then(function(savedStore) {
     Turn.bulkCreate(turns).then(function() {
       if (cb) {
-        cb();
+        cb(savedStore);
       }
     });
   });

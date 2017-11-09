@@ -14,31 +14,25 @@ module.exports = function(socket) {
     var gameStore = Game.build();
 
     User.findOne({ where: { email: data.bot1 } })
-      .then(function(p1, err) {
+      .then(function(p1) {
         if (p1 && p1.bot) {
-          gameStore.setP1(p1);
           botUrls.push(p1.bot);
-        } else {
-          botUrls.push('nodebot');
+          return gameStore.setP1(p1);
         }
-
-        if (botUrls.length >= 2) {
-          startGame(botUrls, gameStore, sendTurns, sendTurn);
-        }
-      });
-
-    User.findOne({ where: { email: data.bot2 } })
-      .then(function (p2, err) {
+        botUrls.push('nodebot');
+        return gameStore;
+      }).then(function(savedGame) {
+        gameStore = savedGame;
+        return User.findOne({ where: { email: data.bot2 } });
+      }).then(function(p2) {
         if (p2 && p2.bot) {
-          gameStore.setP2(p2);
           botUrls.push(p2.bot);
-        } else {
-          botUrls.push('nodebot');
-        }
-
-        if (botUrls.length >= 2) {
-          startGame(botUrls, gameStore, sendTurns, sendTurn);
-        }
+          return gameStore.setP2(p2);
+        } 
+        botUrls.push('nodebot');
+        return gameStore;
+      }).then(function(savedGame) {
+        startGame(botUrls, savedGame, null, sendTurn);
       });
   });
 
@@ -85,22 +79,5 @@ module.exports = function(socket) {
           }
         });
     }
-  }
-
-  function sendTurns() {
-    Game.findOne({ where: { id: gameStore.id } })
-      .then(function (game, err) {
-        console.log('Game: ' + JSON.stringify(game));
-        if (game) {
-          socket.emit('game-data',
-            { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
-          );
-          game.getTurns({ order: ['turnsElapsed'] }).then(function (turns) {
-            turns.forEach(function (turn) {
-              socket.emit('game', turn);
-            });
-          });
-        }
-      });
   }
 };
