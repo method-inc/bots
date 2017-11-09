@@ -10,7 +10,7 @@ module.exports = function nextGame(tournament, round, gameNum, test, sendTurn) {
     return savedTournament.getGames({
       where: { round: round },
       order: ['Game.id'],
-      include: [{ model: User, as: 'p1' }, { model: User, as: 'p2' }]
+      include: [{ model: User, as: 'p1' }, { model: User, as: 'p2' }],
     });
   }).then(function(roundGames) {
     var game = roundGames[gameNum];
@@ -33,14 +33,14 @@ module.exports = function nextGame(tournament, round, gameNum, test, sendTurn) {
       console.log(JSON.stringify(game, null, 4));
     }
   });
-}
+};
 
 function startGameWithUrls(botUrls, game, tournament, gameNum, sendTurn) {
   startGame(botUrls, game, function setupNextRound() {
     var nextRound = game.round + 1;
     var nextGameNum = ~~(gameNum / 2);
     tournament.getGames({ where: { round: nextRound }, order: ['id'] })
-      .then(function (nextRoundGames) {
+      .then(function(nextRoundGames) {
         if (nextRoundGames.length !== 0) {
           var nextRoundGame = nextRoundGames[nextGameNum];
           var nextRoundPlayer = gameNum % 2 === 0 ? 1 : 0;
@@ -52,7 +52,6 @@ function startGameWithUrls(botUrls, game, tournament, gameNum, sendTurn) {
             nextRoundGames[nextGameNum].p2 = game[game.winner];
           }
           nextRoundGame.save();
-
         } else {
           console.log('tournament done');
           tournament.setWinner(game[game.winner]);

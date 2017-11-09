@@ -12,32 +12,35 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
-  Game.findOne({ where: { id: req.params.id }, include: [ { model: User, as: 'p1'}, {model: User, as: 'p2'}] })
-    .then(function(game, err) {
-      if (!game) {
-        res.redirect('/');
-        return;
-      }
+  Game.findOne({
+    where: { id: req.params.id },
+    include: [{ model: User, as: 'p1' }, { model: User, as: 'p2' }],
+  })
+  .then(function(game, err) {
+    if (!game) {
+      res.redirect('/');
+      return;
+    }
 
-      var players = {
-        p1: getPlayer(game.p1, game.TournamentId),
-        p2: getPlayer(game.p2, game.TournamentId)
-      };
+    var players = {
+      p1: getPlayer(game.p1, game.TournamentId),
+      p2: getPlayer(game.p2, game.TournamentId),
+    };
 
-      game.getTurns({ order: ['turnsElapsed'] }).then(function(turns, err) {
-        var prevpage = req.session.prevpage;
-        req.session.prevpage = '';
-        res.render('games/show', {
-          id: req.params.id,
-          p1: players.p1,
-          p2: players.p2,
-          winner: game.winner ? players[game.winner].name : '',
-          prevpage: prevpage,
-          turns: turns,
-          description: getDescription(game, players),
-          tournamentId: game.TournamentId
-        });
+    game.getTurns({ order: ['turnsElapsed'] }).then(function(turns, err) {
+      var prevpage = req.session.prevpage;
+      req.session.prevpage = '';
+      res.render('games/show', {
+        id: req.params.id,
+        p1: players.p1,
+        p2: players.p2,
+        winner: game.winner ? players[game.winner].name : '',
+        prevpage: prevpage,
+        turns: turns,
+        description: getDescription(game, players),
+        tournamentId: game.TournamentId,
       });
+    });
   });
 });
 
@@ -87,7 +90,7 @@ function getPlayer(user, isTournament) {
   if (!user) {
     var name = isTournament ? 'TBD' : 'nodebot';
     var picture = isTournament ? '' : '/images/nodejs-icon.png';
-    return { name: name, picture:  picture };
+    return { name: name, picture: picture };
   }
 
   return { name: user.name, picture: user.picture };

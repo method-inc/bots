@@ -39,8 +39,6 @@ function endGameForError(game, playerName, playerError, playerWinner, err, cb, s
   game.winner = playerWinner;
   game.finished = true;
   game.finishedAt = Date.now();
-  gameStarted = false;
-  ready = 0;
   saveGameAndTurns(game, cb);
   sendTurn({ GameId: game.id, winner: playerWinner });
 }
@@ -110,8 +108,6 @@ function detectGameComplete(gameStore, completeState, cb, sendTurn) {
       gameStore.finished = true;
       gameStore.finishedAt = Date.now();
     }
-    gameStarted = false;
-    ready = 0;
     if (sendTurn) {
       sendTurn(completeState);
     }

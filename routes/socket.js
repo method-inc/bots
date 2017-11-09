@@ -28,7 +28,7 @@ module.exports = function(socket) {
         if (p2 && p2.bot) {
           botUrls.push(p2.bot);
           return gameStore.setP2(p2);
-        } 
+        }
         botUrls.push('nodebot');
         return gameStore;
       }).then(function(savedGame) {
@@ -38,11 +38,20 @@ module.exports = function(socket) {
 
   socket.on('start-tournament-game', function(data) {
     var game;
-    Game.findOne({ where: { id: data.id }, include: [{ model: Tournament }] }).then(function (foundGame) {
+    Game.findOne({
+      where: { id: data.id },
+      include: [{ model: Tournament }],
+    }).then(function(foundGame) {
       game = foundGame;
-      return foundGame.Tournament.getGames({ order: ['id'], where: { round: game.round }, attributes: ['id'] });
-    }).then(function (orderedGames) {
-      var ids = orderedGames.map(function (orderedGame) { return orderedGame.id; });
+      return foundGame.Tournament.getGames({
+        order: ['id'],
+        where: { round: game.round },
+        attributes: ['id'],
+      });
+    }).then(function(orderedGames) {
+      var ids = orderedGames.map(function(orderedGame) {
+ return orderedGame.id;
+});
       var gameIndex = ids.indexOf(game.id);
       socket.emit('message', 'new');
       nextGame(game.Tournament, game.round, gameIndex, false, sendTurn);
@@ -69,15 +78,18 @@ module.exports = function(socket) {
     socket.emit('game', turn);
 
     if (turn.winner) {
-      Game.findOne({ where: { id: turn.GameId }, include: [{ model: User, as: 'p1' }, { model: User, as: 'p2' }] })
-        .then(function(game, err) {
-          console.log('Game: ' + JSON.stringify(game));
-          if (game) {
-            socket.emit('game-data',
-              { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
-            );
-          }
-        });
+      Game.findOne({
+        where: { id: turn.GameId },
+        include: [{ model: User, as: 'p1' }, { model: User, as: 'p2' }],
+      })
+      .then(function(game, err) {
+        console.log('Game: ' + JSON.stringify(game));
+        if (game) {
+          socket.emit('game-data',
+            { p1: game.p1, p2: game.p2, winner: game.winner, end: game.end }
+          );
+        }
+      });
     }
   }
 };

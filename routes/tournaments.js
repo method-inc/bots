@@ -5,7 +5,7 @@ var Tournament = models.Tournament;
 var Game = models.Game;
 var User = models.User;
 
-router.get('/', function (req, res) {
+router.get('/', function(req, res) {
   req.session.prevpage = '/tournaments';
   getTournaments(function(tournamentsList) {
     res.render('tournaments/index', { tournaments: tournamentsList });
@@ -21,11 +21,11 @@ router.get('/:id', function(req, res) {
       include: [
         {
         model: Game, order: ['round'], include: [
-          { model: User, as: 'p1' }, { model: User, as: 'p2' }
-        ]
-      },{ model: User, as: 'winner' }
+          { model: User, as: 'p1' }, { model: User, as: 'p2' },
+        ],
+      }, { model: User, as: 'winner' },
       ],
-      where: { id: req.params.id }
+      where: { id: req.params.id },
     }
   ).then(function(tournament, err) {
       if (tournament) {
@@ -51,12 +51,12 @@ router.get('/startdummy/:players', function(req, res) {
 function getTournaments(cb) {
   Tournament.findAll({
     order: [['createdAt', 'DESC']],
-    include: [ { model: User, as: 'winner'} ]
+    include: [{ model: User, as: 'winner' }],
   }).then(function(tournaments, err) {
     if (tournaments.length) {
       var tournamentsList = [];
       var completed = 0;
-      tournaments.forEach(function (tournament, i) {
+      tournaments.forEach(function(tournament, i) {
         var winner = 'Not Finished';
         if (tournament.winner && tournament.winner.name) winner = tournament.winner.name;
         var description = 'Winner: ' + winner;
@@ -85,8 +85,8 @@ function organizeTournament(callback) {
     var players = [];
     users.forEach(function(user) {
       players.push(user);
-      //user.participating = false;
-      //user.save();
+      // user.participating = false;
+      // user.save();
     });
     players = shuffleArray(players);
     var round = 1;
@@ -123,11 +123,10 @@ function tournamentRound(tournament, round, players, assigned, test, callback) {
     if (!numPlaying) numPlaying = numPlayers;
 
     for (var i=0; i<numPlaying-1; i+=2) {
-      
       var p1 = players[i];
       var p2 = players[i + 1];
-
-      var gameP1, gameP2;
+      var gameP1;
+      var gameP2;
 
       if (assigned.indexOf(p1) === -1) {
         gameP1 = p1;
@@ -143,7 +142,7 @@ function tournamentRound(tournament, round, players, assigned, test, callback) {
 
       newGame.save().then(function(result) {
         return result.setP1(gameP1);
-      }).then(function (result) {
+      }).then(function(result) {
         return result;
       }).then(function(result) {
         return result.setP2(gameP2);
@@ -159,8 +158,7 @@ function tournamentRound(tournament, round, players, assigned, test, callback) {
 
     round++;
     tournamentRound(tournament, round, players, assigned, test, callback);
-  }
-  else {
+  } else {
     if (callback) {
       callback(tournament);
     }

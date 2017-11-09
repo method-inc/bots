@@ -27,7 +27,7 @@ window.onload = function() {
       var gameId = gameIdElement.innerText;
       $('#start-game').hide();
       socket.emit('start-tournament-game', { id: gameId });
-    }
+    };
   }
 };
 
@@ -52,7 +52,6 @@ socket.on('game', function(data) {
   turn++;
   updateRound();
 });
-
 
 
 $(document).keydown(function(e) {

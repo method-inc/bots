@@ -37,7 +37,11 @@ gamesList.forEach(function(game) {
 });
 gracketData.push(roundArray);
 if (tournament.winner) {
-  gracketData.push([[{ name: tournament.winner.name, id: tournament.winner.name.replace(/@|\.|\s/g, '') }]]);
+  gracketData.push([[
+    {
+      name: tournament.winner.name,
+      id: tournament.winner.name.replace(/@|\.|\s/g, ''),
+    }]]);
 } else {
 gracketData.push([[{ name: '', id: 'empty'+empty }]]);
 }
