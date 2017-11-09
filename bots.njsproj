@@ -29,6 +29,7 @@
     <Compile Include="game_logic\game.js" />
     <Compile Include="game_logic\start_game.js" />
     <Compile Include="game_logic\test_bot.js" />
+    <Compile Include="game_logic\tournament.js" />
     <Compile Include="game_logic\utils.js" />
     <Compile Include="middleware\is_authenticated.js">
       <SubType>Code</SubType>
