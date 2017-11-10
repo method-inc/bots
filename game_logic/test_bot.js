@@ -1,8 +1,7 @@
 var utils = require('./utils');
 
 module.exports = function testBot(gameState) {
-  var game = JSON.parse(gameState);
-  var moves = getMoves(game.state, game.player);
+  var moves = getMoves(gameState.state, gameState.player);
   return moves;
 };
 

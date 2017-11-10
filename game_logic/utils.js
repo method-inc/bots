@@ -11,7 +11,7 @@ function log() {
 }
 
 function stringifyGameState(player, state, gameId) {
-  return JSON.stringify({ player, state, gameId }) + '\n';
+  return { player, state, gameId };
 }
 
 function tryParse(str) {

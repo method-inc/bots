@@ -14,14 +14,12 @@ module.exports = function startGame(botUrls, gameStore, cb, sendTurn) {
   var playerOptions = {
     p1Options: {
       url: botUrls[0],
-      method: 'POST',
-      form: {},
+      json: {},
       timeout: 5000,
     },
     p2Options: {
       url: botUrls[1],
-      method: 'POST',
-      form: {},
+      json: {},
       timeout: 5000,
     },
   };
@@ -48,8 +46,8 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   var p2Moves = null;
   var { p1Options, p2Options } = gameStore.playerOptions;
 
-  p1Options.form.data = utils.stringifyGameState('r', gameState, gameStore.id);
-  p2Options.form.data = utils.stringifyGameState('b', gameState, gameStore.id);
+  p1Options.json = utils.stringifyGameState('r', gameState, gameStore.id);
+  p2Options.json = utils.stringifyGameState('b', gameState, gameStore.id);
 
   function playerResponse(body) {
     if (p1Moves && p2Moves) {
@@ -58,14 +56,14 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   }
 
   if (p1Options.url === 'nodebot') {
-    p1Moves = testBot(p1Options.form.data);
+    p1Moves = testBot(p1Options.json);
     playerResponse();
   } else {
-    request(p1Options, function(err, res, body) {
+    request.post(p1Options, function(err, res, body) {
       if (!err) {
         utils.log('Player 1 received data: ' + body);
-        p1Moves = utils.tryParse(body);
-        playerResponse();
+        p1Moves = body;
+        playerResponse(p1Moves);
       } else {
         if (gameStore.p1) {
           endGameForError(gameStore, 'ONE', gameStore.p1.name, 'p2', err, cb, sendTurn);
@@ -79,13 +77,13 @@ function nextTurn(gameStore, gameState, cb, sendTurn) {
   }
 
   if (p2Options.url === 'nodebot') {
-    p2Moves = testBot(p2Options.form.data);
+    p2Moves = testBot(p2Options.json);
     playerResponse();
   } else {
-    request(p2Options, function(err, res, body) {
+    request.post(p2Options, function(err, res, body) {
       if (!err) {
         utils.log('Player 2 received data: ' + body);
-        p2Moves = utils.tryParse(body);
+        p2Moves = body;
         playerResponse();
       } else {
         endGameForError(gameStore, 'TWO', gameStore.p2.name, 'p1', err, cb, sendTurn);
