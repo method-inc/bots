@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bots-deployment
+  labels:
+    app: bots
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: bots
+  template:
+    metadata:
+      labels:
+        app: bots
+    spec:
+      containers:
+      - name: bots
+        image: ptfaulkner/bots:latest
+        ports:
+        - containerPort: 3000
